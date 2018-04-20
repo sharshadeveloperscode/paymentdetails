@@ -1,0 +1,1160 @@
+﻿@{
+    ViewBag.Title = "SalonServices";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .modal3 {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        padding-top: 100px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content3 {
+        position: relative;
+        background-color: #fefefe;
+        margin: auto;
+        padding: 0;
+        border: 1px solid #888;
+        width: 80%;
+        height: 198px;
+    }
+
+
+
+
+    .close3 {
+        color: white;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        margin-top: -18px;
+        margin-right: 10px;
+    }
+
+        .close3:hover,
+        .close3:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .modal-header3 {
+        padding: 20px 16px;
+        background-color: #3c8dbc;
+        color: white;
+    }
+
+    .modal-body3 {
+        padding: 2px 16px;
+    }
+
+    .modal-footer3 {
+        padding: 19px 20px 20px;
+        margin-top: 15px;
+        text-align: right;
+    }
+
+
+    body {
+        background: rgba(0,0,0,0.9);
+    }
+
+    form {
+        /*position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-top: -100px;
+        margin-left: -250px;
+        width: 500px;
+        height: 200px;*/
+        border: 4px dashed rgb(0,0,0);
+    }
+
+        form p {
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            line-height: 170px;
+            color: #000;
+            font-family: Arial;
+        }
+
+        form input {
+            position: absolute;
+            margin: 0;
+            padding: 0;
+            width: 30%;
+            height: 30%;
+            outline: none;
+            opacity: 0;
+        }
+
+        form button {
+            margin: 0;
+            color: #fff;
+            background: #16a085;
+            border: none;
+            width: 508px;
+            height: 35px;
+            margin-top: -20px;
+            margin-left: -4px;
+            border-radius: 4px;
+            border-bottom: 4px solid #117A60;
+            transition: all .2s ease;
+            outline: none;
+        }
+
+            form button:hover {
+                background: #149174;
+                color: #0C5645;
+            }
+
+            form button:active {
+                border: 0;
+            }
+</style>
+<div id="preloader" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #fefefe; z-index: 99; height: 110vh;">
+    <div id="status" style="width:100%;height:100%; text-align: center; position: absolute; left: 0; top: 30%; background-repeat: no-repeat; background-size: cover cover; background-position: center; margin: 0px 0 0 36px;">
+        <div class="preloader-logo"></div>
+        <p class="center-text smaller-text" id="p1" style="margin: 0 24px 10px !important;">
+            <h2> Loading .. </h2><br />
+            <img src="~/img/preload.gif" />
+        </p>
+    </div>
+</div>
+<section class="content-header">
+    <h1 id="displaytext"></h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Venue Services List</a></li>
+        <li class="active">Create Venue Services</li>
+    </ol>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lblSalonServices"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                <div class="box-body table-responsive">
+                    <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                        <tr>
+                            <td>
+                                Service Image : <label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <form>
+                                    <input type="file" id="imgService" onchange="readURL(this);" accept="*/images" />
+                                    <p>Drag your files here or click in this area.</p>
+                                </form>
+                            </td>
+                            <td colspan="2">
+                                <img src="http://placehold.it/275" style="width:275px;height:183px;" id="blah" />
+                                <input type="hidden" id="txtServiceImage" name="ServiceImage" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Service Type:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <select id="ddlCategory" class="form-control"></select>
+                            </td>
+                            <td>
+                                Service Name :<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" id="ddlTreatmentType" />
+                            </td>
+                        </tr>
+                        <tr>
+
+
+                            @*
+                                <td>
+                                    Treatment Title:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select id="ddlTreatmentTitle" onchange="BindTreatmentType()" class="form-control">
+                                        <option value="0">--Select--</option>
+                                    </select>
+                                </td>*@
+
+                        </tr>
+
+                        <tr>
+                            <td>
+                                Pricing Type:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <select id="ddlPricingType" class="form-control">
+                                    <option value="0">--Select--</option>
+                                    <option value="1">Standard</option>
+                                </select>
+                            </td>
+                            <td>
+                                Duration :<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <select id="ddlDuration" class="form-control">
+                                    <option value="0">--Select--</option>
+                                </select>
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <td>Price<label style="color:red;margin-left: 1%;">*</label></td>
+                            <td>
+                                <input type="number" min="0" class="form-control" id="txtPrice" />
+                            </td>
+                            <td>@*Sale*@</td>
+                            <td>
+                                <input type="number" min="0" class="form-control" style="display:none;" id="txtSale" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Cleanup Time:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <select id="ddlCleanUpTime" class="form-control">
+                                    <option value="0">--Select--</option>
+                                </select>
+                            </td>
+
+                            <td>
+                                Description:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <textarea placeholder="Enter Description" id="txtDescription" name="txtDescription" class="form-control" required></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Do You Want To Make This As Feature Service:<label style="margin-left: 1%;"></label>
+                            </td>
+                            <td>
+                                <input type="checkbox" style="margin-left: 3px;" onchange="FeatureServiceCount()" id="chkFeatureServices" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="text-align:right">
+                                <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                @*<input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />*@
+                                <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("SalonServicesList","Salon")';" style="width:100px;" />
+                                <input type="text" hidden="hidden" id="txtSalonServicesId" name="SalonServicesId" />
+                                <input type="text" hidden="hidden" id="txtSalonId" name="SalonId" />
+
+                            </td>
+                        </tr>
+                    </table>
+                    <label id="lbl_status"></label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="myModal4" class="modal3">
+        <!-- Modal content -->
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <div class="modal-content3">
+                <div class="modal-header3">
+                    <span class="close3" onclick="ModalClose()">&times;</span>
+                </div>
+                <div class="modal-body3">
+                    <br />
+                    <p id="lblupdated3" style="color:black"></p>
+                </div>
+                <div class="modal-footer3">
+                    <input type="button" style="margin-top: -59px;" class="btn btn-default" onclick="ModalClose()" value="OK" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script>
+
+    $(document).ready(function () {
+        $('form input').change(function () {
+            $('form p').text(this.files.length + " file(s) selected");
+        });
+    });
+
+
+
+    function ModalClose() {
+        $("#myModal4").css('display', "none");
+    }
+    // Get the modal
+    var modal3 = document.getElementById('myModal4');
+
+    // Get the button that opens the modal
+    var btn3 = document.getElementById("myBtn3");
+
+    // Get the <span> element that closes the modal
+    var span3 = document.getElementsByClassName("close3")[0];
+
+    // When the user clicks the button, open the modal
+    btn3.onclick = function () {
+        modal3.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span3.onclick = function () {
+        modal3.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal3.style.display = "none";
+        }
+    }
+</script>
+<script type="text/javascript">
+
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+ //   var URL = "http://localhost:50445/";
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+    var EditSalonServicesId = localStorage.getItem("EditSalonServicesId");
+
+    window.onload = function () {
+        SelectService();
+        $("#preloader").hide();
+        if (UserId != "null" || UserId != null && RoleId == "1") {
+            //  City();
+            CleanUpTime();
+            Duration();
+            // TreatmentTitle();
+            //  TreatmentType();
+            if (EditSalonServicesId == "null") {
+                Category();
+                $("#displaytext").text("Add Venue Service");
+                $('#btnEdit').hide();
+                $('#btnSave').show();
+            }
+            else {
+                $("#displaytext").text("Edit Venue Service");
+                BindSalonService(EditSalonServicesId);
+                $('#btnEdit').show();
+                $('#btnSave').hide();
+                $('#btnReset').hide();
+            }
+
+        }
+        else {
+            window.location.href = '@Url.Action("Logout", "Salon")';
+        }
+    }
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#blah')
+                    .attr('src', e.target.result)
+                //.width(150)
+                //.height(200);
+
+                var data = new FormData();
+                var files = $("#imgService").get(0).files;
+                if (files.length > 0) {
+                    data.append("MyImages", files[0]);
+                }
+                $.ajax({
+                    url: URL + "api/Upload/UploadServiceImage",
+                    type: "POST",
+                    processData: false,
+                    contentType: false,
+                    data: data,
+                    success: function (response) {
+                        var img = URL + "Files/ServiceImages/" + response;
+                        $('#txtServiceImage').val(img);
+                    }
+                });
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    // Feature Service Onchange
+    GetSalonsId();
+    function GetSalonsId() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Salons/GetByUserId",
+            data: { "UserId": UserId },
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+
+                localStorage.setItem("SalonsId", SalonsId);
+            }
+        })
+    }
+
+    var count = 0;
+    function FeatureServiceCount() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/SalonServices/FeratureServicesbySalonsId",
+            data: { "SalonsId": localStorage.getItem("SalonsId") },
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+                // alert($("#chkFeatureServices").is("checked"))
+                // alert(json.length);
+                if (json.length >= 3) {
+                    count = 3;
+                    if ($("#chkFeatureServices").is(':checked')) {
+                        if ($("#chkFeatureServices").attr('checked', false)) {
+                            count = 3;
+                        }
+                    }
+                    else if (!$("#chkFeatureServices").is(':checked')) {
+                        if ($("#chkFeatureServices").attr('checked', true)) {
+                            count = 2;
+                        }
+                    }
+                    if (count < 3) {
+                    }
+                    else {
+                        $("#myModal4").css('display', "block");
+                        $("#lblupdated3").text("You already added 3 services as featured services. If you want to add this service as featured service please remove / deselect one of featured services and this service as featured services.");
+                        //  alert("no");
+                        $("#chkFeatureServices").attr('checked', false);
+                    }
+
+                    //   if ($("#chkFeatureServices").is("checked") == false)
+                    ////    if($('#chkFeatureServices').prop('checked', true))
+                    //   {
+                    //       //alert($("#chkFeatureServices").is("checked"));
+                    //       // alert("ok")
+                    //    }
+                    //   else if ($("#chkFeatureServices").is("checked") == true)
+                    //    {
+
+                    //    //if ($("#chkFeatureServices").is("checked") == true ) {
+                    //        $("#myModal4").css('display', "block");
+                    //        $("#lblupdated3").text("You already added 3 services as featured services. If you want to add this service as featured service please remove/deselect one of featured services and this service as featured services.");
+
+                    //        $("#chkFeatureServices").attr('checked', false);
+                    //        if (localStorage.getItem("Feature") == 1) {
+                    //            //  alert('came');
+                    //            $("#myModal4").css('display', "block");
+                    //            $("#lblupdated3").text("You already added 3 services as featured services. If you want to add this service as featured service please remove/deselect one of featured services and this service as featured services.");
+
+                    //            $("#chkFeatureServices").attr('checked', false);
+
+                    //       // }
+
+                    //        }
+
+                    //    }
+                    // alert('came');
+
+
+                    @*window.location.href = '@Url.Action("SalonServicesList", "Salon")';*@
+                }
+            }
+        });
+        //    }
+        //})
+    }
+
+
+    /////dropd down Category Name
+    function Category() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Category/GetCategoryByIsActive",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].Category, data[i].CategoryId);
+                    $("#ddlCategory").val("");
+                    //$('#ddlCategory').append(opt);
+                }
+
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+    function CleanUpTime() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/CleanUpTime/GetData",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].IsActive == 1) {
+                        var opt = new Option(data[i].CleanUpTime, data[i].CleanUpTimeId);
+                        $("#ddlCleanUpTime").val("");
+                        $('#ddlCleanUpTime').append(opt);
+                    }
+                }
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+    // api treatment title
+    function BindTreatmentTitle() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/TreatmentTitle/GetbyCategoryIdByIsActvive",
+            data: { "CategoryId": $("#ddlCategory").val() },
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                $("#ddlTreatmentTitle").empty();
+                $('#ddlTreatmentTitle').append("<option value='0' label='--Select--'></option>");
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].TreatmentTitle, data[i].TreatmentTitleId);
+                    $("#ddlTreatmentTitle").val("");
+                    $('#ddlTreatmentTitle').append(opt);
+                }
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+    //TreatmentType type
+    function BindTreatmentType() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/TreatmentType/GetbyTreatmentTitleIdByIsActive",
+            data: { "TreatmentTitleId": $("#ddlTreatmentTitle").val() },
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+
+            success: function (data) {
+                $("#ddlTreatmentType").empty();
+                $('#ddlTreatmentType').append("<option value='0' label='--Select--'></option>");
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].TreatmentType, data[i].TreatmentTypeId);
+                    $("#ddlTreatmentType").val("");
+                    $('#ddlTreatmentType').append(opt);
+                }
+
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+    // drop down duration
+    function Duration() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Duration/GetData",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].Duration, data[i].DurationId);
+                    $("#ddlDuration").val("");
+                    $('#ddlDuration').append(opt);
+                }
+
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+    function LoadCategory(Category) {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Category/GetCategoryByIsActive",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].Category, data[i].CategoryId);
+                    $("#ddlCategory").val("");
+                    //  $('#ddlCategory').append(opt);
+                }
+                $("#ddlCategory").val(Category);
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+
+    function LaodTitle(Category, TreatmentTitle) {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/TreatmentTitle/GetbyCategoryId",
+            data: { "CategoryId": Category },
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                $("#ddlTreatmentTitle").empty();
+                $('#ddlTreatmentTitle').append("<option value='0' label='--Select--'></option>");
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].TreatmentTitle, data[i].TreatmentTitleId);
+                    $("#ddlTreatmentTitle").val("");
+                    $('#ddlTreatmentTitle').append(opt);
+                }
+
+                $("#ddlTreatmentTitle").val(TreatmentTitle);
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+
+    }
+
+
+    function LoadTreatmentType(TreatmentTitle, TreatmentType) {
+
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/TreatmentType/GetbyTreatmentTitleId",
+            data: { "TreatmentTitleId": TreatmentTitle },
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+
+            success: function (data) {
+                $("#ddlTreatmentType").empty();
+                $('#ddlTreatmentType').append("<option value='0' label='--Select--'></option>");
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].TreatmentType, data[i].TreatmentTypeId);
+                    $("#ddlTreatmentType").val("");
+                    $('#ddlTreatmentType').append(opt);
+                }
+                $("#ddlTreatmentType").val(TreatmentType);
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+    function BindSalonService(SalonServicesId) {
+        $("#preloader").show();
+        $("#lbl_status").text("");
+        Clear();
+
+        $.ajax({
+            url: URL + "api/SalonServices/GetDatabyId",
+            data: { "SalonServicesId": SalonServicesId },
+            type: "GET",
+            cache: false,
+            success: function (r) {
+
+                $('#btnEdit').show();
+                $('#btnSave').hide();
+                if (r[0].featuredServices == "1") {
+
+                    $("#chkFeatureServices").attr('checked', 'checked')
+                }
+                else {
+                    $("#chkFeatureServices").attr('checked', false)
+                }
+
+
+                console.log(r);
+
+
+                //alert();
+
+                // $("#ddlCategory").val(r[0].CategoryId,r[0].TreatmentTitleId);
+                //  option += '<option value="' + r[0].CategoryId + '">' + r[0].TreatmentTitleId + '</option>';
+                //$("#ddlCategory").val()
+
+                $("#txtSalonServicesId").val(r[0].SalonServicesId);
+                $("#txtSalonId").val(r[0].SalonsId);
+                $("#ddlTreatmentType").val(r[0].TreatmentTypeId);
+                LoadCategory(r[0].CategoryId);
+                $("#txtDescription").val(r[0].Description);
+                LaodTitle(r[0].CategoryId, r[0].TreatmentTitleId);
+                // $("#ddlTreatmentTitle").val(r[0].CategoryId, r[0].TreatmentTitleId);
+                //  LoadTreatmentType(r[0].TreatmentTitleId, r[0].TreatmentTypeId);
+                // $("#ddlTreatmentType").val(r[0].TreatmentType);
+                $('#txtServiceImage').val(r[0].ImagePath);
+                $('#blah').attr("src", r[0].ImagePath);
+                $("#ddlPricingType").val(r[0].PricingTypeId);
+                setTimeout(function () {
+                    $("#ddlCategory").val(r[0].CategoryId + "," + r[0].TreatmentTitleId);
+                    $("#ddlCleanUpTime").val(r[0].CleanUpTime);
+                    $("#ddlDuration").val(r[0].DurationId);
+                    $("#txtPrice").val(r[0].Price);
+                    $("#txtSale").val(r[0].Sale);
+                }, 1000);
+
+                $("#preloader").hide();
+            },
+            error: function (err) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblSalonServices').text(err.statusText);
+            }
+        })
+    }
+
+    function Save() {
+        var temp = $('#ddlCategory').val();
+        var cat = temp.split(",");
+        var CategoryId = cat[0];
+        var TreatmentTitleId = cat[1];
+
+        $("#lbl_status").text("");
+        $("#lblSalonServices").text("");
+        if ($('#ddlCategory').val() != 0 && $("#ddlTreatmentType").val() != 0 && $("#ddlPricingType").val() != 0 && $("#ddlDuration").val() != 0 && $("#txtPrice").val() != '' && $("#txtPrice").val() > 0 && $("#ddlCleanUpTime").val() != 0 && $("#txtDescription").val() != '' && $('#txtServiceImage').val() != "") {
+            $("#dvErrorStatus").css({ display: "none" });
+            var CreatedBy = UserId;
+            //Insert(int SalonsId, int CategoryId,  int TreatmentTypeId,int TreatmentTitleId, int PricingTypeId, int DurationId, string Price, string Sale, int CleanUpTime, int IsAcitve, int CreatedBy)
+            //var filter = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/
+            var price = $("#txtPrice").val();
+            //if (price != "") {
+            //    if (!filter.test(price)) {
+            //        $("#lblSalonServices").text("Please Enter Valid Price");
+            //        $("#txtPrice").focus();
+            //    }
+            //}
+            // var filter1 = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/
+            var Sale = $("#txtSale").val();
+            //if (Sale != "") {
+            //    if (!filter1.test(Sale)) {
+            //        $("#lblSalonServices").text("Please Enter Valid Sale Price");
+            //        $("#txtSale").focus();
+            //    }
+            //}
+
+            if ($("#chkFeatureServices").is(':checked')) {
+                var i = 1;
+
+            }
+            else if (!$("#chkFeatureServices").is(':checked')) {
+                var i = 0;
+            }
+
+            $.ajax({
+                type: 'GET',
+                url: URL + "api/Salons/GetByUserId",
+                data: { "UserId": UserId },
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                xhrFields: {
+                    withCredentials: false
+                },
+                success: function (json) {
+
+                    var SalonsId = json[0].SalonsId;
+                    $.ajax({
+                        url: URL + "api/SalonServices/Insert",
+                        //is active
+                        data: { "SalonsId": SalonsId, "CategoryId": CategoryId, "TreatmentTypeId": $("#ddlTreatmentType").val(), "TreatmentTitleId": TreatmentTitleId, "PricingTypeId": $("#ddlPricingType").val(), "DurationId": $("#ddlDuration").val(), "Price": $("#txtPrice").val(), "Sale": $("#txtSale").val(), "CleanUpTime": $("#ddlCleanUpTime").val(), "Description": $("#txtDescription").val(), "IsAcitve": 1, "CreatedBy": CreatedBy, "featuredServices": i, "ImagePath": $('#txtServiceImage').val() },
+                        type: "GET",
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblSalonServices").text("Salon Services  Already Existed.");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblSalonServices').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                Clear();
+                                $("#dvErrorStatus").css({ display: "none" });
+                                //$('lblSalonServices').text('Service created successfully')
+                                StatusMessage(2);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblSalonServices').text(err.statusText);
+                        }
+                    });
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblSalonServices').text(err.statusText);
+                }
+            });
+        } else {
+            if ($("#ddlCategory").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select Category");
+
+
+                // $("#myModal6").css('display', "block");
+                // $("#lblupdated1").text("Please Select Category");
+                $("#ddlCategory").focus();
+            }
+
+            else if ($("#ddlTreatmentTitle").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select TreatmentTitle");
+                // $("#myModal6").css('display', "block");
+                // $("#lblupdated1").text("Please Select TreatmentTitle");
+
+                $("#ddlTreatmentTitle").focus();
+            }
+            else if ($("#ddlTreatmentType").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Write Service Type");
+                // $("#myModal6").css('display', "block");
+                // $("#lblupdated1").text("Please Write Service Type");
+                $("#ddlTreatmentType").focus();
+            }
+            else if ($("#ddlPricingType").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select PricingType");
+                // $("#myModal6").css('display', "block");
+                // $("#lblupdated1").text("Please Select PricingType");
+                $("#ddlPricingType").focus();
+            }
+            else if ($("#ddlDuration").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select Duration");
+                // $("#myModal6").css('display', "block");
+                // $("#lblupdated1").text("Please Select Duration");
+                $("#ddlDuration").focus();
+            }
+            else if ($("#txtPrice").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Enter Price");
+                // $("#myModal6").css('display', "block");
+                // $("#lblupdated1").text("Please Enter Price");
+                $("#txtPrice").focus();
+            }
+            else if ($("#txtPrice").val() <= 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Enter Valid Price");
+                // $("#myModal6").css('display', "block");
+                // $("#lblupdated1").text("Please Enter Price");
+                $("#txtPrice").focus();
+            }
+            else if ($("#ddlCleanUpTime").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select CleanUpTime");
+                //  $("#myModal6").css('display', "block");
+                // $("#lblupdated1").text("Please Select CleanUpTime");
+                $("#ddlCleanUpTime").focus();
+            }
+            else if ($("#txtDescription").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Enter Description");
+                //  $("#myModal6").css('display', "block");
+                //  $("#lblupdated1").text("Please Enter Description");
+                $("#txtDescription").focus();
+            } else if ($("#txtServiceImage").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select Image");
+                //  $("#myModal6").css('display', "block");
+                //  $("#lblupdated1").text("Please Enter Description");
+                $("#txtServiceImage").focus();
+            }
+
+        }
+    }
+    function Clear() {
+        $("#ddlCategory").val('0');
+        $("#txtDescription").val(' ');
+        $("#ddlTreatmentTitle").val('0');
+        $("#ddlTreatmentType").val('');
+        $("#ddlPricingType").val('0');
+        $("#ddlDuration").val('0')
+        $("#txtPrice").val(' ');
+        $("#ddlCleanUpTime").val('0');
+        $("#txtSale").val(' ');
+        $("#lbl_status").text("");
+        $("#lblSalonServices").text(" ");
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+        $("#dvSuccess").css({ display: "none" });
+        $("#dvErrorStatus").css({ display: "none" });
+    }
+
+    function Update() {
+
+        var temp = $('#ddlCategory').val();
+        var cat = temp.split(",");
+        var CategoryId = cat[0];
+        var TreatmentTitleId = cat[1];
+        // alert(CategoryId);
+        //   alert(TreatmentTitleId);
+
+        $("#lbl_status").text("");
+
+        if ($('#ddlCategory').val() != 0 && $("#ddlTreatmentType").val() != 0 && $("#ddlPricingType").val() != 0 && $("#ddlDuration").val() != 0 && $("#txtPrice").val() != '' && $("#ddlCleanUpTime").val() != 0 && $("#txtDescription").val() != '' && $("#txtServiceImage").val() != "") {
+
+            var UpdatedBy = UserId;
+            //  Update(int SalonsId, int CategoryId, int TreatmentTypeId,int TreatmentTitleId, int PricingTypeId, int DurationId, string Price, string Sale, int CleanUpTime,string Description, int UpdatedBy, int SalonServicesId)
+            if ($("#chkFeatureServices").is(':checked')) {
+                var i = 1;
+
+            }
+            else if (!$("#chkFeatureServices").is(':checked')) {
+                var i = 0;
+            }
+            // alert(i);
+            $.ajax({
+                url: URL + "api/SalonServices/Update",
+                data: { "SalonsId": $("#txtSalonId").val(), "CategoryId": CategoryId, "TreatmentTypeId": $("#ddlTreatmentType").val(), "TreatmentTitleId": TreatmentTitleId, "PricingTypeId": $("#ddlPricingType").val(), "DurationId": $("#ddlDuration").val(), "Price": $("#txtPrice").val(), "Sale": $("#txtSale").val(), "CleanUpTime": $("#ddlCleanUpTime").val(), "Description": $("#txtDescription").val(), "UpdatedBy": UpdatedBy, "featuredServices": i, "SalonServicesId": $("#txtSalonServicesId").val(), "ImagePath": $("#txtServiceImage").val() },
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+
+                success: function (r) {
+                    if (r[0].Message == "UniqueConstraint") {
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblCity").text("Salon Services Already Existed.");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblCity').text(r[0].ErrorMessage);
+                    }
+                    else {
+                        Clear();
+                        StatusMessage(1);
+                    }
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblCity').text(err.statusText);
+                }
+            });
+
+        }
+        else {
+            //if ($("#ddlCategory").val() == 0) {
+            //    $("#dvErrorStatus").css({ display: "block" });
+            //    $("#lblSalonServices").text("Please Select Category");
+            //    $("#ddlCategory").focus();
+            //}
+            //else if ($("#txtDescription").val() == '')
+            //{
+            //    $("#dvErrorStatus").css({ display: "block" });
+            //    $("#lblSalonServices").text("Please Enter Description");
+            //    $("#txtDescription").focus();
+            //}
+            //else if ($("#ddlTreatmentTitle").val() == 0) {
+            //    $("#dvErrorStatus").css({ display: "block" });
+            //    $("#lblSalonServices").text("Please Select TreatmentTitle");
+            //    $("#ddlTreatmentTitle").focus();
+            //}
+            //else if ($("#ddlTreatmentType").val() == 0) {
+            //    $("#dvErrorStatus").css({ display: "block" });
+            //    $("#lblSalonServices").text("Please Select TreatmentType");
+            //    $("#ddlTreatmentType").focus();
+            //}
+            //else if ($("#ddlPricingType").val() == 0) {
+            //    $("#dvErrorStatus").css({ display: "block" });
+            //    $("#lblSalonServices").text("Please Select PricingType");
+            //    $("#ddlPricingType").focus();
+            //}
+            //else if ($("#ddlDuration").val() == 0) {
+            //    $("#dvErrorStatus").css({ display: "block" });
+            //    $("#lblSalonServices").text("Please Select Duration");
+            //    $("#ddlDuration").focus();
+            //}
+            //else if ($("#txtPrice").val() == '') {
+            //    $("#dvErrorStatus").css({ display: "block" });
+            //    $("#lblSalonServices").text("Please Enter Price");
+            //    $("#txtPrice").focus();
+            //}
+            //else if ($("#ddlCleanUpTime").val() == 0) {
+            //    $("#dvErrorStatus").css({ display: "block" });
+            //    $("#lblSalonServices").text("Please Select CleanUpTime");
+            //    $("#ddlCleanUpTime").focus();
+            //}
+
+
+            if ($("#ddlCategory").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select Category");
+
+
+                // $("#myModal6").css('display', "block");
+                // $("#lblupdated1").text("Please Select Category");
+                $("#ddlCategory").focus();
+            }
+
+            else if ($("#ddlTreatmentTitle").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select TreatmentTitle");
+                // $("#myModal6").css('display', "block");
+                // $("#lblupdated1").text("Please Select TreatmentTitle");
+
+                $("#ddlTreatmentTitle").focus();
+            }
+            else if ($("#ddlTreatmentType").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Write Service Type");
+                //  $("#myModal6").css('display', "block");
+                // $("#lblupdated1").text("Please Write Service Type");
+                $("#ddlTreatmentType").focus();
+            }
+            else if ($("#ddlPricingType").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select PricingType");
+                // $("#myModal6").css('display', "block");
+                //  $("#lblupdated1").text("Please Select PricingType");
+                $("#ddlPricingType").focus();
+            }
+            else if ($("#ddlDuration").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select Duration");
+                // $("#myModal6").css('display', "block");
+                //  $("#lblupdated1").text("Please Select Duration");
+                $("#ddlDuration").focus();
+            }
+            else if ($("#txtPrice").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Enter Price");
+                // $("#myModal6").css('display', "block");
+                // $("#lblupdated1").text("Please Enter Price");
+                $("#txtPrice").focus();
+            }
+            else if ($("#ddlCleanUpTime").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select CleanUpTime");
+                // $("#myModal6").css('display', "block");
+                // $("#lblupdated1").text("Please Select CleanUpTime");
+                $("#ddlCleanUpTime").focus();
+            }
+            else if ($("#txtDescription").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Enter Description");
+                //  $("#myModal6").css('display', "block");
+                //  $("#lblupdated1").text("Please Enter Description");
+                $("#txtDescription").focus();
+            } else if ($("#txtServiceImage").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select Image");
+                //  $("#myModal6").css('display', "block");
+                //  $("#lblupdated1").text("Please Enter Description");
+                $("#txtServiceImage").focus();
+            }
+        }
+    }
+
+    function StatusMessage(value) {
+        localStorage.setItem("SalonServicesMessage", value);
+        window.location.href = '@Url.Action("SalonServicesList", "Salon")';
+    }
+
+
+    function SelectService() {
+        $.ajax({
+            type: 'GET',
+            url: 'http://hogarbarber.developerscode.in/api/TreatmentTitle/GetDataIsActive',
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                var city = "";
+                var CategoryName = [];
+                var CategoryId = [];
+
+
+                for (var i = 0; i < data.length; i++) {
+                    if ($.inArray(data[i].Category, CategoryName) > -1) { }
+                    else {
+                        CategoryName.push(data[i].Category);
+                        CategoryId.push(data[i].CategoryId);
+                    }
+                }
+                city += '<option value="0">--Select Service-</option>';
+                for (var j = 0; j < CategoryName.length; j++) {
+
+                    city += '<optgroup class="optgroupe" label="' + CategoryName[j] + '">';
+                    for (var i = 0; i < data.length; i++) {
+                        if (CategoryId[j] == data[i].CategoryId) {
+                            city += '<option value=' + CategoryId[j] + ',' + data[i].TreatmentTitleId + '>' + data[i].TreatmentTitle + '</option>';
+
+                        }
+
+                    }
+                    city += '</optgroup>';
+
+                }
+                setTimeout(function () {
+                    $('#ddlCategory').append('<Option value="0"></Option>');
+                }, 1000);
+
+                $('#ddlCategory').append(city);
+
+
+
+            }
+        })
+
+    }
+</script>
+
+
+
+
+

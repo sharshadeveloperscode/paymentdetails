@@ -1,0 +1,650 @@
+﻿
+@{
+    ViewBag.Title = "Customers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="preloader" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #fefefe; z-index: 99; height: 110vh;">
+    <div id="status" style="width:100%;height:100%; text-align: center; position: absolute; left: 0; top: 30%; background-repeat: no-repeat; background-size: cover cover; background-position: center; margin: 0px 0 0 36px;">
+        <div class="preloader-logo"></div>
+        <p class="center-text smaller-text" id="p1" style="margin: 0 24px 10px !important;">
+            <h2> Loading .. </h2><br />
+            <img src="~/img/preload.gif" />
+        </p>
+    </div>
+</div>
+<body>
+    <section class="content-header">
+        <h1>
+            Add Customer
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"></a><i class="fa fa-dashboard"></i></i>Home</a></li>
+            <li><a href="#">Customers</a></li>
+            <li><a href="#">Create Customer</a></li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lblCustomer"></label>
+                        </div>
+                        <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lbl_status"></label>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive">
+                        <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                            <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                            <tr>
+
+                                <td>
+                                    First Name:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" placeholder="Enter First Name" id="txtFirstName" name="txtFirstName" title="Enter Alphabets only" class="form-control" required />
+                                </td>
+                                <td>
+                                    Last Name:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" placeholder="Enter Last Name" id="txtLastName" name="txtLastName" title="Enter Alphabets only" class="form-control" required />
+                                </td>
+
+                            </tr>
+                            <tr>
+
+                                <td>
+                                    Email:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" placeholder="Enter Email" id="txtEmail" name="txtEmail" title="Enter Alphabets only" class="form-control" required />
+                                </td>
+
+                                <td>
+                                    Gender:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select type="text" required="required" name="ddlGender" id="ddlGender" class="form-control">
+                                        <option value="0">Select Gender</option>
+                                        <option value="1">Male</option>
+                                        <option value="2">Female</option>
+                                    </select>
+                                    @*<input type="hidden" placeholder="Enter Password" id="txtPassword" name="txtPassword" title="Enter Alphabets only" class="form-control" required />*@
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td>
+                                    Profile Name:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" placeholder="Enter Profile Name" id="txtProfileName" name="txtProfileName" title="Enter Alphabets only" class="form-control" required />
+                                </td>
+                                <td>
+                                    Member Type:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select type="text" required="required" name="ddlMemberType" id="ddlMemberType" class="form-control">
+                                        <option value="0">Select Member Type</option>
+                                        <option value="1">Bronze</option>
+                                        <option value="2">Silver</option>
+                                        <option value="3">Gold</option>
+                                    </select>
+
+                                </td>
+
+                            </tr>
+                            <tr>
+
+                                <td>
+                                    Postal Code:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" placeholder="Enter Postal Code" id="txtPostalcode" name="txtPostalcode" class="form-control" required />
+                                </td>
+                                <td>
+                                    Note:<label style="color:red;margin-left: 1%;"></label>
+                                </td>
+                                <td>
+                                    <textarea type="text" placeholder="Enter Note" id="txtNote" name="txtNote" title="Enter Alphabets only" class="form-control"></textarea>
+                                </td>
+
+                            </tr>
+                            @*<tr>
+
+                                    <td>
+                                        Gender:<label style="color:red;margin-left: 1%;">*</label>
+                                    </td>
+                                    <td>
+                                        <select type="text" required="required" name="ddlGender" id="ddlGender" class="form-control">
+                                            <option value="0">Select Gender</option>
+                                            <option value="1">Male</option>
+                                            <option value="2">Female</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        Newsletter:<label style="color:red;margin-left: 1%;">*</label>
+                                    </td>
+                                    <td>
+                                        <select type="text" required="required" name="ddlNewsletter" id="ddlNewsletter" class="form-control">
+                                            <option value="0">Select Newsletter</option>
+                                            <option value="1">Subscribe</option>
+                                            <option value="2">Un-Subscribe</option>
+
+                                        </select>
+                                    </td>
+
+                                </tr>*@
+                            <tr>
+                                <td>
+                                    Phone Number:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" placeholder="Enter Phone Number" id="txtPhoneNumber" name="txtPhoneNumber" class="form-control" />
+                                </td>
+                                <td>
+                                    Address:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <textarea id="txtAddress" placeholder="Enter Address" class="form-control"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Password:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td colspan="3">
+                                    <input type="password" placeholder="Enter Password" style="width:300px !important;" id="txtPassword" name="txtPassword" title="Enter Alphabets only" class="form-control" required />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="text-align:right">
+                                    <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                    <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                    @*<input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />*@
+                                    <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("CustomersList", "Salon")';" style="width:100px;" />
+                                    <input type="text" hidden="hidden" id="txtCustomerId" name="CustomerId" />
+                                    <input type="text" hidden="hidden" id="txtUserId" name="CustomerId" />
+                                </td>
+                            </tr>
+                        </table>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</body>
+
+
+<script type="text/javascript">
+
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+
+    window.onload = function () {
+        $('#preloader').hide();
+    }
+
+
+    var EditCustomerId = localStorage.getItem("EditCustomerId");
+
+    if (EditCustomerId == null || EditCustomerId == "null") {
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+    }
+    else {
+        BindCustomer(EditCustomerId);
+        $('#btnEdit').show();
+        $('#btnReset').hide();
+        $('#btnSave').hide();
+    }
+
+
+    function BindCustomer(EditCustomerId) {
+        //  RolesLoad();
+        $("#lbl_status").text("");
+        Clear();
+        $('#btnEdit').show();
+        $('#btnSave').hide();
+        $.ajax({
+            url: URL + "api/Customers/GetCustomersId?CustomerId=" + EditCustomerId,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (r) {
+
+                console.log(r);
+                $("#txtPostalcode").val(r[0].PostalCode);
+                $("#txtUserId").val(r[0].UserId);
+
+                $("#txtAddress").val(r[0].Address);
+                $("#txtCustomerId").val(EditCustomerId);
+                $("#txtFirstName").val(r[0].FirstName);
+                $("#txtLastName").val(r[0].LastName);
+
+                $("#txtProfileName").val(r[0].ProfileName);
+                $("#txtPhoneNumber").val(r[0].PhoneNumber);
+
+                $("#txtEmail").val(r[0].Email);
+                $("#txtNote").val(r[0].Note);
+                $("#txtPassword").val(r[0].Password);
+                // $("#txtProfileName").val(r[0].Email);
+                $("#ddlMemberType").val(r[0].MemberTypeId);
+                $("#ddlNewsletter").val(r[0].Newsletter);
+                $("#ddlGender").val(r[0].Gender);
+
+
+            },
+            error: function (err) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblCustomer').text(err.statusText);
+            }
+        })
+    }
+
+    function Save() {
+        //  $('#preloader').show();
+        $("#lbl_status").text("");
+        if ($("#txtFirstName").val() != "" && $("#txtLastName").val() != "" && $("#txtEmail").val() != "" && $('#txtPassword').val() != '' && $('#txtProfileName').val() != '' && $('#ddlMemberType').val() != 0 && $('#txtPostalcode').val() != '' && $('#ddlGender').val() != 0 && $("#txtPhoneNumber").val() != "" && $("#txtAddress").val() != "") {
+
+            var FirstName = $("#txtFirstName").val();
+            var LastName = $("#txtLastName").val();
+            var Name = $("#txtName").val();
+            var CreatedBy = UserId;
+
+            var filter = new RegExp(/^[+a-zA-Z0-9._-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+            var email = $("#txtEmail").val();
+            var filter1 = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/
+            var PhoneNumber = $("#txtPhoneNumber").val();
+
+            if (FirstName.match(/^[a-zA-Z ]*$/) && LastName.match(/^[a-zA-Z ]*$/)) {
+
+
+                if (!filter.test(email)) {
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblCustomer").text("Please Enter Valid Email");
+                }
+                else if (!filter1.test(PhoneNumber)) {
+                    $("#lblCustomer").text("Please Enter Valid Phone Number");
+                    $("#txtPhoneNumber").focus();
+                }
+                else {
+                    var Image = '';
+                    var ImagePath = '';
+                    var Content = "Thank you for Registering with Salon. <br/> Your Salon Login Credentials are :<br/><br/> UserName : " + $('#txtEmail').val() + " <br/> Password :" + $('#txtPassword').val() + " ";
+                    $.ajax({
+                        url: URL + "api/Customers/InsertCustomers",
+                        data: { "FirstName": $("#txtFirstName").val(), "LastName": $("#txtLastName").val(), "PhoneNumber": $('#txtPhoneNumber').val(), "ProfileName": $('#txtProfileName').val(), "PostalCode": $('#txtPostalcode').val(), "MemberTypeId": $('#ddlMemberType').val(), "Gender": $('#ddlGender').val(), "Note": $('#txtNote').val(), "Newsletter": "1", "Email": $('#txtEmail').val(), "Password": $('#txtPassword').val(), "Image": '', "ImagePath": '', "CreatedBy": CreatedBy, "Address": $("#txtAddress").val() },
+                        type: "GET",
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "Success") {
+
+                                StatusMessage(2);
+                                var Email1 = $('#txtEmail').val();
+                                $.ajax({
+                                    url: URL + "api/emailTemplateTypes/SendEmail",
+                                    data: { "Email": Email1, "Mobile": $('#txtPhoneNumber').val(), "TemplateTypeId": 1, "Content": Content, "Name": $("#txtFirstName").val() + $("#txtLastName").val() },
+                                    type: "GET",
+                                    cache: false,
+                                    success: function (json) {
+
+                                    }
+                                });
+                            }
+                            else if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblCustomer").text("Customer Name Already Existed.");
+                            }
+                            else if (r[0].Message == "Duplicate") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblCustomer').text("Email  Already Existed.!Please Try With Another");
+                                // $("#txtEmail").val("Email Alreay Existed");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblCustomer').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                // SendSms();
+                                // SendEmail();
+                                Clear();
+                                $('#preloader').hide();
+
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblCustomer').text(err.statusText);
+                        }
+                    });
+
+                }
+
+
+            }
+            else {
+                if (!FirstName.match(/^[a-zA-Z ]*$/)) {
+
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblCustomer").text("Please Enter Valid First Name");
+                    $("#txtFirstName").focus();
+                }
+                else if (!LastName.match(/^[a-zA-Z ]*$/)) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblCustomer").text("Please Enter Valid Last Name");
+                    $("#txtLastName").focus();
+                }
+
+            }
+
+
+        } else {
+            //   $('#ddlGender').val() != 0 && $('#ddlNewsletter').val() != 0
+            if ($("#txtFirstName").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Enter First Name");
+                $("#txtFirstName").focus();
+            }
+            else if ($("#txtLastName").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Enter LastName ");
+                $("#txtLastName").focus();
+            }
+            else if ($("#txtEmail").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Enter Customer Email");
+                $("#txtEmail").focus();
+            }
+            else if ($("#txtPassword").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Enter Password");
+                $("#txtPassword").focus();
+            }
+            else if ($("#txtProfileName").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Enter Profile Name");
+                $("#txtProfileName").focus();
+            }
+            else if ($('#ddlMemberType').val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Select Member Type");
+                $("#ddlMemberType").focus();
+            }
+            else if ($("#txtPostalcode").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Enter Postalcode ");
+                $("#txtPostalcode").focus();
+            }
+            else if ($('#ddlGender').val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Select Gender");
+                $("#ddlGender").focus();
+            }
+                //else if ($('#ddlNewsletter').val() == 0) {
+                //    $("#dvErrorStatus").css({ display: "block" });
+                //    $("#lblCustomer").text("Please Select News letter");
+                //    $("#ddlNewsletter").focus();
+                //}
+            else if ($("#txtPhoneNumber").val() == '') {
+                //var filter1 = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/
+                //var PhoneNumber = $("#txtPhoneNumber").val();
+                //if (!filter1.test(PhoneNumber)) {
+                //    $("#lblCustomer").text("Please Enter Valid Phone Number");
+                //    $("#txtPhoneNumber").focus();
+                //}
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Enter PhoneNumber");
+                $("#txtPhoneNumber").focus();
+            }
+            else if ($('#txtAddress').val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Enter Address");
+                $("#txtAddress").focus();
+            }
+        }
+    }
+
+    function SendSms() {
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Upload/SendSMS",
+            data: { "mobile": $("#txtPhoneNumber").val() },
+            cache: false,
+            success: function (r) {
+            }
+        });
+    }
+
+    function SendEmail() {
+
+        var Email = $("#txtEmail").val();
+        var password = $('#txtPassword').val();
+        var Message = "Welcome To Salon your Email: " + Email + " and Your Password:" + password + "\n Thank you";
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Upload/SendEmail",
+            data: { "Email": Email, "Message": Message },
+            cache: false,
+            success: function (r) {
+
+            }
+        });
+    }
+
+
+    function Clear() {
+        //  if ($("#txtFirstName").val() != "" && $("#txtEmail").val() != "" && $('#txtPassword').val() != '' && $('#txtProfileName').val() && $('#ddlMemberType').val() != 0 && $('#ddlGender').val() != 0 && $('#ddlNewsletter').val() != 0) {
+        $("#txtFirstName").val("");
+        $("#txtLastName").val("");
+        $("#txtCustomerId").val("");
+        $("#txtEmail").val("");
+        $("#txtPassword").val("");
+        $("#txtProfileName").val("");
+        $("#txtAddress").val("");
+        $("#ddlMemberType").val("0");
+        $("#txtPostalcode").val("");
+        $("#txtNote").val("");
+        $("#txtPhoneNumber").val("");
+        $("#ddlNewsletter").val("0");
+        $("#ddlGender").val("0");
+        $("#lbl_status").text("");
+        $("#lblCustomer").text(" ");
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+        $("#dvSuccess").css({ display: "none" });
+        $("#dvErrorStatus").css({ display: "none" });
+    }
+
+
+    function Update() {
+        // $('#preloader').show();
+        $("#lbl_status").text("");
+        if ($("#txtFirstName").val() != "" && $("#txtLastName").val() != "" && $("#txtEmail").val() != "" && $('#txtPassword').val() != '' && $('#txtProfileName').val() != '' && $('#ddlMemberType').val() != 0 && $('#txtPostalcode').val() != '' && $('#ddlGender').val() != 0 && $("#txtPhoneNumber").val() != '') {
+            var Name = $("#txtName").val();
+            var UpdatedBy = UserId;
+
+            var filter = new RegExp(/^[+a-zA-Z0-9._-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+            var email = $("#txtEmail").val();
+            var filter1 = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/
+            var PhoneNumber = $("#txtPhoneNumber").val();
+            var FirstName = $("#txtFirstName").val();
+            var LastName = $("#txtLastName").val()
+            var PostCode = $('#txtPostalcode').val()
+
+            if (FirstName.match(/^[a-zA-Z ]*$/) && LastName.match(/^[a-zA-Z ]*$/)) {
+
+                if (!filter.test(email)) {
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblCustomer").text("Please Enter Valid Email");
+                }
+
+                else if (!filter1.test(PhoneNumber)) {
+                    $("#lblCustomer").text("Please Enter Valid Phone Number");
+                    $("#txtPhoneNumber").focus();
+                }
+                else {
+                    var Image = '';
+                    var ImagePath = '';
+                    //  UpdateCustomers(string FirstName, string LastName,string PhoneNumber, string ProfileName, string PostalCode,
+                    // int MemberTypeId, int Gender, string Note, string Newsletter, string Email, string Password ,int UserId,  string Iamge,string ImagePath,  int UpdatedBy, int CustomerId)
+                    var Content = "Thank you Your Details Updated Successfullly. <br/> Your Salon Login Credentials are :<br/><br/> UserName : " + $('#txtEmail').val() + " <br/> Password :" + $('#txtPassword').val() + " ";
+                    $.ajax({
+                        url: URL + "api/Customers/UpdateCustomers?FirstName=" + $("#txtFirstName").val() + "&LastName=" + $("#txtLastName").val() + "&PhoneNumber=" + $('#txtPhoneNumber').val() + "&ProfileName=" + $('#txtProfileName').val() + "&PostalCode=" + $('#txtPostalcode').val() + "&MemberTypeId=" + $('#ddlMemberType').val() + "&Gender=" + $('#ddlGender').val() + "&Note=" + $('#txtNote').val() + "&Newsletter=" + "1" + "&Email=" + $('#txtEmail').val() + "&Password=" + $('#txtPassword').val() + "&UserId=" + $('#txtUserId').val() + "&Iamge=" + Image + "&ImagePath=" + ImagePath + "&UpdatedBy=" + UpdatedBy + "&CustomerId=" + $("#txtCustomerId").val() + "&Address=" + $("#txtAddress").val() + "",
+                        type: "GET",
+                        dataType: 'json',
+                        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "Success") {
+                                StatusMessage(1);
+                                var Email2 = $('#txtEmail').val()
+                                $.ajax({
+                                    url: URL + "api/emailTemplateTypes/SendEmail",
+                                    data: { "Email": Email2, "Mobile": $('#txtPhoneNumber').val(), "TemplateTypeId": 6, "Content": Content, "Name": $("#txtFirstName").val() + $("#txtLastName").val() },
+                                    type: "GET",
+                                    cache: false,
+                                    success: function (json) {
+
+                                    }
+                                });
+                            }
+                            else if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblCustomer").text("Customer Name Already Existed.");
+                            }
+                            else if (r[0].Message == "Duplicate") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblCustomer').text("Email  Already Existed.!Please Try With Another");
+                                // $("#txtEmail").val("Email Alreay Existed");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblCustomer').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                Clear();
+                                //  StatusMessage(1);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblCustomer').text(err.statusText);
+                        }
+                    });
+
+                }
+
+            }
+            else {
+                if (!FirstName.match(/^[a-zA-Z ]*$/)) {
+
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblCustomer").text("Please Enter Valid First Name");
+                    $("#txtFirstName").focus();
+                }
+                else if (!LastName.match(/^[a-zA-Z ]*$/)) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblCustomer").text("Please Enter Valid Last Name");
+                    $("#txtLastName").focus();
+                }
+
+
+            }
+
+
+
+        }
+        else {
+            //   $('#ddlGender').val() != 0 && $('#ddlNewsletter').val() != 0
+            if ($("#txtFirstName").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Enter First Name");
+                $("#txtFirstName").focus();
+            }
+            else if ($("#txtLastName").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Enter LastName ");
+                $("#txtLastName").focus();
+            }
+            else if ($("#txtEmail").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Enter Customer Email");
+                $("#txtEmail").focus();
+            }
+            else if ($("#txtPassword").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Enter Password");
+                $("#txtPassword").focus();
+            }
+            else if ($("#txtProfileName").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Enter Profile Name");
+                $("#txtProfileName").focus();
+            }
+            else if ($('#ddlMemberType').val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Select Member Type");
+                $("#ddlMemberType").focus();
+            }
+            else if ($("#txtPostalcode").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Enter Postalcode ");
+                $("#txtPostalcode").focus();
+            }
+            else if ($('#ddlGender').val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Select Gender");
+                $("#ddlGender").focus();
+            }
+                //else if ($('#ddlNewsletter').val() == 0) {
+                //    $("#dvErrorStatus").css({ display: "block" });
+                //    $("#lblCustomer").text("Please Select News letter");
+                //    $("#ddlNewsletter").focus();
+                //}
+            else if ($("#txtPhoneNumber").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCustomer").text("Please Enter PhoneNumber");
+                $("#txtPhoneNumber").focus();
+            }
+        }
+    }
+
+    function StatusMessage(value) {
+        localStorage.setItem("CustomerMessage", value);
+        $('#preloader').hide();
+        if (value == "1") {
+
+            //  $("#myModal3").css('display', "block");
+            // $("#lblupdated").text("Customer Updated Successfully");
+            window.location.href = '@Url.Action("CustomersList", "Salon")';
+
+        }
+        else if (value == "2") {
+
+            //   $("#myModal3").css('display', "block");
+            //  $("#lblupdated").text("Customer Created Successfully");
+            window.location.href = '@Url.Action("CustomersList", "Salon")';
+
+        }
+    }
+    /////// customers from frontEnd
+
+
+
+
+
+
+
+</script>

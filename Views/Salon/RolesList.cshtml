@@ -1,0 +1,259 @@
+﻿
+@{
+    ViewBag.Title = "RolesList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <h1>
+        Roles
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("AdminDashBoard", "Salon")"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">User Management</a></li>
+        <li class="active">Roles</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+
+                        <label id="lblRole"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                <div class="box-body table-responsive">
+                    <input type="button" class="btn btn-primary" value="Add Role" onclick="window.location.href = '@Url.Action("Roles", "Salon")';" style="width:100px;" />
+
+                    <input type="submit" class="btn btn-danger" id="btnBack" value="Back" style="width:100px;float:right;" onclick="window.location.href = '@Url.Action("Dashboard", "Salon")';" />
+                </div>
+                <div class="box-body table-responsive">
+                    <table id="tblRole" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                                <th>Role Name</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table1"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<script type="text/javascript">
+ 
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+
+    window.onload = function () {
+        localStorage.setItem("EditRoleId", "null");
+
+        //if (UserId != "null" && RoleId == "1") {
+        var Message = localStorage.getItem("RoleMessage");
+        if (Message == "1") {
+          
+            $("#myModal3").css('display', "block");
+           
+            $("#lblupdated").text("Role Updated Successfully");
+            GetAll();
+        }
+        else if (Message == "2") {
+           
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("Role Created Successfully");
+            GetAll();
+        }
+        else {
+            $("#dvErrorStatus").css({ display: "none" });
+            $("#dvSuccess").css({ display: "none" });
+            GetAll();
+        }
+        @*}
+        else {
+            window.location.href = '@Url.Action("LockScreen", "Salon")';
+        }*@
+    }
+
+
+    function GetAll() {
+
+        localStorage.setItem("RoleMessage", "null");
+        $('#table1').text('');
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+        $.ajax({
+            type: 'GET',
+            url: URLLink + "api/Role/Get_Roles",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+                if (json[0].Message == "Error") {
+                    $('#tblRole').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblRole').text("Error");
+
+                }
+                else if (json[0].Message == "NoData") {
+                    $('#tblRole').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblRole').text("No Data");
+                }
+                else if (json[0].Message == "Success") {
+                    $('#tblRole').show();
+                    if ($.fn.dataTable.isDataTable('#tblRole')) {
+                        $('#tblRole').DataTable().destroy();
+                    }
+                    $('#table1').empty();
+                    for (var i = 0; i < json.length; i++) {
+                        tr = $('<tr/>');
+                        tr.append("<td>" + json[i].RoleName + "</td>");
+                        if (json[i].Status == 1) {
+                            tr.append("<td>" + "Active" + "</td>");
+                            tr.append("<td><a href='#' id='delete" + i + "' title='Deactivate'  onclick='UpdateStatus(" + json[i].RoleId + " ,0)'><i class='fa fa-check nav_action_icon'></i> </a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].RoleId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+                        }
+                        else if (json[i].Status == 0) {
+                            tr.append("<td>" + "Deactive" + "</td>");
+                            tr.append("<td><a href='#' id='delete" + i + "'  title='Activate' onclick='UpdateStatus(" + json[i].RoleId + ",1)'><i class='fa fa-ban nav_action_icon'></i> </a> </a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].RoleId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+                        }
+                        // tr.append("<td><a href='#' id='delete" + i + "' class='fa fa-trash-o' onclick='Delete(" + json[i].RoleId + ")'></a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].RoleId + ")' class='fa fa-pencil'></a></td>");
+                        $('#tblRole').append(tr);
+                    }
+                    $('#tblRole').DataTable({
+                      
+                        bsort: false,
+                        dom: 'Bfrtip',
+                        buttons: [
+                             'excel', 'pdf'
+                        ],
+                        select: true
+                    });
+                }
+            },
+            error: function (err) {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblRole').text(err.StatusText);
+            }
+        });
+    }
+
+    function Edit(RoleId) {
+        localStorage.setItem("EditRoleId", RoleId);
+        window.location.href = '@Url.Action("Roles", "Salon")';
+    }
+
+
+    function UpdateStatus(RoleId, Status) {
+        $("#lbl_status").text("");
+        var UserId = localStorage.getItem("UserId");
+        var StatusText = '';
+        var UpdateStatusText = '';
+        if (Status == 1) {
+            StatusText = "active";
+            UpdateStatusText = "activated";
+        }
+        else if (Status == 0) {
+            StatusText = "deactive";
+            UpdateStatusText = "deactivated";
+        }
+        if (confirm("Are you sure to  " + StatusText + " this Role?") == true) {
+            $.ajax({
+                url: URLLink + "api/Role/UpdateStatus",
+                data: { "Status": Status, "UpdatedBy": UserId, "RoleId": RoleId },
+                // UpdateStatus(int Status, int UpdatedBy, int DepartmentId)
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblRole").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblRole').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblRole').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+                        GetAll();
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("Role " + UpdateStatusText + " Successfully");
+                    }
+                },
+                error: function (err) {
+                    alert(err.StatusText);
+                }
+            });
+        }
+        else {
+
+        }
+    }
+
+
+
+    function Delete(RoleId) {
+        $("#lbl_status").text("");
+        if (confirm("Are you Sure to delete this Role?") == true) {
+            $.ajax({
+                url: URLLink + "api/Role/Delete_Role?RoleId=" + RoleId,
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+                    $("#lblRole").text(" ");
+                    $("#txtRoleId").val("");
+                    $("#txtRole").val("");
+                    $("#table1").text("");
+                    GetAll();
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblRole").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblRole').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblRole').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("Role Deleted Successfully");
+                    }
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblRole').text(err.StatusText);
+                }
+            });
+        } else {
+
+        }
+    }
+
+</script>

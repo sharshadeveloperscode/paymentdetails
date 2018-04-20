@@ -1,0 +1,270 @@
+﻿
+@{
+    ViewBag.Title = "DurationList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="content-header">
+    <h1>
+        Duration
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href=""><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Masters</a></li>
+        <li class="active">Duration</li>
+    </ol>
+    @* <script src="~/Scripts/jquery-3.1.1.min.js"></script>*@
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+
+                        <label id="lblDuration"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                <div class="box-body table-responsive">
+                    <input type="button" class="btn btn-primary" value="Add Duration" onclick="window.location.href = '@Url.Action("Duration", "Salon")';" style="text-align:left" />
+
+                    <input type="submit" class="btn btn-danger" id="btnBack" value="Back" style="width:100px;float:right;" onclick="window.location.href = '@Url.Action("Dashboard", "Salon")';" />
+                </div>
+                <div class="box-body table-responsive">
+                    <table id="tblDuration" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                             @*<th>Duration Id</th>*@
+                                <th>Duration</th>
+                                @* <th>IsActive</th>*@
+
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblDurationBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+<script type="text/javascript">
+   
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+
+    window.onload = function () {
+       // GetAll();
+        localStorage.setItem("EditDurationId", "null");
+
+        //if (UserId != "null" && RoleId == "1") {
+        var Message = localStorage.getItem("DurationMessage");
+        if (Message == "1") {
+          //  $("#dvErrorStatus").css({ display: "none" });
+          //  $("#dvSuccess").css({ display: "block" });
+            //  $("#lbl_status").text("Duration Updated Successfully");
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("Duration Updated Successfully");
+            GetAll();
+        }
+        else if (Message == "2") {
+           // $("#dvErrorStatus").css({ display: "none" });
+          //  $("#dvSuccess").css({ display: "block" });
+            //  $("#lbl_status").text("Duration Created Successfully");
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("Duration Created Successfully");
+            GetAll();
+        }
+        else {
+            $("#dvErrorStatus").css({ display: "none" });
+            $("#dvSuccess").css({ display: "none" });
+            GetAll();
+        }
+        @*}
+        else {
+            window.location.href = '@Url.Action("LockScreen", "Salon")';
+        }*@
+    }
+   
+    function GetAll() {
+        localStorage.setItem("DurationMessage", "null");
+        $('#tblDurationBody').text('');
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+        $.ajax({
+            type: 'GET',
+            url: URLLink + "api/Duration/GetData",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache:false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+                console.log(json);
+                if (json[0].Message == "Error") {
+                    $('#tblDuration').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblDuration').text("Error");
+
+                }
+                else if (json[0].Message == "NoData") {
+                    $('#tblDuration').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblDuration').text("No Data");
+                }
+                else if (json[0].Message == "Success") {
+                    $('#tblDuration').show();
+                    if ($.fn.dataTable.isDataTable('#tblDuration')) {
+                        $('#tblDuration').DataTable().destroy();
+                    }
+                    $('#tblDurationBody').empty();
+
+                    
+                    for (var i = 0; i < json.length; i++) {
+                        var id = json[i].DurationId
+                        tr = $('<tr/>');
+                        //tr.append("<td>" + id + "</td>");
+                        tr.append("<td>" + json[i].Duration + "</td>");
+                        if (json[i].IsActive == 1) {
+                          //  tr.append("<td>" + "Active" + "</td>");
+                            tr.append("<td><a href='#' id='delete" + i + "' title='Deactivate'  onclick='UpdateStatus(" + json[i].DurationId + " ,0)'><i class='fa fa-check nav_action_icon'></i> </a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].DurationId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+                        }
+                        else if (json[i].IsActive == 0) {
+
+                            tr.append("<td><a href='#' id='delete" + i + "' title='Activate'  onclick='UpdateStatus(" + json[i].DurationId + ",1)'><i class='fa fa-ban nav_action_icon'></i> </a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].DurationId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+                        }
+                       // sortTable($('#tblDuration'), 'asc');
+                        $('#tblDuration').append(tr);
+                    }
+                    $('#tblDuration').DataTable({
+                        
+                        bsort: false,
+                        dom: 'Bfrtip',
+                        buttons: [
+                             'excel', 'pdf'
+                        ],
+                        select: true
+                    });
+                }
+            },
+            error: function (err) {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblDuration').text(err.StatusText);
+            }
+        });
+    }
+    //local
+    function Edit(DurationId) {
+        localStorage.setItem("EditDurationId", DurationId);
+        window.location.href = '@Url.Action("Duration", "Salon")';
+    }
+
+
+    function UpdateStatus(DurationId, IsActive) {
+        $("#lbl_status").text("");
+        var UserId = localStorage.getItem("UserId");
+        var StatusText = '';
+        var UpdateStatusText = '';
+        if (IsActive == 1) {
+            StatusText = "Active";
+            UpdateStatusText = "Activated";
+        }
+        else if (IsActive == 0) {
+            StatusText = "Deactive";
+            UpdateStatusText = "Deactivated";
+        }
+        if (confirm("Are you Sure to  " + StatusText + " this Duration?") == true) {
+            $.ajax({
+                url: URLLink + "api/Duration/UpdateStatus",
+                data: { "Status": IsActive, "UpdatedBy": UserId, "DurationId": DurationId },
+                // UpdateStatus(int Status, int UpdatedBy, int DepartmentId)
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblDuration").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblDuration').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblDuration').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+                        GetAll();
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("Duration " + UpdateStatusText + " Successfully");
+                    }
+                },
+                error: function (err) {
+                  //  alert(err.StatusText);
+                }
+            });
+        }
+        else {
+
+        }
+    }
+
+
+
+    //function Delete(DurationId) {
+    //    $("#lbl_status").text("");
+    //    if (confirm("Are you Sure to delete this Duration?") == true) {
+    //        alert(DurationId);
+    //        $.ajax({
+    //            url: URL + "api/Duration/Delete",
+    //            data:{"id":DurationId},
+    //            type: "GET",
+    //            cache: false,
+    //            dataType: 'json',
+    //            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+    //            success: function (r) {
+    //                $("#lblDuration").text(" ");
+    //                $("#txtDurationId").val("");
+    //                $("#txtDuration").val("");
+    //                $("#tblDuration").text("");
+    //                GetAll();
+    //                if (r[0].Message == "REFERENCE") {
+    //                    $("#dvSuccess").css({ display: "none" });
+    //                    $("#dvErrorStatus").css({ display: "block" });
+    //                    $("#lblDuration").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+    //                }
+    //                else if (r[0].Message == "Error") {
+    //                    $('#tblDuration').hide();
+    //                    $("#dvErrorStatus").css({ display: "block" });
+    //                    $('#lblDuration').text(r[0].ErrorMessage);
+    //                }
+    //                else if (r[0].Message = "Success") {
+    //                    $("#dvErrorStatus").css({ display: "none" });
+    //                    $("#dvSuccess").css({ display: "block" });
+    //                    $("#lbl_status").text("Duration Deleted Successfully");
+    //                }
+    //            },
+    //            error: function (err) {
+    //                $("#dvErrorStatus").css({ display: "block" });
+    //                $('#lblDuration').text(err.StatusText);
+    //            }
+    //        });
+    //    } else {
+
+    //    }
+    //}
+</script>
+
+

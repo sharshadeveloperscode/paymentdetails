@@ -1,0 +1,978 @@
+﻿
+@{
+    ViewBag.Title = "Salons";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.css" rel="stylesheet">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.9/summernote.js"></script>
+
+<div id="preloader" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #fefefe; z-index: 99; height: 110vh;">
+    <div id="status" style="width:100%;height:100%; text-align: center; position: absolute; left: 0; top: 30%; background-repeat: no-repeat; background-size: cover cover; background-position: center; margin: 0px 0 0 36px;">
+        <div class="preloader-logo"></div>
+        <p class="center-text smaller-text" id="p1" style="margin: 0 24px 10px !important;">
+            <h2> Loading .. </h2><br />
+            <img src="~/img/preload.gif" />
+        </p>
+    </div>
+</div>
+<section class="content-header">
+    <h1>
+        Add Venue
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+        <li><a href="#">Venue</a></li>
+        <li><a href="#">Create Venue</a></li>
+
+    </ol>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lblSalon"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                <div class="box-body table-responsive">
+                    <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                        <tr>
+
+                            <td>
+                                Venue Name:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <input type="text" maxlength="40" placeholder="Enter Business Name" id="txtBusinessName" name="txtBusinessName" title="Enter Alphabets only" class="form-control" required />
+                            </td>
+                            <td>
+                                Business Type:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <select type="text" required="required" name="ddlBusinessType" id="ddlBusinessType" class="form-control"></select>
+                            </td>
+                        </tr>
+                        <tr>
+
+                            <td>
+                                Email:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <input type="text" maxlength="40" placeholder="Enter Email" id="txtEmail" name="txtEmail" title="Enter Alphabets only" class="form-control" required />
+                            </td>
+                            <td>
+                                Name:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <input type="text" maxlength="40" placeholder="Enter Name" id="txtName" name="txtName" title="Enter Alphabets only" class="form-control" required />
+                            </td>
+                        </tr>
+                        <tr>
+
+                            <td>
+                                Password:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <input type="password" maxlength="40" placeholder="Enter Password" id="txtPassword" name="txtPassword" title="Enter Alphabets only" class="form-control" required />
+                            </td>
+                            
+                            @*<td>
+                                Country:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <select type="text" required="required" name="" id="ddlCountry" class="form-control">
+                                    <option value="0">-Select-</option>
+                                    <option value="1">UK</option>
+                                </select>
+                            </td>*@
+                            <td>
+                                Classes:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <select type="text" required="required" name="" id="ddlClasses" class="form-control">
+                                    <option value="0">Select</option>
+                                </select>
+                                <select type="text" required="required" name="" style="display:none;" id="ddlCountry" class="form-control">
+                                    <option value="1">India</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                City:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <select type="text" required="required" name="" onchange="Area()" id="ddlCity" class="form-control">
+                                    @*<option value="0">-Select-</option>*@
+
+                                </select>
+                            </td>
+
+                            <td>
+                                Area:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <select type="text" required="required" name="" id="ddlArea" class="form-control">
+                                    <option value="0">-Select-</option>
+
+                                </select>
+                            </td>
+
+
+                        </tr>
+                        <tr>
+                            <td>
+                                Postal Code:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <input type="text" maxlength="40" placeholder="Enter Postal Code" id="txtPostalcode" name="txtPostalcode" title="Enter Alphabets only" class="form-control" required />
+                            </td>
+                            <td>
+                                Phone Number:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <input type="text" maxlength="40" placeholder="Enter Phone Number" id="txtPhoneNo" name="txtPhoneNo" title="Enter Alphabets only" class="form-control" required />
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>
+                                No. of chairs:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <input type="number" min="1" placeholder="Enter No. of chairs" id="txtNoofchairs" name="txtNoofchairs" title="Enter Numeric only" class="form-control" onkeypress="GetAvailability()" onchange="GetAvailability()" required />
+                                <input type="hidden" id="txtNoofchairshidden" />
+                                <input type="hidden" id="txtbookedchairs" />
+                                <label id="lblAvailableStatus" style="color:red;"></label>
+                            </td>
+                            <td>
+                                Available Chairs:<label style="color:red;margin-left: 1%;"></label>
+                            </td>
+                            <td>
+                                <label id="lblAvailable"></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Popularity:<label style="color:red;margin-left: 1%;"></label>
+                            </td>
+                            <td>
+                                <select type="text" required="required" id="ddlPopularity" class="form-control">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </td>
+                            <td>
+                                Address:<label style="color:red;margin-left: 1%;"></label>
+                            </td>
+                            <td>
+                                <textarea type="text" id="txtAddress" name="txtAddress" title="Enter Alphabets only" class="form-control"></textarea>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>
+                                Description:<label style="color:red;margin-left: 1%;"></label>
+                            </td>
+                            <td colspan="3">
+                                <textarea type="text" placeholder="Enter Note" id="txtNote" name="txtNote" title="Enter Alphabets only" class="form-control"></textarea>
+                            </td>
+                        </tr>
+
+                        <tr>
+
+                            <td colspan="4" style="text-align:right">
+                                <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                @*<input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />*@
+                                <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("SalonsList", "Salon")';" style="width:100px;" />
+                                <input type="text" hidden="hidden" id="txtSalonsId" name="txtSalonsId" />
+                            </td>
+                        </tr>
+                    </table>
+                    <label id="lbl_status"></label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+<script type="text/javascript">
+
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+
+    window.onload = function () {
+        $('#preloader').hide();
+        GetClasses();
+    }
+    $(document).ready(function () {
+        $('#txtNote').summernote({
+            height: 300
+        });
+    });
+
+
+
+    var EditSalonsId = localStorage.getItem("EditSalonsId");
+    City();
+    BusinessType();
+    if (EditSalonsId == null || EditSalonsId == "null") {
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+    }
+    else {
+        BindSalons(EditSalonsId);
+        $('#btnEdit').show();
+        $('#btnReset').hide();
+        $('#btnSave').hide();
+    }
+
+    getpages();
+
+    function getpages() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Users/GetSalonPages",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+
+                var PageIds = [];
+                for (var i = 0; i < data.length; i++) {
+                    var ids = data[i].PageID;
+                    PageIds.push(data[i].PageID);
+                }
+                localStorage.setItem("PageIds", PageIds);
+
+            }
+        })
+    }
+    function City() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/City/GetdataByIsActive",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                $('#ddlCity').empty();
+                var opt = new Option('-Select-', '0');
+                $('#ddlCity').append(opt);
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].CityName, data[i].CityId);
+                    $("#ddlCity").val("");
+                    $('#ddlCity').append(opt);
+                }
+
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+    function Area() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Area/GetDatabyCityIdByIsActive?CityId=" + $("#ddlCity").val(),
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                //  $('#ddlArea').empty();
+                var opt = "<option value='0'>Select</option>";
+                //  var opt = new Option('-Select-', '0');
+                //   $('#ddlArea').append(opt);
+                for (var i = 0; i < data.length; i++) {
+                    opt += "<option value='" + data[i].AreaId + "'>" + data[i].AreaName + "</option>";
+                    //     var opt = new Option(data[i].AreaName, data[i].AreaId);
+                    //     $("#ddlArea").val("");
+                    //    $('#ddlArea').append(opt);
+                }
+                $("#ddlArea").text("");
+                $('#ddlArea').append(opt);
+
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+    function AreaLoad(CityId, AreaId) {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Area/GetDatabyCityIdByIsActive?CityId=" + CityId,
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                $("#ddlArea").empty("");
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].AreaName, data[i].AreaId);
+                    $("#ddlArea").val("");
+                    $('#ddlArea').append(opt);
+                }
+                $('#ddlArea').val(AreaId);
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+    function CityLoad(CityId) {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/City/GetdataByIsActive",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                $('#ddlCity').empty();
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].CityName, data[i].CityId);
+                    $("#ddlCity").val("");
+                    $('#ddlCity').append(opt);
+                }
+                $("#ddlCity").val(CityId);
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+
+        });
+    }
+    function BusineeTypeLoad(TypeId) {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Category/GetCategoryByIsActive",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                $('#ddlBusinessType').empty();
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].Category, data[i].CategoryId);
+                    $("#ddlBusinessType").val("");
+                    $('#ddlBusinessType').append(opt);
+                }
+                $('#ddlBusinessType').val(TypeId);
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+    function BindSalons(EditSalonsId) {
+        //  RolesLoad();
+        $("#lbl_status").text("");
+        Clear();
+        $('#btnEdit').show();
+        $('#btnSave').hide();
+        $.ajax({
+            url: URL + "api/Salons/GetSalonsId?SalonsId=" + EditSalonsId,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (r) {
+
+                if (r[0].FrontendStatus == 1) {
+                    $('#chk').prop('checked', true);
+                }
+                if (r[0].Message == "Success") {
+                    console.log(r[0].BusinessName);
+                    console.log(r[0].Name);
+                    CityLoad(r[0].CityId);
+                    $("#ddlCountry").val(r[0].CountryId);
+                    GetClassesLoad(r[0].ClassId);
+                    AreaLoad(r[0].CityId, r[0].AreaId, r[0].PostalCode);
+                    BusineeTypeLoad(r[0].BusinessType);
+                    $('#txtSalonsId').val(EditSalonsId);
+                    console.log(r);
+                    $("#txtPostalcode").val(r[0].PostalCode);
+                    $("#txtCustomerId").val(EditSalonsId);
+                    $("#txtBusinessName").val(r[0].BusinessName);
+                    $("#txtAddress").val(r[0].Address);
+                    $("#txtName").val(r[0].Name);
+                    $("#txtPhoneNo").val(r[0].PhoneNumber);
+                    $("#ddlBusinessType").val(r[0].BusinessType);
+                    $("#txtEmail").val(r[0].Email);
+                    $('#ddlPopularity').val(r[0].Popularity);
+                    //  $("#txtNote").val(r[0].Note);
+                    setTimeout(function () {
+                        $('#txtNote').summernote('code', r[0].Note);
+                    }, 2000);
+
+                    $("#txtPassword").val(r[0].Password);
+                    $("#ddlMemberType").val(r[0].MemberTypeId);
+
+                    $("#ddlCity").val(r[0].CityId);
+                    $("#txtNoofchairs").val(r[0].Noofchairs);
+                    $("#txtNoofchairshidden").val(r[0].Noofchairs);
+                    $('#txtbookedchairs').val(r[0].chairs);
+                    $("#lblAvailable").text(r[0].Available);
+                    $("#ddlbookings").val(r[0].ManageYourBookings);
+                    $("#ddlSigining").val(r[0].ReasonForSigningUp);
+
+                }
+            },
+            error: function (err) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblSalon').text(err.statusText);
+            }
+        })
+    }
+    function BusinessType() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Category/GetCategoryByIsActive",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                $('#ddlBusinessType').empty();
+                $('#ddlBusinessType').append('<option value="0">-Select-</option>');
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].Category, data[i].CategoryId);
+                    $("#ddlBusinessType").val("");
+                    $('#ddlBusinessType').append(opt);
+                }
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+    function Save() {
+        $("#lbl_status").text("");
+        if ($("#txtBusinessName").val() != "" && $("#txtEmail").val() != "" && $('#txtPassword').val() != '' && $("#ddlClasses").val() != 0 && $('#txtName').val() && $('#ddlBusinessType').val() != 0 && $('#ddlCity').val() != 0 && $('#ddlSigining').val() != 0 && $("#txtPhoneNo").val() != '' && $("#txtPostalcode").val() != '' && $('#ddlArea').val() != 0 && $('#ddlClasses').val() != 0 && $('#txtNoofchairs').val() != "") {
+            var Name = $("#txtName").val();
+            var CreatedBy = UserId;
+            var SalonEmail = '';
+            var filter = new RegExp(/^[+a-zA-Z0-9._-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+            var email = $("#txtEmail").val();
+            var filter1 = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/
+            var PhoneNumber = $("#txtPhoneNo").val();
+            var venuname = $("#txtBusinessName").val();
+            var PostCode = $("#txtPostalcode").val();
+            if (venuname.match(/^[a-zA-Z ]*$/)) {
+                if (!filter.test(email)) {
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblSalon").text("Please Enter Valid Email");
+                }
+                else if (!filter1.test(PhoneNumber)) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblSalon").text("Please Enter Valid Phone Number");
+                    $("#txtPhoneNo").focus();
+                }
+                else {
+                    $('#preloader').show();
+                    $.ajax({
+                        url: URL + "api/Salons/InsertSalons",
+                        data: { "BusinessName": $("#txtBusinessName").val(), "Address": $("#txtAddress").val(), "Name": $("#txtName").val(), "PostalCode": $("#txtPostalcode").val(), "MemberTypeId": 0, "Note": $('#txtNote').summernote('code'), "PhoneNumber": $("#txtPhoneNo").val(), "Email": $("#txtEmail").val(), "Password": $("#txtPassword").val(), "BusinessType": $("#ddlBusinessType").val(), "CityId": $("#ddlCity").val(), "AreaId": $('#ddlArea').val().split("$$")[0], "CountryId": $('#ddlCountry').val(), "ManageYourBookings": 0, "ReasonForSigningUp": 0, "Website": "", "GoogleMaps": "", "Image": "", "ImagePath": "", "CreatedBy": CreatedBy, "FrontendStatus": 0, "Noofchairs": $('#txtNoofchairs').val(), "Popularity": $('#ddlPopularity').val(), "ClassId": $('#ddlClasses').val() },
+                        type: "GET",
+                        cache: false,
+                        success: function (r) {
+
+                            SalonEmail = r[0].Email;
+                            //  localStorage.setItem("SalonEmailId", Email);
+                            if (r[0].Message == "UniqueConstraint") {
+                                $('#preloader').hide();
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblSalon").text(" Email/Mobile  Already Existed.Please Try With Another");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $('#preloader').hide();
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblSalon').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                $('#preloader').hide();
+                                $.ajax({
+                                    url: URL + "api/Users/UpdateUserPermissions1",
+                                    data: { "PageID": localStorage.getItem("PageIds"), "UserId": r[0].UserId },
+                                    type: "GET",
+                                    cache: false,
+                                    success: function (data) {
+
+                                    }
+                                });
+                                EmailSend(SalonEmail);
+                                // Clear();
+                                // StatusMessage(2);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblSalon').text(err.statusText);
+                        }
+                    });
+
+                }
+            }
+            else {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Enter Valid Venue Name");
+            }
+
+            //
+
+
+
+        } else {
+            //   if ($("#txtBusinessName").val() != "" && $("#txtEmail").val() != "" && $('#txtPassword').val() != ''
+            // && $('#txtName').val() && $('#ddlMemberType').val() != 0 && $('#ddlCity').val() != 0 && $('#ddlArea').val()
+            // != 0 && $('#ddlCountry').val() != 0 && $('#ddlbookings').val() != 0 && $('#ddlSigining').val() != 0) {
+
+            if ($("#txtBusinessName").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Enter Venue Name");
+                $("#txtBusinessName").focus();
+            }
+            else if ($('#ddlBusinessType').val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Select Business Type");
+                $("#ddlBusinessType").focus();
+            }
+            else if ($("#txtEmail").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Enter  Email");
+                $("#txtEmail").focus();
+            }
+            else if ($("#txtName").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Enter  Name");
+                $("#txtName").focus();
+            }
+            else if ($("#txtPassword").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Enter Password");
+                $("#txtPassword").focus();
+            }
+            else if ($("#ddlClasses").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Select Class");
+                $("#ddlClasses").focus();
+            }
+            else if ($("#txtPhoneNo").val() == '') {
+                alert("else if");
+
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Enter Phone Number");
+                $("#txtPhoneNo").focus();
+            }
+            else if ($("#txtPostalcode").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Enter PostalCode");
+                $("#txtPostalcode").focus();
+            }
+            else if ($('#ddlCity').val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Select City");
+                $("#ddlCity").focus();
+            }
+            else if ($('#ddlSigining').val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Select Sigining");
+                $("#ddlSigining").focus();
+            }
+            else if ($('#ddlArea').val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Select Area");
+                $("#ddlArea").focus();
+            }
+            else if ($("#ddlClasses").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Select Class");
+                $("#ddlClasses").focus();
+            }
+            else if ($('#txtNoofchairs').val() == "") {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Enter No. of chairs");
+                $("#txtNoofchairs").focus();
+            }
+
+
+        }
+    }
+
+
+    function Clear() {
+        //  if ($("#txtFirstName").val() != "" && $("#txtEmail").val() != "" && $('#txtPassword').val() != '' && $('#txtProfileName').val() && $('#ddlMemberType').val() != 0 && $('#ddlGender').val() != 0 && $('#ddlNewsletter').val() != 0) {
+        $('#chk').attr('checked', false);
+        $("#txtPostalcode").val("");
+        $("#ddlCity").val("");
+        $("#txtCustomerId").val("");
+        $("#txtBusinessName").val("");
+        $("#txtAddress").val("");
+        $("#txtName").val("");
+        $("#txtPhoneNo").val("");
+        $("#txtEmail").val("");
+        $("#txtNote").val("");
+        $("#txtPassword").val("");
+        $("#ddlMemberType").val("");
+        $("#ddlCountry").val("");
+        $('#ddlClasses').val();
+        $("#ddlArea").val("");
+        $("#ddlBusinessType").val("");
+        $("#ddlbookings").val("");
+        $("#ddlSigining").val("");
+        $("#lbl_status").text("");
+        $("#lblSalon").text(" ");
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+        $("#dvSuccess").css({ display: "none" });
+        $("#dvErrorStatus").css({ display: "none" });
+    }
+    function Update() {
+        $("#lbl_status").text("");
+        if ($("#txtBusinessName").val() != "" && $("#txtEmail").val() != "" && $('#txtPassword').val() != '' && $('#txtName').val() && $('#ddlBusinessType').val() != 0 && $('#ddlCity').val() != 0 && $("#txtPhoneNo").val() != '' && $("#txtPostalcode").val() != '' && $('#ddlArea').val() != 0 && $('#ddlClasses').val() != 0 && $('#txtNoofchairs').val() != "") {
+            var Name = $("#txtName").val();
+            var UpdatedBy = UserId;
+
+            var filter = new RegExp(/^[+a-zA-Z0-9._-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+            var email = $("#txtEmail").val();
+            var venuname = $("#txtBusinessName").val();
+            var PostCode = $("#txtPostalcode").val();
+
+            if (venuname.match(/^[a-zA-Z ]*$/)) {
+
+                // }
+                if (!filter.test(email)) {
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblSalon").text("Please Enter Valid Email");
+
+                }
+                var filter1 = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/
+                var PhoneNumber = $("#txtPhoneNo").val();
+                if (!filter1.test(PhoneNumber)) {
+                    $("#lblSalon").text("Please Enter Valid Phone Number");
+                    $("#txtPhoneNo").focus();
+                }
+                else {
+                    console.log($("#txtBusinessName").val());
+                    console.log($("#txtName").val());
+                    var Content5 = "Your Venue As Updated. <br/> Your Salon Login Credentials are :<br/><br/> UserName : " + $('#txtEmail').val() + " <br/> Password :" + $('#txtPassword').val() + " ";
+                    $.ajax({
+                        url: URL + "api/Salons/UpdateSalons",
+                        data: { "BusinessName": $("#txtBusinessName").val(), "Address": $("#txtAddress").val(), "Name": $("#txtName").val(), "PostalCode": $("#txtPostalcode").val(), "MemberTypeId": 0, "Note": $('#txtNote').summernote('code'), "PhoneNumber": $("#txtPhoneNo").val(), "Email": $("#txtEmail").val(), "Password": $("#txtPassword").val(), "BusinessType": $("#ddlBusinessType").val(), "CityId": $("#ddlCity").val(), "AreaId": $('#ddlArea').val().split("$$")[0], "CountryId": $('#ddlCountry').val(), "ManageYourBookings": 0, "ReasonForSigningUp": 0, "Website": "", "GoogleMaps": "", "Image": "", "ImagePath": "", "UpdatedBy": UpdatedBy, "SalonsId": $("#txtSalonsId").val(), "FrontendStatus": 0, "Noofchairs": $('#txtNoofchairs').val(), "Available": $('#lblAvailable').text(), "Popularity": $('#ddlPopularity').val(),"ClassId":$('#ddlClasses').val() },
+                        type: "GET",
+                        cache: false,
+                        success: function (r) {
+                            $.ajax({
+                                url: URL + "api/emailTemplateTypes/SendEmail",
+                                data: { "Email": $('#txtEmail').val(), "Mobile": $('#txtPhoneNo').val(), "TemplateTypeId": 5, "Content": Content5, "Name": $("#txtName").val() },
+                                type: "GET",
+                                cache: false,
+                                success: function (json) {
+                                    if (r[0].UserID == "Success") {
+                                        $('#lblStatus').text("Successfully Registered, Check Your Email to Login");
+                                        $("#lblStatus").css("color", "Green");
+                                    } else {
+                                        $('#lblStatus').text(r[0].UserID);
+                                        $("#lblStatus").css("color", "Red");
+                                    }
+                                }
+                            });
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblSalon").text("Email/Mobile Already Existed.!Please Try With Another");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblSalon').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                // EmailSend();
+                                Clear();
+                                StatusMessage(1);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblSalon').text(err.statusText);
+                        }
+                    });
+
+                }
+
+            }
+            else {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Enter Valid Venue Name");
+            }
+
+
+        }
+        else {
+            if ($("#txtBusinessName").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Enter Business Name");
+                $("#txtBusinessName").focus();
+            }
+            else if ($('#ddlBusinessType').val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Select Business Type");
+                $("#ddlBusinessType").focus();
+            }
+            else if ($("#txtEmail").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Enter  Email");
+                $("#txtEmail").focus();
+            }
+            else if ($("#txtName").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Enter  Name");
+                $("#txtName").focus();
+            }
+            else if ($("#txtPassword").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Enter Password");
+                $("#txtPassword").focus();
+            }
+            else if ($("#txtPhoneNo").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Enter Phone Number");
+                $("#txtPhoneNo").focus();
+            }
+            else if ($("#txtPostalcode").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Enter PostalCode");
+                $("#txtPostalcode").focus();
+            }
+            else if ($('#ddlCity').val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Select City");
+                $("#ddlCity").focus();
+            }
+            else if ($('#ddlArea').val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Select Area");
+                $("#ddlArea").focus();
+            }
+            else if ($("#ddlClasses").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Select Class");
+                $("#ddlClasses").focus();
+            }
+            else if ($('#txtNoofchairs').val() == "") {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalon").text("Please Enter No. of chairs");
+                $("#txtNoofchairs").focus();
+            }
+        }
+    }
+
+    GetAdminEmail();
+    function GetAdminEmail() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Users/GetAdminEmailPassword",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+                //  alert(json[0].AdminName);
+                localStorage.setItem("AdminEmail", json[0].AdminEmail);
+
+                localStorage.setItem("AdminMobileNumber", json[0].AdminMobileNumber);
+                localStorage.setItem("AdminName", json[0].AdminName);
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+    function EmailSend(SalonEmail) {
+        var EmailsArry = [];
+        var PhoneNumbersArrry = [];
+        var NameArry = [];
+        var ContentArray = [];
+
+
+        var Content = "Thank you for Registering with Salon. <br/> Your Salon Login Credentials are :<br/><br/> UserName : " + $('#txtEmail').val() + " <br/> Password :" + $('#txtPassword').val() + " ";
+        var Content1 = "Salon Registered with Salon. <br/> Your Salon Login Credentials are :<br/><br/> UserName : " + $('#txtEmail').val() + " <br/> Password :" + $('#txtPassword').val() + " ";
+
+
+
+        var Admin = localStorage.getItem("AdminEmail");
+        var SalonEmail = $('#txtEmail').val();
+        EmailsArry.push(Admin);
+        EmailsArry.push(SalonEmail);
+        localStorage.setItem("EmailsArry", EmailsArry);
+
+
+        var AdminPhoneNumber = localStorage.getItem("AdminMobileNumber");
+        var SalonPhoneNumber = $('#txtPhoneNo').val();
+        PhoneNumbersArrry.push(AdminPhoneNumber);
+        PhoneNumbersArrry.push(SalonPhoneNumber);
+        localStorage.setItem("PhoneNumbersArrry", PhoneNumbersArrry);
+
+
+        var AdminName = localStorage.getItem("AdminName");
+        var SalonName = $("#txtName").val();
+        NameArry.push(AdminName);
+        NameArry.push(SalonName);
+        localStorage.setItem("NameArry", NameArry)
+
+        var ContentArray = [Content1, Content];
+        localStorage.setItem("ContentArray", ContentArray);
+
+
+        $.ajax({
+
+            url: URL + "api/emailTemplateTypes/SendEmail",
+            data: { "Email": SalonEmail, "Mobile": localStorage.getItem("PhoneNumbersArrry"), "TemplateTypeId": 3, "Content": localStorage.getItem("ContentArray"), "Name": localStorage.getItem("NameArry") },
+            type: "GET",
+            cache: false,
+            success: function (json) {
+                console.log(json);
+                Clear();
+                StatusMessage(2);
+            },
+            error: function (json) {
+
+                console.log(json);
+            }
+        });
+
+    }
+
+
+
+    function SendSms() {
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Upload/SendSMS",
+            data: { "mobile": $("#txtPhoneNumber").val() },
+            cache: false,
+            success: function (r) {
+            }
+        });
+    }
+
+    function SendEmail() {
+
+        var Email = $("#txtEmail").val();
+        var password = $('#txtPassword').val();
+        var Message = "Welcome To Salon your Email: " + Email + " and Your Password:" + password + "\n Thank you";
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Upload/SendEmail",
+            data: { "Email": Email, "Message": Message },
+            cache: false,
+            success: function (r) {
+
+            }
+        });
+    }
+
+
+    function StatusMessage(value) {
+        localStorage.setItem("SalonsMessage", value);
+        window.location.href = '@Url.Action("SalonsList", "Salon")';
+    }
+
+    function GetPostCode() {
+        var data = $('#ddlArea').val();
+
+        var postcode = [];
+        postcode = data.split("$$");
+
+        $('#txtPostalcode').val(postcode[1]);
+    }
+
+    function GetAvailability() {
+        var newchairs = $('#txtNoofchairs').val();
+        var chairs = $('#txtNoofchairshidden').val();
+        var bookedchairs = $('#txtbookedchairs').val();
+        var available = $('#lblAvailable').text();
+        var difference = newchairs - chairs;
+        if (bookedchairs != 0) {
+            if (difference >= 0 && available <= newchairs) {
+                $('#lblAvailable').text(parseInt(difference) + parseInt(available));
+                $('#lblAvailableStatus').text("");
+            } else {
+                $('#txtNoofchairs').val($('#txtNoofchairshidden').val());
+                $('#lblAvailableStatus').text("Total chairs should be greater than or equal to available chairs");
+            }
+        } else {
+            $('#lblAvailable').text(newchairs);
+        }
+    }
+
+    function GetClasses() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/ClassesApi/GetClasses",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                var tab = '';
+                for(var i=0;i<data.length;i++)
+                {
+                    if (data[i].Status == "1") {
+                        tab += '<option value=' + data[i].ClassId + '>' + data[i].ClassName + '</option>';
+                    }
+                }
+                $('#ddlClasses').append(tab);
+            }
+        });
+    }
+    function GetClassesLoad(id) {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/ClassesApi/GetClasses",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                var tab = '';
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].Status == "1") {
+                        tab += '<option value=' + data[i].ClassId + '>' + data[i].ClassName + '</option>';
+                    }
+                }
+                $('#ddlClasses').append(tab);
+                $('#ddlClasses').val(id);
+            }
+        });
+    }
+</script>
+
+
+
+

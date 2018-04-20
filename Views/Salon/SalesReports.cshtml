@@ -1,0 +1,458 @@
+﻿
+@{
+    ViewBag.Title = "SalesReports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <h1>
+        Sales Reports
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href=""><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Reports</a></li>
+        <li class="active">Sales Reports</li>
+    </ol>
+</section>
+
+<section class="content">
+
+    @*<div id="modal2" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <h1>Sales Report</h1>
+
+                <div class="modal-content">
+
+
+                    <div class="modal-header">
+                        <div class="alert alert-danger" style="display: none;" id="error_msg_login"></div>
+                        <div class="alert alert-info" style="display: none;" id="success_msg_login"></div>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title">Sales Report</h4>
+                    </div>
+
+                    <div class="modal-footer">
+                        <label id="lblSaveFile Updated Successfully"></label>
+                        <button type="button" id="btnClose" class="btn btn-default" style="margin-top:10px;" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>*@
+    <div class="row">
+        <div class="col-xs-12">
+
+            <div class="box">
+                <!-- /.box-header -->
+
+
+                <div class="box-body table-responsive">
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lblSalesReports"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="col-lg-3">
+                        <input type="text" placeholder="From Date" id="txtdate" class="form-control" style="width:93%;" />
+                    </div>
+                    <div class="col-lg-3">
+                        <input type="text" placeholder="To Date" id="txtdate1" class="form-control" style="width:93%;" />
+                    </div>
+                    <div class="col-lg-3">
+                        <input type="button" class="btn btn-success" onclick="Search()" value="Search" style="width:100px;" />
+                    </div>
+                    <div class="col-lg-3"></div>
+                </div>
+
+
+                <div class="box-body table-responsive">
+
+                    <input type="button" value="Back" style="float:right; width:100px;" class="btn btn-danger" onclick="window.location.href='@Url.Action("Dashboard", "Salon")';" />
+                </div>
+                <div class="box-body table-responsive">
+                    <table id="tblSalesReports" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Total Value</th>
+                                <th>Total Bookings</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblSalesReportsBody"></tbody>
+                    </table>
+                </div>
+                <div class="box-body table-responsive">
+                    <table id="tblSalesReportsbyEmployee" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                                <th>EMPLOYEE</th>
+                                <th>Total Value</th>
+                                <th>Total Bookings</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblSalesReportsbyEmployeeBody"></tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+
+
+    var UserId = localStorage.getItem("UserId");
+    window.onload=function()
+    {
+        $("#txtdate").datepicker();
+        $("#txtdate1").datepicker();
+        GetAll();
+        GetAll1();
+    }
+
+    var d = new Date();
+    var today = ("0" + (d.getMonth() + 1)).slice(-2) + "/" + ("0" + d.getDate()).slice(-2) + "/" + d.getFullYear();
+    $("#txtdate").val(today);
+    $("#txtdate1").val(today);
+    function GetAll() {
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+
+                $.ajax({
+                    type: 'GET',
+                    url: URLLink + "api/Reports/SalesReports",
+                    data: { "SalonsId": SalonsId },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    cache: false,
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+
+                        if (json[0].Message == "Error") {
+                         //   $('#tblSalesReports').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblSalesReports').text("Error");
+                        }
+                        else if (json[0].Message == "NoData") {
+                          //  $('#tblSalesReports').hide();
+                            //$("#dvSuccess").css({ display: "none" });
+                            //$("#dvErrorStatus").css({ display: "block" });
+                            //$('#lblSalesReports').text("No Bookings");
+                        }
+                        else if (json[0].Message == "Success") {
+                            $('#tblSalesReports').show();
+                            if ($.fn.dataTable.isDataTable('#tblSalesReports')) {
+                                $('#tblSalesReports').DataTable().destroy();
+                            }
+                            $('#tblSalesReportsBody').empty();
+                            for (var i = 0; i < json.length; i++) {
+                                tr = $('<tr/>');
+                                var date1 = new Date(json[i].BookingDate);
+                                var date2 = date1.getFullYear() + "-" + parseInt(date1.getMonth() + 1) + "-" + date1.getDate();
+                                tr.append("<td>" + json[i].dayname + " <br/> " + json[i].Bookdate + " </td>");
+                                tr.append("<td>" + json[i].TotalPrice + "</td>");
+                                tr.append("<td>" + json[i].Bookings + "</td>");
+                                $('#tblSalesReports').append(tr);
+                            }
+                         
+                        }
+                        $('#tblSalesReports').DataTable({
+                            select: {
+                                style: 'multi'
+                            },
+                            dom: 'Bfrtip',
+                            buttons: [
+                                 'excel', 'pdf'
+                            ],
+                            select: true
+                        });
+                    },
+                    error: function (err) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#tblSalonComment').text(err.StatusText);
+                    }
+                });
+            }
+        });
+    }
+
+    function GetAll1() {
+
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+
+                $.ajax({
+                    type: 'GET',
+                    url: URLLink + "api/Reports/SalesReportsByEmployee",
+                    data: { "SalonsId": SalonsId },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    cache: false,
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+
+                        if (json[0].Message == "Error") {
+                          //  $('#tblSalesReportsbyEmployee').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#tblSalesReportsbyEmployee').text("Error");
+
+                        }
+                        else if (json[0].Message == "NoData") {
+                           // $('#tblSalesReportsbyEmployee').hide();
+                            //$("#dvSuccess").css({ display: "none" });
+                            //$("#dvErrorStatus").css({ display: "block" });
+                            //$('#lblSalesReports').text("No Bookings");
+                            // $('#lblSalesReports').text('');
+                            //   $('#lblSalesReports').append('<p class="alert alert-info text-center">No Bookings Available </p>');
+                        }
+
+                        else if (json[0].Message == "Success") {
+                            $('#tblSalesReportsbyEmployee').show();
+                            if ($.fn.dataTable.isDataTable('#tblSalesReportsbyEmployee')) {
+                                $('#tblSalesReportsbyEmployee').DataTable().destroy();
+                            }
+                            $('#tblSalesReportsbyEmployeeBody').empty();
+                            for (var i = 0; i < json.length; i++) {
+                                tr = $('<tr/>');
+                                // var date1 = new Date(json[i].BookingDate);
+                                // var date2 = date1.getFullYear() + "-" + parseInt(date1.getMonth() + 1) + "-" + date1.getDate();
+                                //  tr.append("<td>" + json[i].dayname + " <br/> " + json[i].Bookdate + " </td>");
+                                tr.append("<td>" + json[i].EmployeeName + "</td>");
+                                tr.append("<td>" + json[i].TotalPrice + "</td>");
+                                tr.append("<td>" + json[i].Bookings + "</td>");
+                                $('#tblSalesReportsbyEmployee').append(tr);
+                            }
+                            //$('#tblSalesReports').DataTable({
+                            //    select: {
+                            //        style: 'multi'
+                            //    },
+                            //    dom: 'Bfrtip',
+                            //    buttons: [
+                            //        'copyFlash',
+                            //        'csvFlash',
+                            //        'excelFlash',
+                            //        'pdfFlash'
+                            //    ],
+                            //    select: true
+                            //});
+                        }
+                    },
+                    error: function (err) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#tblSalonComment').text(err.StatusText);
+                    }
+                });
+            }
+        });
+    }
+    function Search()
+    {
+        if ($("#txtdate").val() != '' && $("#txtdate1").val() != '')
+        {
+
+
+            if ($('#lblSalesReports').show()) {
+
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "none" });
+            }
+            Search1();
+            Search2();
+        }
+        else
+        {
+            if($("#txtdate").val() == '')
+            {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblSalesReports').text("Please Select From Date");
+            }
+            else if ($("#txtdate1").val() == '')
+            {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblSalesReports').text("Please Select To Date");
+            }
+        }
+    }
+    function Search1()
+    {
+
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                var date1 = new Date($("#txtdate").val());
+                var date2 = date1.getFullYear() + "-" + parseInt(date1.getMonth() + 1) + "-" + date1.getDate();
+                var date3 = new Date($("#txtdate1").val());
+                var date4 = date3.getFullYear() + "-" + parseInt(date3.getMonth() + 1) + "-" + date3.getDate();
+
+                $.ajax({
+                    type: 'GET',
+                    url: URLLink + "api/Reports/SalesReportsBasedonDate",
+                    data: { "Fromdate": date2, "Todate": date4, "SalonsId": SalonsId },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    cache: false,
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+
+                        if (json[0].Message == "Error") {
+                            $('#tblSalesReports').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblSalesReports').text("Error");
+
+                        }
+                        else if (json[0].Message == "NoData") {
+                            $('#tblSalesReports').hide();
+                            //$("#dvSuccess").css({ display: "none" });
+                            //$("#dvErrorStatus").css({ display: "block" });
+                            //$('#lblSalesReports').text("No Data");
+                        }
+
+                        else if (json[0].Message == "Success") {
+                            $('#tblSalesReports').show();
+                            if ($.fn.dataTable.isDataTable('#tblSalesReports')) {
+                                $('#tblSalesReports').DataTable().destroy();
+                            }
+                            $('#tblSalesReportsBody').empty();
+                            for (var i = 0; i < json.length; i++) {
+                                tr = $('<tr/>');
+                                var date1 = new Date(json[i].BookingDate);
+                                var date2 = date1.getFullYear() + "-" + parseInt(date1.getMonth() + 1) + "-" + date1.getDate();
+                                tr.append("<td>" + json[i].dayname + " <br/> " + json[i].Bookdate + " </td>");
+                                tr.append("<td>" + json[i].TotalPrice + "</td>");
+                                tr.append("<td>" + json[i].Bookings + "</td>");
+                                $('#tblSalesReports').append(tr);
+                            }
+                            $('#tblSalesReports').DataTable({
+                                select: {
+                                    style: 'multi'
+                                },
+                                dom: 'Bfrtip',
+                                buttons: [
+                                     'excel', 'pdf'
+                                ],
+                                select: true
+                            });
+                        }
+                    },
+                    error: function (err) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#tblSalonComment').text(err.StatusText);
+                    }
+                });
+            }
+        });
+    }
+    function Search2() {
+
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                var date1 = new Date($("#txtdate").val());
+                var date2 = date1.getFullYear() + "-" + parseInt(date1.getMonth() + 1) + "-" + date1.getDate();
+                var date3 = new Date($("#txtdate1").val());
+                var date4 = date3.getFullYear() + "-" + parseInt(date3.getMonth() + 1) + "-" + date3.getDate();
+
+                $.ajax({
+                    type: 'GET',
+                    url: URLLink + "api/Reports/SalesReportsByEmployeeBasedonDate",
+                    data: { "Fromdate": date2, "Todate": date4, "SalonsId": SalonsId },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    cache: false,
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+                        if (json[0].Message == "Error") {
+
+                            $('#tblSalesReportsbyEmployee').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#tblSalesReportsbyEmployee').text("Error");
+
+                        }
+                        else if (json[0].Message == "NoData") {
+
+                            $('#tblSalesReportsbyEmployee').hide();
+                            //$("#dvSuccess").css({ display: "none" });
+                            //$("#dvErrorStatus").css({ display: "block" });
+                            //$('#lblSalesReports').text("No Data");
+                            // $('#lblSalesReports').text('');
+                            //   $('#lblSalesReports').append('<p class="alert alert-info text-center">No Bookings Available </p>');
+                        }
+
+                        else if (json[0].Message == "Success") {
+
+                            $('#tblSalesReportsbyEmployee').show();
+                            if ($.fn.dataTable.isDataTable('#tblSalesReportsbyEmployee')) {
+                                $('#tblSalesReportsbyEmployee').DataTable().destroy();
+                            }
+                            $('#tblSalesReportsbyEmployeeBody').empty();
+                            for (var i = 0; i < json.length; i++) {
+                                tr = $('<tr/>');
+                                // var date1 = new Date(json[i].BookingDate);
+                                // var date2 = date1.getFullYear() + "-" + parseInt(date1.getMonth() + 1) + "-" + date1.getDate();
+                                //  tr.append("<td>" + json[i].dayname + " <br/> " + json[i].Bookdate + " </td>");
+                                tr.append("<td>" + json[i].EmployeeName + "</td>");
+                                tr.append("<td>" + json[i].TotalPrice + "</td>");
+                                tr.append("<td>" + json[i].Bookings + "</td>");
+                                $('#tblSalesReportsbyEmployee').append(tr);
+                            }
+                            //$('#tblSalesReports').DataTable({
+                            //    select: {
+                            //        style: 'multi'
+                            //    },
+                            //    dom: 'Bfrtip',
+                            //    buttons: [
+                            //        'copyFlash',
+                            //        'csvFlash',
+                            //        'excelFlash',
+                            //        'pdfFlash'
+                            //    ],
+                            //    select: true
+                            //});
+                        }
+                    },
+                    error: function (err) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#tblSalonComment').text(err.StatusText);
+                    }
+                });
+            }
+        });
+    }
+</script>

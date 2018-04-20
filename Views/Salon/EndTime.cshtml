@@ -1,0 +1,223 @@
+﻿
+@{
+    ViewBag.Title = "EndTime";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<body>
+    <section class="content-header">
+        <h1>
+            EndTime
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Masters</a></li>
+            <li class="active">Create EndTime</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lblEndTime"></label>
+                        </div>
+                        <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lbl_status"></label>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive">
+                        <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                            <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                            <tr>
+
+                                <td>
+                                    EndTime:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" maxlength="40" placeholder="Enter EndTime" id="txtEndTime" name="txtEndTime" title="Enter Alphabets only" class="form-control" required />
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td colspan="4" style="text-align:right">
+                                    <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                    <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                    <input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />
+                                    <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("EndTimeList", "Salon")';" style="width:100px;" />
+                                    <input type="text" hidden="hidden" id="txtEndTimeId" name="EndTimeId" />
+                                </td>
+                            </tr>
+                        </table>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</body>
+<script type="text/javascript">
+
+          var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+        var UserId = localStorage.getItem("UserId");
+        var RoleId = localStorage.getItem("RoleId");
+        var EditEndTimeId = localStorage.getItem("EditEndTimeId");
+
+        window.onload = function () {
+            if (UserId != "null" || UserId != null && RoleId == "1") {
+
+                if (EditEndTimeId == "null") {
+                        $('#btnEdit').hide();
+                        $('#btnSave').show();
+                    }
+                    else {
+                    BindEndTime(EditEndTimeId);
+                        $('#btnEdit').show();
+                        $('#btnSave').hide();
+                        $('#btnReset').hide();
+                    }
+
+            }
+            else {
+                window.location.href = '@Url.Action("Logout", "Salon")';
+            }
+        }
+
+
+        //}
+
+    function BindEndTime(EndTimeId) {
+            $("#lbl_status").text("");
+            Clear();
+
+            $.ajax({
+                url: URL + "api/EndTime/GetDataById",
+                data: { "EndTimeId": EndTimeId },
+                type: "GET",
+                cache: false,
+                success: function (r) {
+                    $('#btnEdit').show();
+                    $('#btnSave').hide();
+                    console.log(r);
+                    $("#txtEndTimeId").val(EndTimeId);
+                    var num = r[0].EndTime.match(/[\d\.]+/g);
+                    var number = num.toString();
+                    $("#txtEndTime").val(r[0].EndTime);
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblEndTime').text(err.statusText);
+                }
+            })
+        }
+
+        function Save() {
+            $("#lbl_status").text("");
+            if ($("#txtEndTime").val() != '') {
+                var EndTime = $("#txtEndTime").val();
+                var CreatedBy = UserId;
+                if (EndTime.match("^[0-9]+$")) {
+                // api/StartTime/Insert?StartTime={StartTime}&IsAcitve={IsAcitve}&CreatedBy={CreatedBy}
+                    $.ajax({
+                        url: URL + "api/EndTime/Insert",
+                        data: { "EndTime": EndTime, "IsActive": 1, "CreatedBy": CreatedBy },
+                        type: "GET",
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblEndTime").text("EndTime  Already Existed.");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblEndTime').text(r[0].ErrorMessage);
+                            }
+                            else
+                            {
+                                Clear();
+                                StatusMessage(2);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblEndTime').text(err.statusText);
+                        }
+                    });
+                } else {
+                   $("#dvErrorStatus").css({ display: "block" });
+                   $("#lblEndTime").text("Please Enter Valid EndTime ");
+                }
+            } else {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblEndTime").text("Please Enter EndTime ");
+                $("#txtEndTime").focus();
+            }
+        }
+        function Clear() {
+            $("#txtEndTimeId").val("");
+            $("#txtEndTime").val("");
+            $("#lbl_status").text("");
+            $("#lblEndTime").text(" ");
+            $('#btnEdit').hide();
+            $('#btnSave').show();
+            $("#dvSuccess").css({ display: "none" });
+            $("#dvErrorStatus").css({ display: "none" });
+        }
+
+        function Update() {
+            $("#lbl_status").text("");
+            if ($("#txtEndTime").val() != '') {
+                var EndTime = $("#txtEndTime").val();
+                var UpdatedBy = UserId;
+               // if (StartTime.match(/^[a-zA-Z ]*$/)) {
+                // Update(string CityName,int UpdatedBy,int Cityid)
+                if (EndTime.match("^[0-9]+$")) {
+                    $.ajax({
+                        url: URL + "api/EndTime/Update",
+                        data: { "EndTime": $("#txtEndTime").val(), "UpdatedBy": UpdatedBy, "EndTimeId": $("#txtEndTimeId").val() },
+                        cache:false,
+                        type: "GET",
+                        dataType: 'json',
+                        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblEndTime").text("EndTime  Already Existed.");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblEndTime').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                Clear();
+                                StatusMessage(1);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblEndTime').text(err.statusText);
+                        }
+                    });
+                } else {
+                   $("#dvErrorStatus").css({ display: "block" });
+                   $("#lblEndTime").text("Please Enter Valid EndTime ");
+                }
+            }
+            else {
+                $("#lblEndTime").text("Please Enter EndTime.");
+                $("#dvErrorStatus").css({ display: "block" });
+            }
+        }
+
+        function StatusMessage(value) {
+            localStorage.setItem("EndTimeMessage", value);
+            window.location.href = '@Url.Action("EndTimeList", "Salon")';
+        }
+</script>

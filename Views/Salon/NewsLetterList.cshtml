@@ -1,0 +1,238 @@
+﻿
+@{
+    ViewBag.Title = "NewsLetterList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="content-header">
+    <h1>
+        NewsLetterSubscribers
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"></a><i class="fa fa-dashboard"></i></i>Home</a></li>
+        <li><a href="#">NewsLetter</a></li>
+        <li><a href="#">NewsLetter List</a></li>
+
+    </ol>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+
+                        <label id="lblNewsLetter"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                @*<div class="box-body table-responsive">
+                    <input type="button" class="btn btn-primary" value="Send Email To All" onclick="window.location.href='    ';" style="text-align:left" />
+                    <input type="button" class="btn btn-primary" value="Click To UnSubscribe" onclick="window.location.href='    ';" style="text-align:left" />
+                </div>*@
+                <div class="box-body table-responsive">
+                    <table id="NewsLetter" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                                
+                               @*<td><input type="checkbox"/></td>*@
+                                <th>Serial No</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <th>Newsletter</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="NewsLetterBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+    window.onload=function()
+    {
+        GetAll();
+    }
+    function GetAll() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/NewsLetter/GetNewsletterSubscribers",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache:false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+
+                if (json[0].Message == "Error") {
+                    $('#NewsLetter').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblNewsLetter').text("Error");
+
+                }
+                else if (json[0].Message == "NoData") {
+                    $('#NewsLetter').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblNewsLetter').text("No Data");
+                }
+
+                else if (json[0].Message == "Success") {
+                    $('#NewsLetter').show();
+                    if ($.fn.dataTable.isDataTable('#NewsLetter')) {
+                        $('#NewsLetter').DataTable().destroy();
+                    }
+                    $('#NewsLetterBody').empty();
+                    var p = 1;
+                    for (var i = 0; i < json.length; i++) {
+
+                        tr = $('<tr/>');
+                      //  tr.append("<tr><td><input type='checkbox' style='padding-left:10px'></input></td></tr>");
+                        tr.append("<td>" + p + "</td>");
+                        tr.append("<td>" + json[i].FirstName + "</td>");
+                        tr.append("<td>" + json[i].LastName + "</td>");
+                        tr.append("<td>" + json[i].Email + "</td>");
+                        if (json[i].Newsletter == 1) {
+                            tr.append("<td>Subscribed</td");
+                        }
+                       
+                        if (json[i].Newsletter == 1) {
+                            tr.append("<td><a href='#' id='delete" + i + "'  onclick='UpdateStatus(" + json[i].CustomerId + " ,0)'><i class='fa fa-trash-o'></i> </a></td>");
+                        }
+
+                        $('#NewsLetter').append(tr);
+                        p++;
+                    }
+                    $('#NewsLetter').DataTable({
+                        select: {
+                            style: 'multi'
+                        },
+                        dom: 'Bfrtip',
+                        buttons: [
+                            'copyFlash',
+                            'csvFlash',
+                            'excelFlash',
+                            'pdfFlash'
+                        ],
+                        select: true
+                    });
+                }
+            },
+            error: function (err) {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#NewsLetter').text(err.StatusText);
+            }
+        });
+    }
+
+    function UpdateStatus(CustomerId, Newsletter) {
+      //  alert(CustomerId);
+        $("#lbl_status").text("");
+       // var UserId = localStorage.getItem("UserId");
+        var StatusText = 'UnSubscribe';
+        //var UpdateStatusText = '';
+        
+
+        if (confirm("Are you Sure to  " + StatusText + " this Customer?") == true) {
+            $.ajax({
+                type: "GET",
+                url: URL + "api/NewsLetter/UpdateNewsletter",
+                data: { "Newsletter": Newsletter, "CustomerId": CustomerId },
+                cache: false,
+                success: function (r) {
+                
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblNewsLetter").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblCustomer').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblNewsLetter').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+                   
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("Customer UnSubscribed Successfully");
+                       
+                    }
+                    GetAll();
+                },
+                error: function (err) {
+                    alert(err.StatusText);
+                }
+            });
+
+        }
+
+
+
+
+
+
+        //  alert(CustomerId);
+        //  $("#lbl_status").text("");
+        //  var UserId = localStorage.getItem("UserId");
+        //  var StatusText = '';
+        //  var UpdateStatusText = '';
+        //if (Status == 1) {
+        //    StatusText = "UnSubscribe";
+        //}
+
+        //    if (confirm("Are you Sure to  " + StatusText + " this Customer?") == true) {
+        //        $.ajax({
+        //            url: URL + "api/NewsLetter/UpdateNewsletter",
+        //            data: { "Newsletter": Newsletter, "CustomerId": CustomerId },
+        //            type: "GET",
+        //            cache: false,
+        //            dataType: 'json',
+        //            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+        //            success: function (r) {
+
+        //                if (r[0].Message == "REFERENCE") {
+        //                    $("#dvSuccess").css({ display: "none" });
+        //                    $("#dvErrorStatus").css({ display: "block" });
+        //                    $("#lblNewsLetter").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+        //                }
+        //                else if (r[0].Message == "Error") {
+        //                    $('#tblCustomer').hide();
+        //                    $("#dvErrorStatus").css({ display: "block" });
+        //                    $('#lblNewsLetter').text(r[0].ErrorMessage);
+        //                }
+        //                else if (r[0].Message = "Success") {
+        //                    GetAll();
+        //                    $("#dvErrorStatus").css({ display: "none" });
+        //                    $("#dvSuccess").css({ display: "block" });
+        //                    $("#lbl_status").text("Customer " + StatusText + " Successfully");
+        //                }
+        //            },
+        //            error: function (err) {
+        //                alert(err.StatusText);
+        //            }
+        //        });
+        //    }
+        //    else {
+
+        //    }
+        //}
+
+    }
+</script>
+
+
+

@@ -1,0 +1,317 @@
+﻿
+@{
+    ViewBag.Title = "StartPage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <h1>
+        Start Page
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Masters</a></li>
+        <li class="active">Start Page</li>
+    </ol>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lblError"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                        <tr>
+                            @*<td>
+                                Department:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <select id="ddlDepartments" class="form-control select2" style="width:200px;" onchange="DepartmentChanged()">
+                                    <option label="SELECT DEPARTMENT" value="0"></option>
+                                </select>
+                            </td>*@
+                            <td>
+                                ROLE:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <select id="ddlRoles" class="form-control select2" style="width:200px;" onchange="RoleChanged()">
+                                    <option label="SELECT ROLE" value="0"></option>
+                                </select>
+                            </td>
+                            <td>
+                                PAGES:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <select id="ddlPages" class="form-control select2" style="width:200px;" onchange="PageChanged()">
+                                    <option label="SELECT PAGE" value="0"></option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="button" class="btn btn-primary" id="btnSave" value="Assign" style="width:100px;" onclick="Save()" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="box-body table-responsive">
+                    <table id="tblStartPages" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                                <th>ROLE NAME</th>
+                                <th>START PAGE</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblStartPageBody"></tbody>
+                    </table>
+                    <label id="lblStatus"></label>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    var URL="@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+
+    window.onload = function () {
+        if (UserId != "null" || UserId != null && RoleId == "1") {
+            $('#tblUserPermissions').hide();
+            GetAll();
+            //  Departments();
+            DepartmentChanged();
+            GetPages();
+        }
+        else {
+            window.location.href = '@Url.Action("Logout", "Salon")';
+        }
+    }
+
+    function GetAll() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Users/GetAllStartPages",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+               
+                if ($.fn.dataTable.isDataTable('#tblStartPages')) {
+                    $('#tblStartPages').DataTable().destroy();
+                    }
+                $('#tblStartPageBody').empty();
+
+                    localStorage.setItem("PermissionsLength", json.length);
+                    GetPermissions();
+                    for (var i = 0; i < json.length; i++) {
+                        tr = $('<tr/>');
+                        tr.append("<td>" + json[i].RoleName + "</td>");
+                        tr.append("<td>" + json[i].PageName + "</td>");
+                        tr.append("<td><a href='#' id='delete" + i + "' class='fa fa-trash-o' onclick='Delete(" + json[i].ID + ")'> </a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].ID + ")' class='fa fa-pencil'> </a></td>");
+                        $('#tblStartPages').append(tr);
+                    }
+                    $('#tblStartPages').DataTable({
+                        select: {
+                            style: 'multi'
+                        },
+                        dom: 'Bfrtip',
+                        buttons: [
+                            'copyFlash',
+                            'csvFlash',
+                            'excelFlash',
+                            'pdfFlash'
+                        ],
+                        select: true
+                    });
+            }
+        });
+    }
+
+   
+    function DepartmentChanged() {
+   
+            $.ajax({
+                type: 'GET',
+                url: URL + "api/Role/Get_Roles",
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                xhrFields: {
+                    withCredentials: false
+                },
+                success: function (data) {
+                    $("#ddlRoles").text("");
+                    $("#ddlRoles").append("<option label='SELECT ROLE' value='0'></option>");
+                    var opt="";
+                    for (var i = 0; i < data.length; i++) {
+                        opt += "<option value='"+data[i].RoleId+"'>"+data[i].RoleName+"</option>";
+                    }
+                    $('#ddlRoles').append(opt);
+                },
+                error: function (err) {
+                    console.log(err.StatusText);
+                }
+            });
+     
+    }
+
+    function RoleChanged() {
+        var roleid = $('#ddlRoles').val();
+        if (roleid == "0") {
+            $("#ddlPages").text("");
+            $("#ddlPages").append("<option label='SELECT PAGE' value='0'></option>");
+        } else {
+            $.ajax({
+                type: 'GET',
+                url: URL + "api/Users/GetStartPageByRoleId?RoleID=" + roleid,
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                xhrFields: {
+                    withCredentials: false
+                },
+                success: function (data) {
+                    if (data.length > 0) {
+                        $('#ddlPages').val(data[0].PageID);
+                    } else {
+                        $('#ddlPages').val("0");
+                    }
+                },
+                error: function (err) {
+                    console.log(err.StatusText);
+                }
+            });
+        }
+    }
+
+    function GetPages() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Users/GetPageList",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].PageName, data[i].PageID);
+                    $("#ddlPages").val("");
+                    $('#ddlPages').append(opt);
+                }
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+    function Save() {
+        
+        var RoleID = $('#ddlRoles').val();
+        var PageID = $('#ddlPages').val();
+        if (RoleID != 0 && PageID != 0) {
+            $.ajax({
+                type: 'GET',
+                url: URL + "api/Users/AddStartPage?RoleID="+RoleID+"&PageID="+PageID,
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                xhrFields: {
+                    withCredentials: false
+                },
+                success: function (data) {
+                    $("#dvSuccess").css({ display: "block" });
+                    $("#dvErrorStatus").css({ display: "none" });
+                    $("#lbl_status").text(data);
+                    GetAll();
+                },
+                error: function (err) {
+                    console.log(err.StatusText);
+                }
+            });
+        }
+        else {
+            if ($('#ddlRoles').val() == 0) {
+                 $("#dvSuccess").css({ display: "none" });
+                   $("#dvErrorStatus").css({ display: "block" });
+                  $("#lblError").text("Please Select Role");
+            }
+            else if ($('#ddlPages').val() == 0) {
+            $("#dvSuccess").css({ display: "none" });
+            $("#dvErrorStatus").css({ display: "block" });
+            $("#lblError").text("Please Select Page");
+            }
+          
+        }
+    }
+
+    function Edit(id) {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Users/GetStartPageById?ID="+id,
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+               // alert("ok");
+                $.ajax({
+                    type: 'GET',
+                    url: URL + "api/Role/Get_Roles",
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (data1) {
+                        $("#ddlRoles").text("");
+                        $("#ddlRoles").append("<option label='SELECT ROLE' value='0'></option>");
+                        var opt = "";
+                        for (var i = 0; i < data1.length; i++) {
+                            opt += "<option value='" + data1[i].RoleId + "'>" + data1[i].RoleName + "</option>";
+                        }
+                        $('#ddlRoles').append(opt);
+                        $('#ddlRoles').val(data[0].RoleID);
+                        $('#ddlPages').val(data[0].PageID);
+                    },
+                    error: function (err) {
+                        console.log(err.StatusText);
+                    }
+                });
+               
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+    function Delete(id) {
+        if (confirm("Are You Sure to delete?")) {
+            $.ajax({
+                type: 'GET',
+                url: URL + "api/Users/DeleteStartPage?ID=" + id,
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                xhrFields: {
+                    withCredentials: false
+                },
+                success: function (data) {
+                    $("#dvSuccess").css({ display: "block" });
+                    $("#dvErrorStatus").css({ display: "none" });
+                    $("#lbl_status").text(data);
+                    GetAll();
+                }
+            });
+        } else {
+
+        }
+    }
+    </script>

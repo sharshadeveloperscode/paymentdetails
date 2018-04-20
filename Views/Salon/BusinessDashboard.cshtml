@@ -1,0 +1,1237 @@
+﻿
+@{
+    ViewBag.Title = "BusinessDashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+
+<style>
+    .menu-block {
+        width: 100%;
+        float: left;
+        text-align: center;
+        cursor: pointer;
+        margin: 16px 0px;
+    }
+
+        .menu-block p {
+            margin: 0px;
+        }
+
+            .menu-block p i {
+                font-size: 60px;
+                text-align: center;
+                color: #3c8dbc;
+            }
+
+        .menu-block a {
+            font-size: 18px;
+            color: #3c8dbc;
+        }
+
+    .menusection {
+        padding: 4px 0px;
+        margin-left: -55px;
+    }
+
+    .text-uppercase {
+        color: black;
+    }
+</style>
+
+<div id="modal2" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content" style="width: 83%;margin-left: 91px;">
+            <!--  SIGN IN PAGE -->
+
+            <div class="modal-header">
+                <div class="alert alert-danger" style="display: none;" id="error_msg_login"></div>
+                <div class="alert alert-info" style="display: none;" id="success_msg_login"></div>
+                <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>-->
+                <h4 class="modal-title" style="text-align:center">User Booking Details</h4>
+            </div>
+            <form method="POST">
+                <div class="modal-body">
+                    <table class="table table-bordered">
+                        @*<thead>
+                                <tr>
+                                <th></th>
+                                    <th></th>
+
+
+
+                                </tr>
+                            </thead>*@
+                        <tbody>
+                            <tr>
+                                <th scope="row">Customer Name</th>
+                                <td id="mycustomer"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Booking Id</th>
+                                <td id="mybookid"></td>
+                            </tr>
+
+                            <tr>
+                                <th scope="row">Appointment Date</th>
+                                <td id="mybdate">Larry</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Appointment Time</th>
+                                <td id="mytime"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Service</th>
+                                <td id="myservice"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Service Duration</th>
+                                <td id="myduration"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Payment Status</th>
+                                <td id="mystatus"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row" id="mypricelabel"></th>
+                                <td id="myprice"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+            <!--END SIGN IN PAGE  -->
+            <div class="modal-footer">
+                <label id="lblSaveFile Updated Successfully"></label>
+                <button type="button" id="btnClose" class="btn btn-success" style="margin-top:10px;width:100px;" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<section class="content-header">
+    <h1>
+        Business Dashboard
+
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Business Dashboard</a></li>
+    </ol>
+</section>
+
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-body ">
+                    <div class="row">
+                        <!-- ./col -->
+                        <div class="col-lg-4 col-xs-6">
+                            <!-- small box -->
+                            <div class="small-box bg-green">
+                                <div class="inner">
+                                    <h3><label id="lblTodayBookings"></label></h3>
+                                    <p>Today Bookings</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="ion ion-stats-bars"></i>
+                                </div>
+                                <a href="@Url.Action("TodayBookings", "Salon")" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+                        <!-- ./col -->
+
+                        <div class="col-lg-4 col-xs-6">
+                            <!-- small box -->
+                            <div class="small-box bg-yellow">
+                                <div class="inner">
+                                    <h3><label id="lblActualBookings"></label></h3>
+                                    <p>@*Actual Bookings*@</p>
+                                    <p>Today Appointments</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="ion ion-person-add"></i>
+                                </div>
+                                <a href="@Url.Action("ActualBookings", "Salon")" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-xs-6">
+                            <!-- small box -->
+                            <div class="small-box bg-red">
+                                <div class="inner">
+                                    <h3><label id="lblCancellation"></label></h3>
+                                    <p>Cancellation Bookings</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="ion ion-pie-graph"></i>
+                                </div>
+                                <a href="@Url.Action("BookingCancellations", "Salon")" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+                        <!-- ./col -->
+                        <!-- ./col -->
+                    </div>
+
+
+
+
+
+                    <!-- QUICK LINKS -->
+                    @*<section class="content">
+                        <div class="container">
+                            <div class="col-md-12">
+                                <h3 style="margin-left:-28px"> Quick Links</h3>
+                            </div>
+                        </div>
+                        <div class="container menusection">
+
+
+                            <div class="col-md-2 col-xs-6">
+                                <!-- small box -->
+                                <a href="@Url.Action("Billings", "Salon")" class="text-uppercase">
+                                    <div class="menu-block">
+
+                                        <p><i class="fa fa-bookmark-o"></i></p>
+
+                                        View Billings
+
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-2 col-xs-6">
+                                <!-- small box -->
+                                <a href="@Url.Action("SalonSchedular", "Salon")" class="text-uppercase">
+                                    <div class="menu-block">
+
+                                        <p><i class="fa fa-book"></i></p>
+
+                                        View Booking
+
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="col-md-2 col-xs-6">
+                                <a href="@Url.Action("SalonServicesList", "Salon")" class="text-uppercase">
+                                    <div class="menu-block">
+
+                                        <p><i class="ion ion-closed-captioning"></i></p>
+
+                                        View Venue services
+
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </section>*@
+                    <!--  END QUICK LINKS -->
+                    <!-- bookings -->
+                    <div class="col-md-12">
+                        <div class="nav-tabs" style="background-color:#fff;">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a href="#activity" onclick="TodayBookings()" data-toggle="tab">Today Bookings</a></li>
+                                <li><a href="#timeline" onclick="ActualBookings()" data-toggle="tab">Today Appointments</a></li>
+                                @*<li><a href="#unconfirmed" data-toggle="tab">Unconfirmed Bookings</a></li>*@
+
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane in active" id="activity">
+                                    <div class="box-body">
+                                        <div id="lblStatus1"></div>
+                                        <table id="todaybookings" class="table table-bordered table-hover table-responsive">
+                                            <thead>
+                                                <tr>
+                                                    <th>Booking Id</th>
+                                                    <th>Order Date</th>
+                                                    <th>Name</th>
+                                                    <th>Service</th>
+                                                    <th>Price</th>
+                                                    <th>Payment Status</th>
+                                                    <th>Actions</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody id="todaybookingsBody"></tbody>
+
+                                            @*<tr><td colspan="7">
+                                                <p class="alert alert-info text-center">No Bookings Available</p></td></tr>*@
+
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="timeline">
+                                    <div class="box-body">
+                                        <div id="lblStatus2"></div>
+                                        <table id="Actualbookings" class="table table-bordered table-hover table-responsive">
+                                            <thead>
+                                                <tr>
+                                                    <th>Booking Id</th>
+                                                    <th>Order Date</th>
+                                                    <th>Name</th>
+                                                    <th>Service</th>
+                                                    <th>Price</th>
+                                                    <th>Payment Status</th>
+                                                    <th>Actions</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody id="ActualbookingsBody"></tbody>
+
+                                            @*<tr><td colspan="7">
+                                                </td></tr>*@
+
+                                        </table>
+                                    </div>
+                                </div><!-- /.tab-pane -->
+                                <div class="tab-pane" id="unconfirmed">
+                                    <!-- The timeline -->
+                                    <div class="box-body">
+                                        <div id="lblStatus3"></div>
+                                        <table id="unconfirmed-bookings" class="table table-bordered table-hover table-responsive">
+                                            <tbody>
+                                                <tr>
+
+                                                    <th>Booking Id</th>
+                                                    <th>Order Date</th>
+                                                    <th>Name</th>
+                                                    <th>Service</th>
+                                                    <th>Price</th>
+                                                    <th>Payment Status</th>
+
+                                                </tr>
+
+                                                <tr><td colspan="7"><p class="alert alert-info text-center">No Bookings Available</p></td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end  bookings -->
+
+                    <p>&nbsp;</p>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 style="margin-left:28px;">Booking Activities</h3>
+                        </div>
+                        <div class="col-md-6">
+                            <!-- AREA CHART -->
+                            <div class="box box-success">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">Monthly Bookings</h3>
+                                    <div class="box-tools pull-right">
+                                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                            <i class="fa fa-minus"></i>
+                                        </button>
+                                        @* <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>*@
+                                    </div>
+                                </div>
+                                <div class="box-body">
+                                    <div class="chart">
+                                        <canvas id="barChart" style="height:245px"></canvas>
+                                    </div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-6">
+                            <!-- /.box -->
+                            <!-- DONUT CHART -->
+                            <div class="box box-danger">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">Employee Bookings</h3>
+                                    <div class="box-tools pull-right">
+                                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                            <i class="fa fa-minus"></i>
+                                        </button>
+                                        @*<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>*@
+                                    </div>
+                                </div>
+                                <div class="box-body">
+                                    <canvas id="canvas3" style="height:230px"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        @*//end new chart*@
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+<!-- /.content -->
+<!-- /.box-header -->
+<!-- /.content-wrapper -->
+<!-- Control Sidebar -->
+<aside class="control-sidebar control-sidebar-dark">
+    <!-- Create the tabs -->
+    <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+        <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
+        <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <!-- Home tab content -->
+        <div class="tab-pane" id="control-sidebar-home-tab">
+            <h3 class="control-sidebar-heading">Recent Activity</h3>
+            <ul class="control-sidebar-menu">
+                <li>
+                    <a href="javascript:void(0)">
+                        <i class="menu-icon fa fa-birthday-cake bg-red"></i>
+                        <div class="menu-info">
+                            <h4 class="control-sidebar-subheading">Langdon's Birthday</h4>
+                            <p>Will be 23 on April 24th</p>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)">
+                        <i class="menu-icon fa fa-user bg-yellow"></i>
+                        <div class="menu-info">
+                            <h4 class="control-sidebar-subheading">Frodo Updated His Profile</h4>
+                            <p>New phone +1(800)555-1234</p>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)">
+                        <i class="menu-icon fa fa-envelope-o bg-light-blue"></i>
+                        <div class="menu-info">
+                            <h4 class="control-sidebar-subheading">Nora Joined Mailing List</h4>
+                            <p>nora@example.com</p>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)">
+                        <i class="menu-icon fa fa-file-code-o bg-green"></i>
+                        <div class="menu-info">
+                            <h4 class="control-sidebar-subheading">Cron Job 254 Executed</h4>
+                            <p>Execution time 5 seconds</p>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+            <!-- /.control-sidebar-menu -->
+            <h3 class="control-sidebar-heading">Tasks Progress</h3>
+            <ul class="control-sidebar-menu">
+                <li>
+                    <a href="javascript:void(0)">
+                        <h4 class="control-sidebar-subheading">
+                            Custom Template Design
+                            <span class="label label-danger pull-right">70%</span>
+                        </h4>
+                        <div class="progress progress-xxs">
+                            <div class="progress-bar progress-bar-danger" style="width: 70%"></div>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)">
+                        <h4 class="control-sidebar-subheading">
+                            Update Resume
+                            <span class="label label-success pull-right">95%</span>
+                        </h4>
+                        <div class="progress progress-xxs">
+                            <div class="progress-bar progress-bar-success" style="width: 95%"></div>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)">
+                        <h4 class="control-sidebar-subheading">
+                            Laravel Integration
+                            <span class="label label-warning pull-right">50%</span>
+                        </h4>
+                        <div class="progress progress-xxs">
+                            <div class="progress-bar progress-bar-warning" style="width: 50%"></div>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)">
+                        <h4 class="control-sidebar-subheading">
+                            Back End Framework
+                            <span class="label label-primary pull-right">68%</span>
+                        </h4>
+                        <div class="progress progress-xxs">
+                            <div class="progress-bar progress-bar-primary" style="width: 68%"></div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+            <!-- /.control-sidebar-menu -->
+        </div>
+        <!-- /.tab-pane -->
+        <!-- Stats tab content -->
+        <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>
+        <!-- /.tab-pane -->
+        <!-- Settings tab content -->
+        <div class="tab-pane" id="control-sidebar-settings-tab">
+            <form method="post">
+                <h3 class="control-sidebar-heading">General Settings</h3>
+                <div class="form-group">
+                    <label class="control-sidebar-subheading">
+                        Report panel usage
+                        <input type="checkbox" class="pull-right" checked>
+                    </label>
+                    <p>
+                        Some information about this general settings option
+                    </p>
+                </div>
+                <!-- /.form-group -->
+                <div class="form-group">
+                    <label class="control-sidebar-subheading">
+                        Allow mail redirect
+                        <input type="checkbox" class="pull-right" checked>
+                    </label>
+                    <p>
+                        Other sets of options are available
+                    </p>
+                </div>
+                <!-- /.form-group -->
+                <div class="form-group">
+                    <label class="control-sidebar-subheading">
+                        Expose author name in posts
+                        <input type="checkbox" class="pull-right" checked>
+                    </label>
+                    <p>
+                        Allow the user to show his name in blog posts
+                    </p>
+                </div>
+                <!-- /.form-group -->
+                <h3 class="control-sidebar-heading">Chat Settings</h3>
+                <div class="form-group">
+                    <label class="control-sidebar-subheading">
+                        Show me as online
+                        <input type="checkbox" class="pull-right" checked>
+                    </label>
+                </div>
+                <!-- /.form-group -->
+                <div class="form-group">
+                    <label class="control-sidebar-subheading">
+                        Turn off notifications
+                        <input type="checkbox" class="pull-right">
+                    </label>
+                </div>
+                <!-- /.form-group -->
+                <div class="form-group">
+                    <label class="control-sidebar-subheading">
+                        Delete chat history
+                        <a href="javascript:void(0)" class="text-red pull-right"><i class="fa fa-trash-o"></i></a>
+                    </label>
+                </div>
+                <!-- /.form-group -->
+            </form>
+        </div>
+
+    </div>
+</aside>
+
+
+<script>
+    var URLLink = "http://hogarbarber.developerscode.in/";
+    var ctx3 = document.getElementById('canvas3').getContext('2d');
+    var UserId = localStorage.getItem("UserId");
+    EmployeeSales();
+    function EmployeeSales() {
+
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            async: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+
+                $.ajax({
+                    url: URLLink + 'api/Reports/CurrentMonthSalesByEmployee',
+                    data: { "SalonsId": SalonsId },
+                    type: "GET",
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        console.log(data);
+                        if (data[0].Message != "NoData") {
+                            var bookings = [];
+                            var EmployeeName = [];
+                            for (var i = 0; i < data.length; i++) {
+                                EmployeeName.push(data[i].EmployeeName);
+                                bookings.push(data[i].Bookings);
+                            }
+                            var chart2 = new Chart(ctx3, {
+                                // The type of chart we want to create
+                                type: 'bar',
+                                // The data for our dataset
+                                data: {
+                                    labels: EmployeeName,
+                                    datasets: [{
+                                        // label: "Number of Bookings",
+                                        backgroundColor: ['rgb(25, 99, 182)', 'rgb(55, 199, 132)', 'rgb(155, 99, 132)', 'rgb(255, 99, 32)', 'rgb(205, 79, 10)', 'rgb(125, 176, 1)'],
+                                        //borderColor: 'rgb(255, 99, 132)',
+                                        data: bookings,
+                                    }]
+                                },
+
+                                // Configuration options go here
+                                options: {
+                                    legend: false
+                                    ,
+                                    title: {
+                                        display: true,
+                                        text: 'Employee Bookings'
+                                    },
+                                    responsive: true,
+                                    scales: {
+                                        xAxes: [{
+                                            display: true,
+                                            scaleLabel: {
+                                                display: true,
+                                                labelString: 'Employees'
+                                            }
+                                        }],
+                                        yAxes: [{
+                                            display: true,
+                                            scaleLabel: {
+                                                display: true,
+                                                labelString: 'No Of Bookings'
+                                            },
+                                            ticks: {
+                                                beginAtZero: true,
+                                            }
+                                        }]
+                                    }
+                                }
+                            })
+                        }
+                    }
+
+                });
+
+            }
+        });
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    var URLLink = "@System.Configuration.ConfigurationManager.AppSettings["URLLink"]";
+    var UserId = localStorage.getItem("UserId");
+    window.onload = function () {
+
+        TodayBookings();
+        TodayBookingsCount();
+        ActualBookingsCount();
+        CancellationCount();
+        localStorage.setItem("EditSalonEmployeesId", "null");
+        localStorage.setItem("EditSalonServicesId", "null");
+
+        //SalonEmployees
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                $.ajax({
+                    url: URLLink + "api/SalonEmployees/GetDatabySalonsId",
+                    data: { "SalonsId": SalonsId },
+                    type: "GET",
+                    cache: false,
+                    // async: false,
+                    success: function (r) {
+                        console.log(r);
+                        $("#lblEmployees").text(r.length);
+                    },
+                    error: function (err) {
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblUser').text(err.statusText);
+                    }
+                });
+            }
+        });
+
+        //   Today Bookings
+
+        // Booking cancelled
+
+        //  Actual Bookings
+
+
+
+
+        var UserId = localStorage.getItem("UserId");
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+
+                PopularServices(SalonsId);
+                Bookings(SalonsId);
+            }
+
+        })
+
+        function Bookings(SalonsId) {
+
+            var barChartCanvas = $("#barChart").get(0).getContext("2d");
+            var barChart = new Chart(barChartCanvas);
+            $.ajax({
+                url: URLLink + 'api/Reports/SalonConfirmCancelBookings?SalonsId=' + SalonsId,
+                type: "GET",
+                cache: false,
+                //async: false,
+                success: function (data) {
+                    console.log("data");
+                    console.log(data);
+                    if (data[0].Message != "NoData") {
+                        var cancel = [];
+                        var confirm = [];
+                        var label = [];
+
+
+                        for (var i = 0; i < data.length; i++) {
+                            confirm.push(data[i].booked);
+                            cancel.push(data[i].cancel);
+                            label.push(data[i].month);
+                        }
+
+                        var barChartData = {
+                            labels: label,
+                            datasets: [
+                              {
+                                  label: "Cancelled Bookings",
+                                  fillColor: "rgba(210, 214, 222, 1)",
+                                  strokeColor: "rgba(210, 214, 222, 1)",
+                                  pointColor: "rgba(210, 214, 222, 1)",
+                                  pointStrokeColor: "#c1c7d1",
+                                  pointHighlightFill: "#fff",
+                                  pointHighlightStroke: "rgba(220,220,220,1)",
+                                  data: cancel
+                              },
+                              {
+                                  label: "Completed Bookings",
+                                  fillColor: "rgba(60,141,188,0.9)",
+                                  strokeColor: "rgba(60,141,188,0.8)",
+                                  pointColor: "#3b8bba",
+                                  pointStrokeColor: "rgba(60,141,188,1)",
+                                  pointHighlightFill: "#fff",
+                                  pointHighlightStroke: "rgba(60,141,188,1)",
+                                  data: confirm
+                              }
+                            ]
+                        };
+                        var barChartOptions = {
+                            //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+                            scaleBeginAtZero: true,
+                            //Boolean - Whether grid lines are shown across the chart
+                            scaleShowGridLines: true,
+                            //String - Colour of the grid lines
+                            scaleGridLineColor: "rgba(0,0,0,.05)",
+                            //Number - Width of the grid lines
+                            scaleGridLineWidth: 1,
+                            //Boolean - Whether to show horizontal lines (except X axis)
+                            scaleShowHorizontalLines: true,
+                            //Boolean - Whether to show vertical lines (except Y axis)
+                            scaleShowVerticalLines: true,
+                            //Boolean - If there is a stroke on each bar
+                            barShowStroke: true,
+                            //Number - Pixel width of the bar stroke
+                            barStrokeWidth: 2,
+                            //Number - Spacing between each of the X value sets
+                            barValueSpacing: 5,
+                            //Number - Spacing between data sets within X values
+                            barDatasetSpacing: 1,
+                            //String - A legend template
+                            legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].fillColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>",
+                            //Boolean - whether to make the chart responsive
+                            responsive: true,
+                            maintainAspectRatio: true
+                        };
+
+                        barChartOptions.datasetFill = false;
+                        barChart.Bar(barChartData, barChartOptions);
+                        barChartData.datasets[1].fillColor = "#00a65a";
+                        barChartData.datasets[1].strokeColor = "#00a65a";
+                        barChartData.datasets[1].pointColor = "#00a65a";
+                    }
+                },
+
+            });
+        }
+
+        function PopularServices(SalonsId) {
+            $.ajax({
+                url: URLLink + 'api/Reports/SalonTopServicesBooking?SalonsId=' + SalonsId,
+                type: "GET",
+                cache: false,
+                //async: false,
+                success: function (data) {
+                    if (data[0].Message != "NoData") {
+                        var pieChartCanvas = $("#pieChart").get(0).getContext("2d");
+                        var pieChart = new Chart(pieChartCanvas);
+                        var result = [];
+                        var colors = ["#f56954", "#00a65a", "#f39c12", "#00c0ef", "#3c8dbc"];
+                        var highlight = ["#f56954", "#00a65a", "#f39c12", "#00c0ef", "#3c8dbc"];
+                        for (var i = 0; i < data.length; i++) {
+                            result.push({
+                                value: data[i].Count,
+                                label: data[i].TreatmentTitle + " - " + data[i].Category,
+                                color: colors[i],
+                                highlight: highlight[i],
+                            });
+                            var pieOptions = {
+                                //Boolean - Whether we should show a stroke on each segment
+                                segmentShowStroke: true,
+                                //String - The colour of each segment stroke
+                                segmentStrokeColor: "#fff",
+                                //Number - The width of each segment stroke
+                                segmentStrokeWidth: 2,
+                                //Number - The percentage of the chart that we cut out of the middle
+                                percentageInnerCutout: 50, // This is 0 for Pie charts
+                                //Number - Amount of animation steps
+                                animationSteps: 100,
+                                //String - Animation easing effect
+                                animationEasing: "easeOutBounce",
+                                //Boolean - Whether we animate the rotation of the Doughnut
+                                animateRotate: true,
+                                //Boolean - Whether we animate scaling the Doughnut from the centre
+                                animateScale: false,
+                                //Boolean - whether to make the chart responsive to window resizing
+                                responsive: true,
+                                // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+                                maintainAspectRatio: true,
+                                //String - A legend template
+                                legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
+                            };
+                            pieChart.Doughnut(result, pieOptions);
+                        }
+                    }
+                },
+
+            });
+        }
+    }
+
+    //PopularServices1();
+    //function PopularServices1() {
+    //    alert("ok");
+    //    $.ajax({
+    //        url: URLLink + 'api/Reports/SalonTopServicesBooking',
+    //        data:{"SalonsId":136},
+    //        type: "GET",
+    //        cache: false,
+    //        //async: false,
+    //        success: function (data) {
+    //            alert("ok");
+    //            console.log(data);
+    //            var colors = ["#f56954", "#00a65a", "#f39c12", "#00c0ef", "#3c8dbc"];
+    //            var highlight = ["#f56954", "#00a65a", "#f39c12", "#00c0ef", "#3c8dbc"];
+    //            var lbls = [];
+    //            var values = [];
+    //            for (var i = 0; i < data.length; i++) {
+    //                var a = data[i].TreatmentTitle + " - " + data[i].Category;
+    //                lbls.push(a);
+    //                values.push(data[i].Count);
+    //            }
+    //            var ctx2 = document.getElementById("mychart1").getContext('2d');
+    //            // alert(lbls + "    " + values);
+    //            var chart = new Chart(ctx2, {
+    //                // The type of chart we want to create
+    //                type: 'pie',
+    //                // The data for our dataset
+    //                data: {
+    //                    labels: ['pradeep', 'suleman'],
+    //                    datasets: [{
+    //                        label: "No Of Empolyees",
+    //                        backgroundColor: ["#f56954", "#00a65a", "#f39c12", "#00c0ef", "#3c8dbc"],
+    //                        // borderColor: 'rgb(255, 99, 132)',
+    //                        data: [10, 20],
+    //                    }]
+    //                },
+    //            });
+    //        },
+    //    });
+    //}
+
+    function TodayBookings() {
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                $.ajax({
+                    type: 'GET',
+                    url: URLLink + "api/Reports/TodayBookings",
+                    data: { "SalonsId": SalonsId },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    cache: false,
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+                        if (json[0].Message == "Error") {
+                            $('#todaybookings').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblBillings').text("Error");
+
+                        }
+                        else if (json[0].Message == "NoData") {
+                            $('#todaybookings').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#todaybookings').text("No Data");
+                            $('#lblStatus1').text('');
+                            $('#lblStatus1').append('<p class="alert alert-info text-center">No Bookings Available</p>');
+                        }
+
+                        else if (json[0].Message == "Success") {
+                            $('#todaybookings').show();
+                            if ($.fn.dataTable.isDataTable('#todaybookings')) {
+                                $('#todaybookings').DataTable().destroy();
+                            }
+                            $('#todaybookingsBody').empty();
+                            for (var i = 0; i < json.length; i++) {
+                                // $("#NameandMail").val(json[i].Email);
+                                // alert(json[i].Email);
+                                //  $('#txtservicename').val(json[i].TreatmentTitle);
+                                tr = $('<tr/>');
+                                var date1 = new Date(json[i].BookingDate);
+                                var date2 = date1.getDate() + "-" + parseInt(date1.getMonth() + 1) + "-" + date1.getFullYear();
+                              
+                                tr.append("<td>" + json[i].BookingsId + "</td>");
+                                tr.append("<td>" + date2 + "  " + json[i].BookingTime + " </td>");
+                                tr.append("<td>" + json[i].FirstName + " " + json[i].LastName + "</td>");
+                                tr.append("<td>" + json[i].TreatmentTypeId + "</td>");
+                                if (json[i].BookingType != "Evoucher") {
+                                    tr.append("<td>" + json[i].ServicePrice + "</td>");
+                                }
+                                else {
+                                    tr.append("<td>" + json[i].ServicePrice + "</td>");
+                                    //  tr.append("<td>" + json[i].Price + "</td>");
+                                }
+                                tr.append("<td>" + json[i].PaymentStatus + "</td>");
+
+                                tr.append('<td><a href="#" data-toggle="modal" data-target="#modal2"  onclick= "GetDetails(' + json[i].SalonCheckoutId + ');" class="btn btn-success">View</a></td>');
+                                $('#todaybookings').append(tr);
+                            }
+                            $('#todaybookings').DataTable({
+                                select: {
+                                    style: 'multi'
+                                },
+                                dom: 'Bfrtip',
+                                buttons: [
+                                    'excel',
+                                    'pdf'
+                                ],
+                                select: true
+                            });
+                        }
+                    },
+                    error: function (err) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#todaybookings').text(err.StatusText);
+                    }
+                });
+            }
+        });
+    }
+
+
+    function ActualBookings() {
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                $.ajax({
+                    type: 'GET',
+                    url: URLLink + "api/Reports/ActualBooking",
+                    data: { "SalonsId": SalonsId },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    cache: false,
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+                        console.log('json');
+                        console.log(json);
+                        if (json[0].Message == "Error") {
+                            $('#Actualbookings').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblBillings').text("Error");
+
+                        }
+                        else if (json[0].Message == "NoData") {
+                            $('#Actualbookings').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#Actualbookings').text("No Data");
+                            $('#lblStatus2').text('');
+                            $('#lblStatus2').append('<p class="alert alert-info text-center">No Bookings Available</p>');
+                        }
+
+                        else if (json[0].Message == "Success") {
+                            $('#Actualbookings').show();
+                            if ($.fn.dataTable.isDataTable('#Actualbookings')) {
+                                $('#Actualbookings').DataTable().destroy();
+                            }
+                            $('#ActualbookingsBody').empty();
+                            for (var i = 0; i < json.length; i++) {
+
+                                tr = $('<tr/>');
+                                var date1 = new Date(json[i].BookingDate);
+                                var date2 = date1.getDate() + "-" + parseInt(date1.getMonth() + 1) + "-" + date1.getFullYear();
+                                tr.append("<td>" + json[i].BookingsId + "</td>");
+                                tr.append("<td>" + date2 + "  " + json[i].BookingTime + " </td>");
+                                tr.append("<td>" + json[i].FirstName + " " + json[i].LastName + "</td>");
+                                tr.append("<td>" + json[i].TreatmentTypeId + "</td>");
+                                if (json[i].BookingType != "Evoucher") {
+                                    tr.append("<td>" + json[i].ServicePrice + "</td>");
+                                }
+                                else {
+                                    tr.append("<td>" + json[i].Price + "</td>");
+                                }
+                                tr.append("<td>" + json[i].PaymentStatus + "</td>");
+
+                                tr.append('<td><a href="#" data-toggle="modal" data-target="#modal2"  onclick= "GetDetails(' + json[i].SalonCheckoutId + ');" class="btn btn-success">View</a></td>');
+
+                                $('#Actualbookings').append(tr);
+                            }
+                            $('#Actualbookings').DataTable({
+                                select: {
+                                    style: 'multi'
+                                },
+                                dom: 'Bfrtip',
+                                buttons: [
+                                     'excel',
+                                     'pdf'
+                                ],
+                                select: true
+                            });
+                        }
+                    },
+                    error: function (err) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#Actualbookings').text(err.StatusText);
+                    }
+                });
+            }
+        });
+
+
+    }
+
+
+
+    function ActualBookingsCount() {
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                $.ajax({
+                    url: URLLink + "api/Reports/ActualBooking",
+                    data: { "SalonsId": SalonsId },
+                    type: "GET",
+                    cache: false,
+                    success: function (r) {
+                        console.log(r);
+                        if (r[0].Message == "NoData") {
+                            $("#lblActualBookings").text(0);
+                        }
+                        else {
+                            $("#lblActualBookings").text(r.length);
+                        }
+
+
+                    },
+                    error: function (err) {
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblUser').text(err.statusText);
+                    }
+                });
+            }
+        });
+    }
+
+    function TodayBookingsCount() {
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                $.ajax({
+                    url: URLLink + "api/Reports/TodayBookings",
+                    data: { "SalonsId": SalonsId },
+                    type: "GET",
+                    cache: false,
+                    success: function (json) {
+                        console.log(json);
+                        if (json[0].Message == "NoData") {
+                            $("#lblTodayBookings").text(0);
+                        }
+                        else {
+                            $("#lblTodayBookings").text(json.length);
+                        }
+                    },
+                    error: function (err) {
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblUser').text(err.statusText);
+                    }
+                });
+            }
+        });
+    }
+
+    function CancellationCount() {
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                $.ajax({
+                    url: URLLink + "api/Reports/Bookingcancellations",
+                    data: { "SalonsId": SalonsId },
+                    type: "GET",
+                    cache: false,
+                    success: function (json) {
+                        console.log(json);
+                        if (json[0].Message == "NoData") {
+                            $("#lblCancellation").text(0);
+                        }
+                        else {
+                            $("#lblCancellation").text(json.length);
+                        }
+                    },
+                    error: function (err) {
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblUser').text(err.statusText);
+                    }
+                });
+            }
+        });
+    }
+
+    function GetDetails(SalonCheckoutId) {
+        $('#mycustomer').text("");
+        $('#mybdate').text("");
+        $('#mystatus').text("");
+        $('#myemp').text("");
+
+        $('#myservice').text("");
+        $('#mytime').text("");
+        $('#myduration').text("");
+        $('#mypricelabel').text('');
+        $('#myprice').text('');
+        $.ajax({
+            type: 'GET',
+            url: URLLink + 'api/Billings/ListofBookings1?SalonCheckoutId=' + SalonCheckoutId,
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+
+
+
+                if (json[0].EvoucherNumber == null) {
+                    $('#mybookid').text(json[0].BookingsId);
+                }
+                else {
+                    $('#mybookid').text(json[0].EvoucherNumber);
+                }
+
+                $('#mycustomer').text(json[0].LastName + '  ' + json[0].FirstName);
+                $('#mybdate').text(json[0].BookingDate);
+                $('#mystatus').text(json[0].PaymentStatus);
+                $('#myemp').text(json[0].EmployeeName);
+
+                $('#myservice').text(json[0].TreatmentTypeId);
+                $('#mytime').text(json[0].BookingTime);
+                $('#myduration').text(json[0].Duration);
+                //if (json[0].PaymentStatus == 'pending' && json[0].EvoucherNumber == null) {
+                //  //  alert('if');
+                //    $('#mypricelabel').text('Amount to be Paid');
+                //    $('#myprice').text(json[0].ServicePrice);
+                //}
+                //else if (json[0].PaymentStatus == 'paid' && json[0].EvoucherNumber == null) {
+                //   // alert('else if1');
+                //    $('#mypricelabel').text('Amount  Paid');
+                //    $('#myprice').text(json[0].ServicePrice);
+                //}
+                //else if (json[0].PaymentStatus == 'paid' && json[0].EvoucherNumber != "") {
+                //   // alert('else if2');
+                //    $('#mypricelabel').text('Amount Paid');
+                //    $('#myprice').text(json[0].Price);
+                //}
+
+                if (json[0].PaymentStatus == 'pending' && json[0].BookingType == "Appointments") {
+
+                    $('#mypricelabel').text('Amount to be Paid');
+                    $('#myprice').text(json[0].ServicePrice);
+                }
+                else if (json[0].PaymentStatus == 'paid' && json[0].BookingType == "Appointments") {
+
+                    $('#mypricelabel').text('Amount  Paid');
+                    $('#myprice').text(json[0].ServicePrice);
+                }
+                else if (json[0].PaymentStatus == 'paid' && json[0].BookingType != "Evoucher") {
+
+                    $('#mypricelabel').text('Amount Paid');
+                    $('#myprice').text(json[0].Price);
+                }
+            }
+        });
+    }
+</script>

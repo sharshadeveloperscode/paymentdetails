@@ -1,0 +1,363 @@
+﻿
+@{
+    ViewBag.Title = "SalonInvoice";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm("HtmlCreate", "Salon", FormMethod.Post))
+{ }
+<div id="preloader" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #fefefe; z-index: 99; height: 110vh;">
+    <div id="status" style="width:100%;height:100%; text-align: center; position: absolute; left: 0; top: 30%; background-repeat: no-repeat; background-size: cover cover; background-position: center; margin: 0px 0 0 36px;">
+        <div class="preloader-logo"></div>
+        <p class="center-text smaller-text" id="p1" style="margin: 0 24px 10px !important;">
+            <h2> Loading .. </h2><br />
+            <img src="~/img/preload.gif" />
+        </p>
+    </div>
+</div>
+<section class="content-header">
+    <h1>
+
+        Invoice
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">  Invoice</a></li>
+    </ol>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="box-body table-responsive">
+            <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <label id="lblScheduler"></label>
+            </div>
+            <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <label id="lbl_status"></label>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-body table-responsive">
+
+                    <input type="button" value="Back" class="btn btn-danger" onclick="window.location.href='/Salon/BusinessDashboard';" style="width:130px;float:right;">
+                </div>
+                <div class="box-body table-responsive">
+                    <table id="tblSalonInvoice" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Year</th>
+                                <th>Period</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblSalonInvoiceBody"></tbody>
+                    </table>
+                    <input type="hidden" id="test" />
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+@*<div class="box-body table-responsive">
+        <table id="tblSalonInvoiceGeneration" style="width: 100%" class="table table-bordered table-hover dataTable">
+            <thead>
+                <tr>
+                    <th>Booking Date</th>
+                    <th>Service</th>
+                    <th>Payment Type</th>
+                    <th>Payable Amount</th>
+                    <th>Monthly Total Amount</th>
+                </tr>
+            </thead>
+            <tbody id="tblSalonInvoiceGenerationBody"></tbody>
+        </table>
+    </div>*@
+<script type="text/javascript">
+
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+    var UserId = localStorage.getItem("UserId");
+    GetAll();
+    function GetAll() {
+
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                $.ajax({
+                    type: 'GET',
+                    url: URL + "api/AdminInvoice/GetInvoice",
+                    data: { "SalonsId": SalonsId },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    cache: false,
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+                        $('#preloader').hide();
+                        if (json[0].Message == "Error") {
+                            $('#tblSalonInvoice').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                          // $('#lblScheduler').text("Error");
+
+                        }
+                        else if (json[0].Message == "NoData") {
+                            $('#tblSalonInvoice').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblScheduler').text("No Data Available");
+                        }
+
+                        else if (json[0].Message == "Success") {
+
+                            $('#tblSalonInvoice').show();
+                            if ($.fn.dataTable.isDataTable('#tblSalonInvoice')) {
+                                $('#tblBillings').DataTable().destroy();
+                            }
+                            var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                            $('#tblSalonInvoiceBody').empty();
+                            for (var i = 0; i < json.length; i++) {
+                                tr = $('<tr/>');
+                                tr.append("<td>" + months[parseInt(json[i].Month) - 1] + "</td>");
+                                // tr.append("<td>" + json[i].Month + "</td>");
+                                tr.append("<td>" + json[i].Year + "</td>");
+                                if (json[i].Period1 == "1" && json[i].Period2 == "15") {
+                                    tr.append("<td>Period 1</td>");
+                                }
+                                else {
+                                    tr.append("<td>Period 2</td>");
+                                }
+                                tr.append("<td><a href='#'class='btn btn-success' onclick='Generate(" + json[i].Month + "," + json[i].Year + "," + json[i].Period1 + "," + json[i].Period2 + ")''>Download PDF </a></td>");
+                                $('#tblSalonInvoice').append(tr);
+                            }
+                            $('#tblSalonInvoice').DataTable({
+                                select: {
+                                    style: 'multi'
+                                },
+                                dom: 'Bfrtip',
+                                buttons: [
+                                    'copyFlash',
+                                    'csvFlash',
+                                    'excelFlash',
+                                    'pdfFlash'
+                                ],
+                                select: true
+                            });
+                        }
+                    },
+                    error: function (err) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#tblSalonComment').text(err.StatusText);
+                    }
+                });
+            }
+        });
+    }
+    function Generate(Month, Year, Period1, Period2) {
+        $('#preloader').show();
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                $.ajax({
+                    type: 'GET',
+                    url: URL + "api/AdminInvoice/GetInvoiceGeneration",
+                    data: { "Month": Month, "Year": Year, "SalonsId": SalonsId, "Period1": Period1, "Period2": Period2 },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    cache: false,
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+                        console.log("json");
+                        console.log(json);
+                        if (json[0].Message == "Error") {
+                            $('#tblSalonInvoiceGeneration').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblBillings').text("Error");
+                        }
+                        else if (json[0].Message == "NoData") {
+                            $('#tblSalonInvoiceGeneration').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblBillings').text("No Data");
+                        }
+                        else if (json[0].Message == "Success") {
+                            $('#tblSalonInvoiceGeneration').show();
+                            if ($.fn.dataTable.isDataTable('#tblSalonInvoiceGeneration')) {
+                                $('#tblBillings').DataTable().destroy();
+                            }
+                            $('#tblSalonInvoiceGenerationBody').empty();
+                            var sum = 0;
+                            var sum1 = 0;
+                            var sum2 = 0;
+                            var mydata = "";
+
+                            var mydata1 = "";
+                            var mydata2 = "";
+                            var mydata3 = "";
+                            var mydata4 = "";
+
+                            var date = new Date();
+
+                            var monthNames = [];
+
+                            monthNames[0] = 'January';
+                            monthNames[1] = 'February';
+                            monthNames[2] = 'March';
+                            monthNames[3] = 'April';
+                            monthNames[4] = 'May';
+                            monthNames[5] = 'June';
+                            monthNames[6] = 'July';
+                            monthNames[7] = 'August';
+                            monthNames[8] = 'September';
+                            monthNames[9] = 'October';
+                            monthNames[10] = 'November';
+                            monthNames[11] = 'December';
+
+                            var month = monthNames[date.getMonth()];
+
+                            tdate = date.getDate();
+                            year = date.getFullYear();
+
+                            var getcurrentdate = " " + month + " " + " " + tdate + " " + " " + year;
+
+
+                            // mydata += '<h3>Salon Invoice Remittance #UK</h3>';
+                            //mydata += '</br>';
+                            //mydata += '<label style="font-size:15px;">Issue Date:' + getcurrentdate + '</label>'
+                            //   mydata += '</br>';
+                            //   mydata += '</br>';
+                            //   mydata += '<label> To   :  ' + json[0].BusinessName + ' </label>'; mydata0 += '<label style="margin-left:500px">From   : Salon</label>';
+                            // mydata += '</br>';
+                            //   mydata += '<label>' + json[0].BusinessName + '</label>'
+                            //   mydata += '</br>';
+                            //   mydata += '<label>' + json[0].Address + '</label>'
+                            //   mydata += '</br>';
+                            //  mydata += '<label>London</label>'
+                            //   mydata += '</br>';
+                            //   mydata += '<label>' + json[0].Postcode + '</label>'
+
+
+
+                            mydata += '<h2>Salon</h2>';
+                            mydata += '<label style="font-size:15px;">Issue Date:' + getcurrentdate + '</label>'
+                            mydata += '<br/>';
+                            mydata += '<br/>';
+                            mydata += '<label>To   :  ' + json[0].BusinessName + ' </label>';
+
+                            mydata += '<label style="align:right"> From   : Salon</label>';
+                            mydata += '<br/>';
+                            mydata += '<label>' + json[0].Address + '</label>'
+                            mydata += '<br/>';
+                            mydata += '<label>London</label>'
+                            mydata += '<br/>';
+                            mydata += '<label>' + json[0].Postcode + '</label>'
+
+
+                            mydata += '<h2>PAYATVENUE</h2>';
+                            mydata += '<table border="1" style="text-align:center">';
+                            mydata += '<thead>';
+                            mydata += "<tr><th>Booking Date</th>";
+                            mydata += "<th>Service</th>";
+                            mydata += "<th>Payment Type</th>";
+                            mydata += "<th>Payable Amount</th></tr>";
+                            mydata += '</thead>';
+
+
+                            mydata1 += '<h2>PAYBYPAYPAL</h2>';
+                            mydata1 += '<table border="1" style="text-align:center">';
+                            mydata1 += '<thead>';
+                            mydata1 += "<tr><th>Booking Date</th>";
+                            mydata1 += "<th>Service</th>";
+                            mydata1 += "<th>Payment Type</th>";
+                            mydata1 += "<th>Payable Amount</th></tr>";
+                            mydata1 += '</thead>';
+
+                            mydata2 += '<h2>Total Amount</h2>';
+                            mydata2 += '<table border="1" style="text-align:center">';
+                            var totalpayatvenue = 0;
+                            var totalpaypal = 0;
+
+                            mydata += '<tbody>';
+                            mydata1 += '<tbody>';
+                            for (var i = 0; i < json.length; i++) {
+                                if (json[i].PaymentType == "PAYATVENUE") {
+                                    mydata += '<tr>';
+                                    mydata += "<td>" + json[i].bookdate + "</td>";
+                                    mydata += "<td>" + json[i].TreatmentTypeId + "</td>";
+                                    mydata += "<td>" + json[i].PaymentType + "</td>";
+                                    mydata += "<td>" + json[i].ServicePrice + "</td>";
+                                    mydata += "</tr>";
+                                    totalpayatvenue = parseFloat(totalpayatvenue) + parseFloat(json[i].ServicePrice);
+                                }
+                                if (json[i].PaymentType == "PAYBYPAYPAL") {
+                                    mydata1 += "<tr>";
+                                    mydata1 += "<td>" + json[i].bookdate + "</td>";
+                                    mydata1 += "<td>" + json[i].TreatmentTypeId + "</td>";
+                                    mydata1 += "<td>" + json[i].PaymentType + "</td>";
+                                    mydata1 += "<td>" + json[i].ServicePrice + "</td>";
+                                    mydata1 += "</tr>";
+                                    totalpaypal = parseFloat(totalpaypal) + parseFloat(json[i].ServicePrice);
+                                }
+                            }
+                            mydata1 += '</tbody>';
+                            mydata += '</tbody>';
+                            var total = 0;
+                            mydata += "<tfoot><tr><td></td><td></td>";
+                            mydata += "<td><span>Total</span></td>";
+                            mydata += "<td>" + totalpayatvenue + "  </td></tr></tfoot>";
+                            mydata1 += "<tfoot><tr><td></td><td></td>";
+                            mydata1 += "<td><span>Total</span></td>";
+                            mydata1 += "<td>" + totalpaypal + "  </td></tr></tfoot>";
+                            mydata2 += "<thead><tr><th>Paypal</th><th>PayAt Venue</th><th>Net Total</th></tr></thead>";
+                            var total = totalpayatvenue + totalpaypal
+                            mydata2 += "<tbody><tr><td>" + total + "</td><td>" + totalpayatvenue + "</td>";
+                            mydata2 += "<td>" + total + " </td></tr></tbody>";
+                            mydata += "</table>";
+                            mydata1 += "</table>";
+                            mydata2 += "</table>";
+                            $('#test').val(mydata + mydata1 + mydata2);
+                            var my = mydata + mydata1 + mydata2;
+                            console.log(my);
+                            $.ajax({
+                                type: 'POST',
+                                url: "http://hogarbarber.developerscode.in/Salon/HtmlCreate",
+                                data: { "mydata": my },
+                                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                                cache: false,
+                                xhrFields: {
+                                    withCredentials: false
+                                },
+                                success: function (json) {
+                                    console.log(json);
+                                    $('#preloader').hide();
+                                    window.location.href = "http://hogarbarber.developerscode.in/tcpdf/examples/appypdf.php";
+                                }
+                            });
+                        }
+                    },
+                    error: function (err) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#tblSalonComment').text(err.StatusText);
+                    }
+                });
+            }
+        });
+    }
+</script>

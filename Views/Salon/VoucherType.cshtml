@@ -1,0 +1,665 @@
+﻿
+@{
+    ViewBag.Title = "Add Voucher";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<body>
+    <section class="content-header">
+        <h1>
+            Add Voucher
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Voucher</a></li>
+            <li class="active">Add Voucher</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    
+                    <div class="box-body table-responsive">
+                        <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lblVoucherType"></label>
+                        </div>
+                        <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lbl_status"></label>
+                            
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive">
+                        @*<table style="width: 100%" class="table table-bordered table-hover dataTable">
+                            <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                            <tr>
+
+                                <td>
+                                    VoucherType Name:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" maxlength="40" placeholder="Enter VoucherType Name" id="txtVoucherType" name="txtVoucherType" title="Enter Alphabets only" class="form-control" required />
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td colspan="4" style="text-align:right">
+                                    <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                    <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                    <input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />
+                                    <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("VoucherTypeList", "Salon")';" style="width:100px;" />
+                                    <input type="text" hidden="hidden" id="txtVoucherTypeId" name="VoucherTypeId" />
+                                </td>
+                            </tr>
+                        </table>*@
+                        <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                            <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                            <tr>
+                                <td>
+                                    COUPON NAME:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" id="txtOfferName" placeholder="Please Enter Coupon Name" name="Offer Name" style="width: 300px;" class="form-control" required />
+                                    <label id="lblOfferName"></label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    COUPON CODE:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" maxlength="40" placeholder="Please Enter Coupon Code" id="txtCouponCode" name="Coupon Code" style="width: 300px;" class="form-control" pattern="^[a-zA-Z0-9_]*$" required />
+                                    <label id="lblCouponCode"></label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    START DATE :<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input id="txtFromDate" type="text" name="txtStartDate" onchange="DateChanged()" placeholder="Please Select Start Date" style="width: 300px;" class="form-control" required /> @*pattern="^\d{1,2}\/\d{1,2}\/\d{4}$"*@
+                                    <label id="lblStartDate"></label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    END DATE :<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input id="txtToDate" type="text" name="txtEndDate1" style="width: 300px;" placeholder="Please Select End Date" class="form-control" required />
+                                    <label id="lblEndDate"></label>
+                                </td>
+                            </tr>
+                            @*<tr>
+                                <td>
+                                    MINIMUM TRANSACTION AMOUNT :<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input id="txtMinimumAmount" type="text" name="txtMinimumAmount" style="width: 300px;" placeholder="Enter Amount" class="form-control" required />
+                                    <label id="lblEndDate"></label>
+                                </td>
+                            </tr>*@
+
+
+                            <tr>
+                                <td>
+                                    DISCOUNT AMOUNT:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <div class="col-md-12">
+                                        <div class="col-md-5">
+                                            <input type="text" maxlength="40" id="txtDiscountAmount" placeholder="Please Enter Discount Amount" name="Discount Amount" style="width: 300px;margin-left:-30px" pattern="^[0-9]*$" class="form-control" />
+                                        </div>
+                                        @*<div class="col-md-3" style="margin-left: -46px;">OR</div>
+            <div class="col-md-2"><input type="number" id="txtDiscountPercentage" style="width: 80px;margin-left:-160px;" pattern="^[0-9]*$" placeholder="20" class="form-control" />
+                </div><div class="col-md-2"><label style="margin-left: -198px;">%</label></div></div>*@
+                                    </div>
+                                    <label id="lblDiscountAmount"></label>
+                                </td>
+                            </tr>
+                            @*<tr>
+                                <td>
+                                    DISCOUNT TYPE :<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select id="txtDiscountType" class="form-control" name="Discount Type" style="width: 300px;" required>
+                                        <option label="SELECT DISCOUNT TYPE" value="0"></option>
+                                        <option value="CASHBACK">CASHBACK</option>
+                                        <option value="INSTANTCREDITS">INSTANTCREDITS</option>
+                                    </select>
+                                    <label id="lblDiscountType"></label>
+                                </td>
+                            </tr>*@
+                            <tr>
+                                <td>
+                                    SALONS :<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select id="ddlSalons" name="SALONS" onchange="Venues()" class="form-control" multiple style="width: 300px;" required>
+                                        <option label="Select All" value="-1"></option>
+                                        <option value="0">Gift Voucher</option>
+                                    </select>
+                                    <label id="lblEvents"></label>
+                                </td>
+                            </tr>
+                            @*<tr>
+                                <td>
+                                    TYPE OF USERS :<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select id="txtTypeOfUsers" class="form-control" name="Discount Type" style="width: 300px;" onchange="ChangeUserType()" required>
+                                        <option label="SELECT USER TYPE" value="0"></option>
+                                        <option value="ALL">ALL</option>
+                                        <option value="NEWUSERS">NEW USERS</option>
+                                        <option value="CUSTOMUSERS">CUSTOM USERS</option>
+                                    </select>
+                                    <label id="lblUserType"></label>
+                                </td>
+                            </tr>*@
+                            @*<tr id="trNumberOfUsers"><td>NUMBER OF USERS AVAIL DISCOUNT :</td><td><input type="text" id="txtUsersAccess" placeholder="Please Enter Number of Users Avail Discount" value="100" style="width: 300px;" pattern="^[0-9]*$" class="form-control" /><label id="lblNumberOfUsers"></label></td></tr>*@
+                            @*<tr>
+                                <td>
+                                    COUPON IMAGE:
+                                </td>
+                                <td>
+                                    <input type="file" id="txtDiscountImage" onchange="readURL(this);" name="OfferImage" style="width: 300px;" class="form-control" />
+                                    <div id="divImage"></div>
+                                    <label id="lblImage" hidden="hidden"></label>
+                                    <label id="lblOfferImage"></label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <img id="blah" src="#" alt="your image" style="margin-left: 1px;" />
+                                </td>
+                            </tr>*@
+
+                            <tr>
+                                <td>
+                                    ABOUT COUPON 
+                                </td>
+                                <td colspan="6">
+                                    <textarea id="txtDescription" name="txtDescription" class="form-control" required></textarea>
+                                    <label id="lblDescription"></label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="text-align:right">
+                                   
+                                    <input type="submit" class="btn btn-success" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                    <input type="submit" class="btn btn-success" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                    @*<input type="reset" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />*@
+                                    <input type="text" hidden="hidden" id="txtVoucherTypeId" />
+                                    <input type="submit" class="btn btn-danger" id="btnBack" value="Back" style="width:100px;" onclick="window.location.href = '@Url.Action("VoucherTypeList", "Salon")';" />
+                                </td>
+                            </tr>
+                        </table>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</body>
+
+<script type="text/javascript">
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+    var UserId = localStorage.getItem("UserId");
+    var EditVoucherTypeId = localStorage.getItem("EditVoucherTypeId");
+    window.onload=function()
+    {
+        $('#txtFromDate').datepicker({ format: 'dd/mm/yyyy', startDate: "+0d", todayHighlight: true });
+        $('#txtToDate').datepicker({ format: 'dd/mm/yyyy', startDate: "+0d", todayHighlight: true });
+
+            if (UserId != "null" || UserId != null && RoleId == "1") {
+
+                if (EditVoucherTypeId == "null") {
+                    Salons();
+                    $('#btnEdit').hide();
+                    $('#btnSave').show();
+                }
+                else {
+                  
+                    BindVoucherType(EditVoucherTypeId);
+                    
+                    $('#btnEdit').show();
+                    $('#btnSave').hide();
+                    $('#btnReset').hide();
+                }
+            }
+            else {
+                window.location.href = '@Url.Action("Logout", "Salon")';
+            }
+    }
+
+
+    //function readURL(input) {
+    //    $('#divImage').hide();
+    //    if (input.files && input.files[0]) {
+    //        var reader = new FileReader();
+
+    //        reader.onload = function (e) {
+    //            $('#blah').show();
+    //            $('#blah')
+    //                .attr('src', e.target.result)
+    //                .width(470)
+    //                .height(250);
+    //        };
+
+    //        reader.readAsDataURL(input.files[0]);
+    //    }
+    //}
+
+
+    function Salons() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/VoucherType/TotalSalonsIsActive",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].BusinessName, data[i].SalonsId);
+                    $("#ddlSalons").val("");
+                    $('#ddlSalons').append(opt);
+                }
+
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+    function Venues()
+    {
+        var id = $("#ddlSalons").val();
+        if (id == -1) {
+            $('#ddlSalons option').prop('selected', true);
+            $('#ddlSalons option[value=-1]').prop('selected', false);
+        }
+    }
+    function SelectedSalons(ids) {
+        var aa = [];
+        aa = ids.split(',');
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/VoucherType/TotalSalonsIsActive",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].BusinessName, data[i].SalonsId);
+                    $("#ddlSalons").val("");
+                    $('#ddlSalons').append(opt);
+                }
+              //  setTimeout(function () {
+                    $("#ddlSalons").val(aa);
+              //  }, 1000);
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+    function DateChanged() {
+        var StartDate = $('#txtFromDate').val();
+        $("#txtToDate").datepicker('option', 'minDate', StartDate);
+        $("#txtToDate").datepicker('option', 'showOn', 'button');
+        $("#txtToDate").datepicker('option', 'buttonImage', 'images/calendar.gif');
+        $("#txtToDate").datepicker('option', 'buttonImageOnly', true);
+        $("#txtToDate").datepicker('option', 'dateFormat', 'dd-mm-yy');
+    }
+    GetAll();
+    var code = [];
+    function GetAll() {
+
+      
+        $.ajax({
+            type: 'GET',
+            //link
+            url: URL + "api/VoucherType/Getdata",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+                 if (json[0].Message == "NoData") {
+                    $('#tblVoucherType').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    // $('#lblVoucherType').text("No Data");
+                }
+
+                 else if (json[0].Message == "Success") {
+                     for (var i = 0; i < json.length; i++) {
+                       
+                         code.push(json[i].GiftCoupon);
+                     }
+                }
+            }
+        })
+    }
+    var n = 0;
+
+    $("#txtCouponCode").on('keyup', function () {
+        
+        if (code.includes($("#txtCouponCode").val())) {
+           
+            n=1
+           
+        }
+        else
+        {
+            n = 0;
+        }
+        
+    });
+
+
+
+    function Save() {
+      
+        var date = $('#txtFromDate').val();
+        var d = new Date(date.split("/").reverse().join("-"));
+        var dd = d.getDate();
+        var mm = d.getMonth() + 1;
+        var yy = d.getFullYear();
+        var newdate = yy + "-" + mm + "-" + dd;
+        var FromDate = newdate;
+
+
+        var date2 = $('#txtToDate').val();
+
+        var d1 = new Date(date2.split("/").reverse().join("-"));
+        var dd1 = d1.getDate();
+        var mm1 = d1.getMonth() + 1;
+        var yy1 = d1.getFullYear();
+        var newdate1 = yy1 + "-" + mm1 + "-" + dd1;
+        var ToDate1 = newdate1;
+       
+        if ($('#txtOfferName').val() != '' && $('#txtOfferName').val() != 'Giftcard' && $("#txtCouponCode").val() != '' && n ==0 && $("#txtFromDate").val() != '' && $("#txtToDate").val() != '' && $("#txtDiscountAmount").val() != '' && $("#ddlSalons").val() != null && d <= d1) {
+            var couponname = $('#txtOfferName').val()
+            if ((couponname.match(/^[a-zA-Z ]*$/)))
+          //  {
+          
+            $.ajax({
+                url: WebURL + "Upload/CoupenImages",
+                type: "POST",
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    localStorage.setItem("SalonsId", $("#ddlSalons").val());
+                    console.log("response");
+                    var customerId = $("#txtCustomerId").val();
+                    console.log(response);
+                    var FilePath = WebURL + "Files/CoupenImages/" + response;
+
+                    $.ajax({
+                        url: URL + "api/VoucherType/InsertNew",
+                        data: { 'CouponName': $('#txtOfferName').val(), 'CouponCode': $('#txtCouponCode').val(), 'FromDate': FromDate, 'ToDate': ToDate1, 'DiscountAmount': $('#txtDiscountAmount').val(), 'Salons': localStorage.getItem("SalonsId"), 'Image': '', 'ImagePath': '', 'Description': $('#txtDescription').val(), 'IsActive': 1, 'CreatedBy': UserId, "MinimumAmount": 0 },
+                        type: "GET",
+                        cache: false,
+                        success: function (d) {
+                            StatusMessage(2);
+
+                        }
+                    });
+                }
+            });
+            else
+            {
+
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblVoucherType").text("Please Enter Valid CouponName");
+                $("#txtOfferName").focus();
+            }
+
+
+
+        }
+        else
+        {
+          
+            if ($("#txtOfferName").val() == '') {
+           
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblVoucherType").text("Please Enter CouponName");
+                $("#txtOfferName").focus();
+            }
+           else if ($("#txtOfferName").val() == 'Giftcard') {
+
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblVoucherType").text("Coupon Name Not Available");
+                $("#txtOfferName").focus(); 
+            }
+            else if ($("#txtCouponCode").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblVoucherType").text("Please Enter CouponCode");
+                $("#txtCouponCode").focus();
+            }
+            else if (n == 1) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblVoucherType").text("CouponCode already used please try another");
+                $("#txtCouponCode").focus();
+            }
+            else if ($("#txtFromDate").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                 $("#lblVoucherType").text("Please Select FromDate");
+                $("#txtFromDate").focus();
+            }
+            else if ($("#txtToDate").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                 $("#lblVoucherType").text("Please Select ToDate");
+                $("#txtToDate").focus();
+            }
+            else if ($("#txtDiscountAmount").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                 $("#lblVoucherType").text("Please Enter DiscountAmount");
+                $("#txtDiscountAmount").focus();
+            }
+            else if ($("#ddlSalons").val() == null) {
+                $("#dvErrorStatus").css({ display: "block" });
+                 $("#lblVoucherType").text("Please Select Salons");
+                $("#ddlSalons").focus();
+            }
+         
+            else if(! d <= d1)
+            {
+              //  $("#dvErrorStatus").css({ display: "block" });
+                alert("Please select to date greaterThan from date")
+                $("#txtToDate").focus();
+               // alert("")
+            }
+        }
+            }
+    function Update() {
+      
+        var date = $('#txtFromDate').val();
+        var d = new Date(date.split("/").reverse().join("-"));
+        var dd = d.getDate();
+        var mm = d.getMonth() + 1;
+        var yy = d.getFullYear();
+        var newdate = yy + "-" + mm + "-" + dd;
+        var FromDate = newdate;
+
+
+        var date2 = $('#txtToDate').val();
+
+        var d1 = new Date(date2.split("/").reverse().join("-"));
+        var dd1 = d1.getDate();
+        var mm1 = d1.getMonth() + 1;
+        var yy1 = d1.getFullYear();
+        var newdate1 = yy1 + "-" + mm1 + "-" + dd1;
+        var ToDate1 = newdate1;
+      
+        if ($('#txtOfferName').val() != '' && $('#txtOfferName').val() != 'Giftcard' && $("#txtCouponCode").val() != '' && n==0 && $("#txtFromDate").val() != '' && $("#txtToDate").val() != '' && $("#txtDiscountAmount").val() != '' && $("#ddlSalons").val() != null && d <= d1) {
+
+            var couponname = $('#txtOfferName').val()
+            if ((couponname.match(/^[a-zA-Z ]*$/)))
+                  {
+
+                $.ajax({
+                    url: WebURL + "Upload/CoupenImages",
+                    type: "POST",
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        localStorage.setItem("SalonsId", $("#ddlSalons").val());
+                        console.log("response");
+                        var customerId = $("#txtCustomerId").val();
+                        console.log(response);
+                        var FilePath = WebURL + "Files/CoupenImages/" + response;
+
+                        $.ajax({
+                            url: URL + "api/VoucherType/UpdateNew",
+                            data: { 'CouponName': $('#txtOfferName').val(), 'CouponCode': $('#txtCouponCode').val(), 'FromDate': FromDate, 'ToDate': ToDate1, 'DiscountAmount': $('#txtDiscountAmount').val(), 'Salons': localStorage.getItem("SalonsId"), 'Image': '', 'ImagePath': '', 'Description': $('#txtDescription').val(), 'IsActive': 1, 'UpdatedBy': UserId, "MinimumAmount": 0, "VoucherTypeId": $("#txtVoucherTypeId").val() },
+                            type: "GET",
+                            cache: false,
+                            success: function (d) {
+
+                                StatusMessage(1);
+                            }
+                        });
+                    }
+                });
+
+        }
+            //
+            else
+            {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblVoucherType").text("Please Enter Valid CouponName");
+                $("#txtOfferName").focus();
+            }
+
+
+        }
+        else {
+            if ($("#txtOfferName").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblVoucherType").text("Please Enter CouponName");
+                $("#txtOfferName").focus();
+            }
+            else if ($("#txtOfferName").val() == 'Giftcard') {
+
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblVoucherType").text("Coupon Name Not Available");
+                $("#txtOfferName").focus();
+            }
+            else if ($("#txtCouponCode").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblVoucherType").text("Please Enter CouponCode");
+                $("#txtCouponCode").focus();
+            }
+            else if (n == 1) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblVoucherType").text("CouponCode already used please try another");
+                $("#txtCouponCode").focus();
+            }
+            else if ($("#txtFromDate").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblVoucherType").text("Please Select FromDate");
+                $("#txtFromDate").focus();
+            }
+            else if ($("#txtToDate").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblVoucherType").text("Please Select ToDate");
+                $("#txtToDate").focus();
+            }
+            else if ($("#txtDiscountAmount").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblVoucherType").text("Please Enter DiscountAmount");
+                $("#txtDiscountAmount").focus();
+            }
+            else if ($("#ddlSalons").val() == null) {
+              
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblVoucherType").text("Please Select Salons");
+                $("#ddlSalons").focus();
+            }
+
+            else if (!d <= d1) {
+              //  $("#dvErrorStatus").css({ display: "block" });
+                alert("Please select to date greaterThan from date")
+              //  $("#lblVoucherType").text("Please select to date greaterThan from date");
+                $("#txtToDate").focus();
+            }
+
+        }
+    }
+
+
+    function Clear() {
+        $("#txtCouponCode").val("");
+        $("#lbl_status").text("");
+        $("#txtFromDate").val(" ");
+        $("#txtToDate").val(" ");
+       
+        $("#txtDiscountAmount").val(" ");
+        $("#txtOfferName").val(" ");
+        $("#txtDescription").val(" ");
+        $("#ddlSalons").val("");
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+        $("#dvSuccess").css({ display: "none" });
+        $("#dvErrorStatus").css({ display: "none" });
+    }
+  
+    function BindVoucherType(VoucherTypeId) {
+        $("#lbl_status").text("");
+       // Clear();
+
+        $.ajax({
+            url: URL + "api/VoucherType/GetbyId?VoucherId=" + VoucherTypeId,
+            type: "GET",
+            cache: false,
+            success: function (r) {
+              
+                $('#btnEdit').show();
+                $('#btnSave').hide();
+                console.log(r);
+              
+                SelectedSalons(r[0].Salons);
+                $("#txtVoucherTypeId").val(VoucherTypeId);
+                $("#txtCouponCode").val(r[0].GiftCoupon);
+                // alert(r[0].FromDate1);
+              
+              //  var date1 = new Date(r[0].FromDate1);
+             //   var date2 = date1.getDate() + "/" + parseInt(date1.getMonth() + 1) + "/" + date1.getFullYear();
+              //  alert(date2);
+                $("#txtFromDate").val(r[0].FromDate1);
+             //   var date3 = new Date(r[0].ToDate1);
+             //   var date4 = date3.getDate() + "/" + parseInt(date3.getMonth() + 1) + "/" + date3.getFullYear();
+              //  alert(date4);
+
+                $("#txtToDate").val(r[0].ToDate1);
+             
+                $("#txtDiscountAmount").val(r[0].DiscountAmount);
+                $("#txtOfferName").val(r[0].CouponName);
+                $("#txtDescription").val(r[0].Description);
+              //  $("#ddlSalons").val(r[0].Salons);
+            },
+            error: function (err) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblVoucherType').text(err.statusText);
+            }
+        })
+    }
+
+    function StatusMessage(value) {
+        localStorage.setItem("VoucherTypeMessage", value);
+        window.location.href = '@Url.Action("VoucherTypeList", "Salon")';
+    }
+</script>
+

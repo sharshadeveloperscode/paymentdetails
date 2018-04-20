@@ -1,0 +1,218 @@
+﻿
+@{
+    ViewBag.Title = "PricingType";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<body>
+    <section class="content-header">
+        <h1>
+            PricingType
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Masters</a></li>
+            <li class="active">Create PricingType</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lblPricingType"></label>
+                        </div>
+                        <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lbl_status"></label>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive">
+                        <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                            <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                            <tr>
+
+                                <td>
+                                    PricingType:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" maxlength="40" placeholder="Enter PricingType" id="txtPricingType" name="txtPricingType" title="Enter Alphabets only" class="form-control" required />
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td colspan="4" style="text-align:right">
+                                    <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                    <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                    <input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />
+                                    <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("PricingTypeList", "Salon")';" style="width:100px;" />
+                                    <input type="text" hidden="hidden" id="txtPricingTypeId" name="PricingTypeId" />
+                                </td>
+                            </tr>
+                        </table>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</body>
+<script type="text/javascript">
+
+          var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+        var UserId = localStorage.getItem("UserId");
+        var RoleId = localStorage.getItem("RoleId");
+        var EditPricingTypeId = localStorage.getItem("EditPricingTypeId");
+
+        window.onload = function () {
+            if (UserId != "null" || UserId != null && RoleId == "1") {
+
+                if (EditPricingTypeId == "null") {
+                        $('#btnEdit').hide();
+                        $('#btnSave').show();
+                    }
+                    else {
+                    BindPricingType(EditPricingTypeId);
+                        $('#btnEdit').show();
+                        $('#btnSave').hide();
+                        $('#btnReset').hide();
+                    }
+
+            }
+            else {
+                window.location.href = '@Url.Action("Logout", "Salon")';
+            }
+        }
+
+
+        //}
+
+    function BindPricingType(PricingTypeId) {
+            $("#lbl_status").text("");
+            Clear();
+
+            $.ajax({
+                url: URL + "api/PricingType/GetbyId",
+                data: { "PricingTypeId": PricingTypeId },
+                type: "GET",
+                cache: false,
+                success: function (r) {
+                    $('#btnEdit').show();
+                    $('#btnSave').hide();
+                    console.log(r);
+                    $("#txtPricingTypeId").val(PricingTypeId);
+
+                    $("#txtPricingType").val(r[0].PricingType);
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblPricingType').text(err.statusText);
+                }
+            })
+        }
+
+        function Save() {
+            $("#lbl_status").text("");
+            if ($("#txtPricingType").val() != '') {
+                var PricingType = $("#txtPricingType").val();
+                var CreatedBy = UserId;
+                $.ajax({
+                    url: URL + "api/PricingType/Insert",
+                    data: { "PricingType": PricingType, "IsAcitve": 1, "CreatedBy": CreatedBy },
+                        type: "GET",
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblPricingType").text("PricingType  Already Existed.");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblPricingType').text(r[0].ErrorMessage);
+                            }
+                            else
+                            {
+                                Clear();
+                                StatusMessage(2);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblPricingType').text(err.statusText);
+                        }
+                    });
+                //} else {
+                //    $("#dvErrorStatus").css({ display: "block" });
+                //    $("#lblStartTime").text("Please Enter Valid StartTime ");
+                //}
+            } else {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblPricingType").text("Please Enter PricingType ");
+                $("#txtPricingType").focus();
+            }
+        }
+        function Clear() {
+            $("#txtPricingTypeId").val("");
+            $("#txtPricingType").val("");
+            $("#lbl_status").text("");
+            $("#lblPricingType").text(" ");
+            $('#btnEdit').hide();
+            $('#btnSave').show();
+            $("#dvSuccess").css({ display: "none" });
+            $("#dvErrorStatus").css({ display: "none" });
+        }
+
+        function Update() {
+            $("#lbl_status").text("");
+            if ($("#txtPricingType").val() != '') {
+                var PricingType = $("#txtPricingType").val();
+                var UpdatedBy = UserId;
+               // if (StartTime.match(/^[a-zA-Z ]*$/)) {
+                    // Update(string CityName,int UpdatedBy,int Cityid)
+                    $.ajax({
+                        url: URL + "api/PricingType/Update",
+                        data: { "PricingType": $("#txtPricingType").val(), "UpdatedBy": UpdatedBy, "PricingTypeId": $("#txtPricingTypeId").val() },
+                        cache:false,
+                        type: "GET",
+                        dataType: 'json',
+                        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblPricingType").text("PricingType  Already Existed.");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblPricingType').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                Clear();
+                                StatusMessage(1);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblPricingType').text(err.statusText);
+                        }
+                    });
+                //} else {
+                //    $("#dvErrorStatus").css({ display: "block" });
+                //    $("#lblStartTime").text("Please Enter Valid StartTime ");
+                //}
+            }
+            else {
+                $("#lblPricingType").text("Please Enter PricingType");
+                $("#dvErrorStatus").css({ display: "block" });
+            }
+        }
+
+        function StatusMessage(value) {
+            localStorage.setItem("PricingTypeMessage", value);
+            window.location.href = '@Url.Action("PricingTypeList", "Salon")';
+        }
+</script>

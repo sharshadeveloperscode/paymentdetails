@@ -1,0 +1,266 @@
+﻿
+@{
+    ViewBag.Title = "TreatmentTitleList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="content-header">
+    <h1>
+        Treatment Title
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href=""><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Location</a></li>
+        <li class="active">TreatmentTitle</li>
+    </ol>
+    @* <script src="~/Scripts/jquery-3.1.1.min.js"></script>*@
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+
+                        <label id="lblTreatmentTitle"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                <div class="box-body table-responsive">
+                    <input type="button" class="btn btn-primary" value="Add Treatment Title" onclick="window.location.href = '@Url.Action("TreatmentTitle", "Salon")';" style="text-align:left" />
+                    <input type="submit" class="btn btn-danger" id="btnBack" value="Back" style="width:100px;float:right;" onclick="window.location.href = '@Url.Action("Dashboard", "Salon")';" />
+                </div>
+                <div class="box-body table-responsive">
+                    <table id="tblTreatmentTitle" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Treatment Title</th>
+                                <th>Image</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblTreatmentTitleBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+<script type="text/javascript">
+  
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+
+    window.onload = function () {
+       // GetAll();
+        localStorage.setItem("EditTreatmentTitleId", "null");
+
+        //if (UserId != "null" && RoleId == "1") {
+        var Message = localStorage.getItem("TreatmentTitleMessage");
+        if (Message == "1") {
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("TreatmentTitle Updated Successfully");
+          
+            GetAll();
+        }
+        else if (Message == "2") {
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("TreatmentTitle Created Successfully");
+            
+            GetAll();
+        }
+        else {
+            $("#dvErrorStatus").css({ display: "none" });
+            $("#dvSuccess").css({ display: "none" });
+            GetAll();
+        }
+        @*}
+        else {
+            window.location.href = '@Url.Action("LockScreen", "Salon")';
+        }*@
+    }
+
+
+    function GetAll() {
+
+        localStorage.setItem("TreatmentTitleMessage", "null");
+        $('#tblTreatmentTitleBody').text('');
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+        $.ajax({
+            type: 'GET',
+            url: URLLink + "api/TreatmentTitle/GetData",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            // cache:false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+
+                if (json[0].Message == "Error") {
+                    $('#tblTreatmentTitle').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblTreatmentTitle').text("Error");
+
+                }
+                else if (json[0].Message == "NoData") {
+                    $('#tblTreatmentTitle').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                  //  $('#lblTreatmentTitle').text("No Data");
+                }
+
+                else if (json[0].Message == "Success") {
+                    $('#tblTreatmentTitle').show();
+                    if ($.fn.dataTable.isDataTable('#tblTreatmentTitle')) {
+                        $('#tblTreatmentTitle').DataTable().destroy();
+                    }
+                    $('#tblTreatmentTitleBody').empty();
+                    for (var i = 0; i < json.length; i++) {
+
+                        tr = $('<tr/>');
+                        tr.append("<td>" + json[i].Category + "</td>");
+                        tr.append("<td>" + json[i].TreatmentTitle + "</td>");
+                        console.log(json[i].ImagePath)
+                        tr.append("<td><img src='" + (typeof json[i].ImagePath == 'undefined' || json[i].ImagePath == null || json[i].ImagePath == '' ? URLLink + '/img/noimage.png' : json[i].ImagePath) + "' width='50px' /></td>");
+                        
+                        if (json[i].IsActive == 1) {
+
+                            tr.append("<td><a href='#' id='delete" + i + "'  title='Deactivate' onclick='UpdateStatus(" + json[i].TreatmentTitleId + " ,0)'><i class='fa fa-check nav_action_icon'></i> </a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].TreatmentTitleId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+                        }
+                        else if (json[i].IsActive == 0) {
+
+                            tr.append("<td><a href='#' id='delete" + i + "'  title='Activate' onclick='UpdateStatus(" + json[i].TreatmentTitleId + ",1)'><i class='fa fa-ban nav_action_icon'></i></a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].TreatmentTitleId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+                        }
+
+                        $('#tblTreatmentTitle').append(tr);
+                    }
+                    $('#tblTreatmentTitle').DataTable({
+                       
+                        bsort: false,
+                        dom: 'Bfrtip',
+                        buttons: [
+                             'excel', 'pdf'
+                        ],
+                        select: true
+                    });
+                }
+            },
+            error: function (err) {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblTreatmentTitle').text(err.StatusText);
+            }
+        });
+    }
+    //local
+    function Edit(TreatmentTitleId) {
+        localStorage.setItem("EditTreatmentTitleId", TreatmentTitleId);
+        window.location.href = '@Url.Action("TreatmentTitle", "Salon")';
+    }
+
+
+    function UpdateStatus(TreatmentTitleId, IsActive) {
+        $("#lbl_status").text("");
+        var UserId = localStorage.getItem("UserId");
+        var StatusText = '';
+        var UpdateStatusText = '';
+        if (IsActive == 1) {
+            StatusText = "active";
+            UpdateStatusText = "activated";
+        }
+        else if (IsActive == 0) {
+            StatusText = "deActive";
+            UpdateStatusText = "deactivated";
+        }
+        if (confirm("Are you sure to  " + StatusText + " this TreatmentTitle?") == true) {
+            $.ajax({
+                url: URLLink + "api/TreatmentTitle/UpdateStatus",
+                data: { "Status": IsActive, "UpdatedBy": UserId, "TreatmentTitleId": TreatmentTitleId },
+                // UpdateStatus(int Status, int UpdatedBy, int DepartmentId)
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblTreatmentTitle").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblTreatmentTitle').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblTreatmentTitle').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+                        GetAll();
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("TreatmentTitle " + UpdateStatusText + " Successfully");
+                    }
+                },
+                error: function (err) {
+                    alert(err.StatusText);
+                }
+            });
+        }
+        else {
+
+        }
+    }
+
+///////////////////////////
+
+    function Delete(TreatmentTitleId) {
+        $("#lbl_status").text("");
+        if (confirm("Are you Sure to delete this TreatmentTitle?") == true) {
+            alert(TreatmentTitleId);
+            $.ajax({
+                url: URLLink + "api/TreatmentTitle/Delete",
+                data: { "TreatmentTitleId": TreatmentTitleId },
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+                    $("#lblTreatmentTitle").text(" ");
+                    $("#txtTreatmentTitleId").val("");
+                    $("#txtTreatmentTitle").val("");
+                    $("#tblTreatmentTitle").text("");
+                    GetAll();
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblTreatmentTitle").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblTreatmentTitle').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblTreatmentTitle').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("TreatmentTitle Deleted Successfully");
+                    }
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblTreatmentTitle').text(err.StatusText);
+                }
+            });
+        } else {
+
+        }
+    }
+</script>

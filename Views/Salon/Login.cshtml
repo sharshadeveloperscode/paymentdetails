@@ -1,0 +1,417 @@
+﻿@{
+
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    @*
+        <meta name="viewport" content="width=device-width" />*@
+    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <!-- bootstrap 3.0.2 -->
+
+    <link href="~/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- font Awesome -->
+    <link href="../css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <!-- Theme style -->
+    @*<link href="~/Content/style3.css" rel="stylesheet" />*@
+
+    <link href="../../Content/style.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed" rel="stylesheet">
+
+    <style>
+        .logo-main {
+            width: 90px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .box-login {
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 100%;
+            background: #fff;
+        }
+
+        .form-box .header {
+            background: #fff;
+            color: #7d7d7d;
+            box-shadow: none;
+        }
+
+        .form-box {
+            width: 420px;
+        }
+
+            .form-box .body > .form-group > input, .form-box .footer > .form-group > input {
+                border: 1px solid #808080;
+            }
+
+            .form-box .btn-group {
+                width: 150px;
+                margin: 0 auto;
+                display: block;
+            }
+
+                .form-box .btn-group button.btn {
+                    border-radius: 0px;
+                    -webkit-border-radius: 0px;
+                    -moz-border-radius: 0px;
+                    margin: 0px 2px;
+                }
+
+        .input-icon {
+            width: 100%;
+            display: block;
+            float: left;
+            position: relative;
+        }
+
+            .input-icon i.glyphicon {
+                position: absolute;
+                top: 10px;
+                left: 5px;
+            }
+
+            .input-icon .form-control {
+                width: 100%;
+                padding-left: 25px;
+            }
+
+        .modal-backdrop.in {
+            opacity: 0 !important;
+        }
+
+        .modal-backdrop {
+            position: relative !important;
+        }
+    </style>
+
+</head>
+
+<!-- Body -->
+<body class="hold-transition login-page" style="background-image: url(../../img/login_bg.png); background-position: initial; background-repeat: no-repeat; background-attachment: fixed; background-origin: initial; background-clip: initial; background-color: initial; background-size: cover; overflow-y: auto;">
+    <!--  Login Form -->
+    <div class="container" style="margin-top:120px">
+
+        <div class="row">
+
+            <div class="col-sm-6 col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <strong style="font-family: 'Roboto Condensed', sans-serif;"> LOGIN</strong>
+                        <div id="my-tab-content" class="tab-content">
+                            <div class="tab-pane active" id="login">
+                                <img class="profile-img img-responsive" src="~/img/banner-logo.png" alt="">
+                            </div>
+
+                            <div class="panel-body">
+                                <form role="form" action="#" method="POST">
+                                    <fieldset>
+                                        <div class="row">
+                                            <div class="col-sm-12 col-md-12">
+                                                <div class="form-group">
+
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">
+                                                            <i class="glyphicon glyphicon-user"></i>
+                                                        </span>
+                                                        <input class="form-control" placeholder="Enter Username" id="txtUserName" name="loginname" type="text">
+                                                        <br />
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">
+                                                            <i class="glyphicon glyphicon-lock"></i>
+                                                        </span>
+                                                        <input class="form-control" placeholder="Enter Password" name="password" type="password" id="txtPassword">
+                                                        <br />
+                                                    </div>
+
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <a href="#" id="forgetlinkID" data-toggle="modal" data-target="#modal-forgot_password" style="font-size:15px;text-decoration:none"> Forgot Password?</a>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-6 col-sm-6 col-md-12">
+                                                        <input type="button" onclick="Login()" class="btn  btn-success btn-block" value="Sign In">
+                                                        <label style="font-size: 15px !important;float:left;" id="lbl_status"></label>
+                                                        <label style="font-size: 15px !important;float:left;" id="lblUserName"></label>
+                                                        <label style="font-size: 15px !important;float:left;" id="lblPassword"></label>
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Template Preview</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="lblText"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal" id="modal-forgot_password" tabindex="-1" role="dialog" aria-hidden="true" style="background:rgba(60, 60, 60, 0.7);opacity:0.8;">
+        <div class="modal-dialog" role="document" style="width:360px;padding-top: 100px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="exampleModalLabel" style="text-align:center;font-size:20px;color:#333!important;font-weight:600">Forgot Password</h3>
+
+                </div>
+                <div class="modal-body">
+                    @*<div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-5">
+                                    Enter Your Email : <label style="color:red">*</label>
+                                </div>
+                                <div class="col-md-7">
+                                    <input type="text" id="txtForgotPassword" class="form-control" />
+                                    <br />
+                                    <span style="color:red" id="lblError"></span>
+                                    <label id="lblMailStatus" style="color:green;"></label>
+                                </div>
+                            </div>
+                        </div>*@
+                    <div class="form-group">
+                        <label>Enter Your E-mail : <span style="color:red">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-envelope"></i>
+                            </span>
+                            <input type="text" id="txtForgotPassword" placeholder="Enter Your E-mail" class="form-control" />
+                            <br />
+                        </div>
+                        <span style="color:red" id="lblError"></span>
+                        <label id="lblMailStatus" style="color:green;"></label>
+                    </div>
+
+                    <div class="row">
+                        <span style="float:left;" id="lblSuccessShift"></span>
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal" style="width:100%;">Close</button>
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                            <button type="button" class="btn btn-primary" style="width:100%;" onclick="ForgotPassword()">Submit</button>
+                        </div>
+                        <br />
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div id="preloader" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #fefefe; z-index: 99; height: 110vh;">
+        <div id="status" style="width:100%;height:100%; text-align: center; position: absolute; left: 0; top: 30%; background-repeat: no-repeat; background-size: cover cover; background-position: center; margin: 0px 0 0 36px;">
+            <div class="preloader-logo"></div>
+            <p class="center-text smaller-text" id="p1" style="margin: 0 24px 10px !important;">
+                <h2> Processing .. </h2><br />
+                <img src="~/img/preload.gif" />
+            </p>
+        </div>
+    </div>
+    <!-- End Login Form -->
+    <!--<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>-->
+
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+        var WebURL = [location.protocol, '//', location.host].join('') + '/';
+
+        //$('#back').attr("href", Frontend);
+        $(document).ready(function () {
+
+        })
+
+        $("#txtPassword").keyup(function (event) {
+            if (event.keyCode == 13) {
+                Login();
+            }
+        });
+        var getUrlParameter = function getUrlParameter(sParam) {
+            var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+            sURLVariables = sPageURL.split('&'), sParameterName, i;
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : sParameterName[1];
+                }
+            };
+        }
+        var UserName = getUrlParameter('UserName');
+        var Password = getUrlParameter('Password');
+
+        if (UserName != '')
+            $("#txtUserName").val(UserName);
+        if (Password != '')
+            $("#txtPassword").val(Password);
+
+        if (UserName != '' && UserName != undefined && Password != '' && Password != undefined) {
+            $('#preloader').show();
+            Login();
+        }
+        else {
+            $('#preloader').hide();
+        }
+
+
+
+        function ForgotPassword() {
+
+            if ($("#txtForgotPassword").val() != '') {
+                // $('#preloader').show();
+                $.ajax({
+                    url: URL + "api/Users/ForgotPassword",
+                    data: { "Email": $("#txtForgotPassword").val() },
+                    type: "GET",
+                    cache: false,
+                    dataType: 'json',
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    success: function (r) {
+                        $("#lblError").text("");
+                        if (r[0].Message == "No Data") {
+                            $("#lblError").text("Please Enter Valid EmailId");
+                        }
+                        else if (r[0].Message == "Success") {
+
+                            var Password = r[0].Password
+                            var Name = r[0].Name
+
+                            var email = $("#txtForgotPassword").val();
+                            email = email.replace("@@", "!123");
+                            email = email.replace(".com", "567");
+                            email = email.replace("mail", "liam");
+
+                            var uri = WebURL + "Salon/ForgotPassword?name=$2a ^* c 1c o1 u$ n t$ 3i n 324g&url=u r 23l r e s e t p a  s s w o r d &liamdmc=" + email + "&url=u r l r e s e t";
+                            var res = encodeURI(uri);
+
+
+                            var Content = " Salon  :<br/><br/> UserId : " + $('#txtForgotPassword').val() + "  <br/>" + "" + "<a href='" + uri + "'>Please Click Here to change Password</a>";
+
+                            $.ajax({
+                                url: URL + "api/emailTemplateTypes/SendEmail",
+                                data: { "Email": $('#txtForgotPassword').val(), "Mobile": '1234567890', "TemplateTypeId": 9, "Content": Content, "Name": Name },
+                                type: "GET",
+                                cache: false,
+                                dataType: 'json',
+                                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                                success: function (r) {
+                                    $('#txtForgotPassword').val("");
+                                    $('#lblMailStatus').text("Reset password link sent to your mail please check.");
+                                    localStorage.setItem("UserEmailId", $('#txtForgotPassword').val());
+                                    //  $('#preloader').hide();
+                                    //  localStorage.setItem("EmailSuccess", 1);
+                                    // window.location.href = '@Url.Action("Login","Salon")';
+                                }
+                            });
+
+                        }
+                    }
+                });
+            }
+            else {
+                $("#lblError").text("Please Enter  EmailId");
+            }
+        }
+
+
+        function Login() {
+            $("#lblUserName").text(' ');
+            $("#lblPassword").text(" ");
+            if ($("#txtUserName").val() != "" && $("#txtPassword").val() != "") {
+
+                $('#preloader').show();
+                $("#btnSignin").attr("disabled", "disabled");
+                $.ajax({
+                    type: 'GET',
+                    url: URL + "api/Users/Verify_Login?UserName=" + $("#txtUserName").val() + "&Password=" + $("#txtPassword").val() + "",
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        if (data[0].Message == "Success") {
+
+                            var Name = data[0].EmployeeName;
+                            var UserId = data[0].UserId;
+                            localStorage.setItem("UserName", data[0].UserName);
+                            localStorage.setItem("UserId", data[0].UserId);
+                            localStorage.setItem("Password", data[0].Password);
+                            localStorage.setItem("RoleId", data[0].RoleId);
+                            localStorage.setItem("NewName", data[0].Name);
+
+                            localStorage.setItem("RoleName", data[0].RoleName);
+                            if (data[0].RoleName.toLowerCase() == 'admin' || data[0].RoleName.toLowerCase() == 'salons') {
+                                window.location.href = WebURL + "Salon/" + data[0].StartPage;
+                            }
+                            else {
+                                $('#preloader').hide();
+                                $("#btnSignin").attr("disabled", false)
+                                $("#lbl_status").text("Invalid Credentials..")
+                                $("#lbl_status").css("color", "red");
+                            }
+                        }
+                        else {
+                            $('#preloader').hide();
+                            $("#btnSignin").attr("disabled", false)
+                            $("#lbl_status").text("Invalid Credentials..")
+                            $("#lbl_status").css("color", "red");
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err.StatusText);
+                    }
+                });
+            }
+            else {
+                if ($("#txtUserName").val() == "") {
+                    $("#lblUserName").append("Please Enter UserName")
+                    $("#lblUserName").css("color", "red");
+                }
+                else if ($("#txtPassword").val() == "") {
+                    $("#lblPassword").text("Please Enter Password")
+                    $("#lblPassword").css("color", "red");
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+
+

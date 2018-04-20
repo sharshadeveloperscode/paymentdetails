@@ -1,0 +1,185 @@
+﻿
+@{
+    ViewBag.Title = "SalonComment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lblSalonComment"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                <div class="box-body table-responsive">
+                    <table id="tblSalonComment" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                                <th>Review Id</th>
+                                <th>Salon Name</th>
+                                <th>Posted By</th>
+                                <th>Start Rating</th>
+                                <th>Comment</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblSalonCommentBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+    window.onload=function()
+    {
+        GetAll();
+    }
+    function GetAll() {
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+            
+                $.ajax({
+                    type: 'GET',
+                    url: URL + "api/SalonReviews/GetDatabySalonsId",
+                    data: { "SalonsId": SalonsId },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    cache:false,
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+
+                        if (json[0].Message == "Error") {
+                            $('#tblSalonComment').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblSalonComment').text("Error");
+
+                        }
+                        else if (json[0].Message == "NoData") {
+                            $('#tblSalonComment').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblSalonComment').text("No Data");
+                        }
+
+                        else if (json[0].Message == "Success") {
+                            $('#tblSalonComment').show();
+                            if ($.fn.dataTable.isDataTable('#tblSalonComment')) {
+                                $('#tblSalonComment').DataTable().destroy();
+                            }
+                            $('#tblSalonCommentBody').empty();
+                            for (var i = 0; i < json.length; i++) {
+
+                                tr = $('<tr/>');
+
+                                tr.append("<td>" + json[i].SalonReviewsId + "</td>");
+                                tr.append("<td>" + json[i].BusinessName + "</td>");
+                                tr.append("<td>" + json[i].Name + "</td>");
+                                tr.append("<td>" + json[i].StartRating + "</td>");
+                                tr.append("<td>" + json[i].Comment + "</td>");
+
+                                if (json[i].IsActive == 1) {
+
+                                    tr.append("<td><a href='#' id='delete" + i + "' class='btn btn-success' onclick='UpdateStatus(" + json[i].SalonReviewsId + " ,0)'>Active </a></td>");
+                                }
+                                else if (json[i].IsActive == 0) {
+
+                                    tr.append("<td><a href='#' id='delete" + i + "' class='btn btn-danger' onclick='UpdateStatus(" + json[i].SalonReviewsId + ",1)'>DeActive </a></td");
+                                }
+
+                                $('#tblSalonComment').append(tr);
+                            }
+                            $('#tblSalonComment').DataTable({
+                                select: {
+                                    style: 'multi'
+                                },
+                                dom: 'Bfrtip',
+                                buttons: [
+                                    'copyFlash',
+                                    'csvFlash',
+                                    'excelFlash',
+                                    'pdfFlash'
+                                ],
+                                select: true
+                            });
+                        }
+                    },
+                    error: function (err) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#tblSalonComment').text(err.StatusText);
+                    }
+                });
+            }
+        });
+    }
+
+
+    function UpdateStatus(SalonReviewsId, IsActive) {
+        $("#lbl_status").text("");
+        var UserId = localStorage.getItem("UserId");
+        var StatusText = '';
+        var UpdateStatusText = '';
+        if (IsActive == 1) {
+            StatusText = "Active";
+            UpdateStatusText = "Activated";
+        }
+        else if (IsActive == 0) {
+            StatusText = "DeActive";
+            UpdateStatusText = "DeActivated";
+        }
+        if (confirm("Are you Sure to  " + StatusText + " this Review?") == true) {
+            $.ajax({
+                url: URL + "api/SalonReviews/UpdateStatus",
+                data: { "IsActive": IsActive, "UpdatedBy": UserId, "SalonReviewsId": SalonReviewsId },
+                // UpdateStatus(int Status, int UpdatedBy, int DepartmentId)
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblComment").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblComment').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblComment').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+                        GetAll();
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("Review " + UpdateStatusText + " Successfully");
+                    }
+                },
+                error: function (err) {
+                    alert(err.StatusText);
+                }
+            });
+        }
+        else {
+
+        }
+    }
+
+</script>

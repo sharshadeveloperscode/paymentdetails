@@ -1,0 +1,297 @@
+﻿
+@{
+    ViewBag.Title = "AddClients";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="content-header">
+    <h1>
+        Add Clients
+    </h1>
+
+    <ol class="breadcrumb">
+        <li><a href=""><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">  Add Clients</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+
+
+                    <div class="col-md-12">
+                        <div class="nav-tabs-custom">
+                            <div class="tab-content">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label id="lblCustomerRegistration" style="color:red"></label>
+                                        <label id="lblCustomer" style="color:green"></label>
+                                        <div class="tab-pane" id="timeline">
+                                            <!-- The timeline -->
+                                            <div class="box-body">
+                                                <section>
+                                                    <form class="form-horizontal add_client_form" id="add_client_form" action="#" method="post">
+                                                        <div class="form-group">
+                                                            <div class="col-sm-6 col-mar-1">
+                                                                <label>First Name </label><label style="color:red">*</label>
+                                                                <input type="text" value="" name="fname" id="txtFirstName" emsg="Please enter Fname" class="form-control required" placeholder="First Name">
+                                                            </div>
+                                                            <div class="col-sm-6 col-mar-1">
+                                                                <label>Last Name </label><label style="color:red">*</label>
+                                                                <input type="text" value="" name="lname" id="txtLastName" emsg="Please enter Lname" class="form-control required" placeholder="Last Name">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-sm-6 col-mar-1">
+                                                                <label>Email </label><label style="color:red">*</label>
+                                                                <input type="email" value="" name="email" id="txtEmail" emsg="Please enter Email" class="form-control required" placeholder="Email Address">
+                                                            </div>
+                                                            <div class="col-sm-6 col-mar-1">
+                                                                <label>Password </label><label style="color:red">*</label>
+                                                                <input type="password" name="password" class="form-control required" id="txtPasssword" emsg="Please enter Password" placeholder="Password">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <div class="col-sm-6 col-mar-1">
+                                                                <label>Profile Name </label><label style="color:red">*</label>
+                                                                <input type="text" value="" name="profile_name" id="txtProfileName" emsg="Please enter profile name" class="form-control required" placeholder="Profile Name">
+                                                            </div>
+                                                            <div class="col-sm-6 col-mar-1">
+                                                                <label>Gender</label><br>
+                                                                <label class="radio-inline"><input type="radio" id="gendermale" name="gender" value="F" class="" checked="checked"> Female</label>
+                                                                <label class="radio-inline"><input type="radio" id="genderfemale" name="gender" value="M" class="">Male</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-sm-6 col-mar-1">
+                                                                <label>Postal Code </label><label style="color:red">*</label>
+                                                                <input type="text" name="postal_code" id="txtPostalcode" class="form-control required" emsg="Please enter Postal Code" placeholder="Postal Code">
+                                                            </div>
+                                                            <div class="col-sm-6 col-mar-1">
+                                                                <label>Note</label>
+                                                                <textarea name="note" rows="2" placeholder="Note" class="form-control" id="txtNote"></textarea>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="form-group"  style="float:right;">
+                                                            <div class="col-sm-12 col-mar-1 col-mar-top-7">
+                                                                <input type="button" class="btn btn-primary " onclick="Save()" value="Save"  style="width:100px" />
+                                                              
+                                                                @*<input type="button" class="btn-danger btn" style="width:100px" onclick="Clear()" value="Reset">*@
+                                                                <input type="button" class="btn-danger btn" style="width:100px" onclick="window.location.href = '@Url.Action("Clients", "Salon")';" value="Back">
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </section>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /.tab-pane -->
+                            </div>
+                            <!-- /.tab-content -->
+                        </div>
+                        <!-- /.nav-tabs-custom -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+    var UserId = localStorage.getItem("UserId");
+
+    function Save() {
+        $("#lbl_status").text("");
+        if ($("#txtFirstName").val() != "" && $("#txtLastName").val() != "" && $("#txtEmail").val() != "" && $('#txtProfileName').val() != '' && $("#txtPasssword").val() != "" && $("#txtPostalcode").val() != '') {
+
+            var FirstName = $("#txtFirstName").val();
+            var LastName = $("#txtLastName").val();
+               if (FirstName.match(/^[a-zA-Z ]*$/) && LastName.match(/^[a-zA-Z ]*$/)) {
+            var filter = new RegExp(/^[+a-zA-Z0-9._-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+            var email = $("#txtEmail").val();
+            if (!filter.test(email)) {
+                $("#dvSuccess").css({ display: "none" });
+
+                $("#lblCustomerRegistration").text("Please Enter Valid Email");
+                $("#txtEmail").focus();
+                $(window).scrollTop(0);
+            }
+
+
+            else {
+                if ($("#gendermale").is(':checked')) {
+
+                    var j = 1;
+
+                }
+                else if ($("#genderfemale").is(':checked')) {
+
+                    var j = 2;
+                }
+                    // They clicked Yes
+                var Content = "Thank you for Registering with Salon. <br/> Your Salon Login Credentials are :<br/><br/> UserName : " + $('#txtEmail').val() + " <br/> Password :" + $('#txtPasssword').val() + " ";
+                    $.ajax({
+                        url: URL + "api/Customers/InsertCustomers",
+                        data: { "FirstName": $("#txtFirstName").val(), "LastName": $("#txtLastName").val(), "PhoneNumber": '000', "ProfileName": $("#txtProfileName").val(), "PostalCode": $("#txtPostalcode").val(), "MemberTypeId": '0', "Gender": j, "Note": $("#txtNote").val(), "Newsletter": '0', "Email": $("#txtEmail").val(), "Password": $("#txtPasssword").val(), "Image": '', "ImagePath": '', "CreatedBy": UserId, "Address": '' },
+                        type: "GET",
+                        cache: false,
+                        success: function (r) {
+                            $.ajax({
+                              //  url: URL + "api/emailTemplateTypes/SendEmail",
+                                data: { "Email": $('#txtEmail').val(), "Mobile": '', "TemplateTypeId": 1, "Content": Content, "Name": $("#txtFirstName").val() + $("#txtLastName").val() },
+                                type: "GET",
+                                cache: false,
+                                success: function (json) {
+
+                                }
+                            });
+                            if (r[0].Message == "UniqueConstraint") {
+
+                                $("#lblCustomerRegistration").text(" Name Already Existed.");
+                            }
+                            else if(r[0].Message=="Duplicate")
+                            {
+                                $("#lblCustomerRegistration").text("Email  Already Existed.!Please Try With Another.");
+                            }
+                            else if (r[0].Message == "Error") {
+
+                                $('#lblCustomerRegistration').text(r[0].ErrorMessage);
+                            }
+                            else if (r[0].Message == "Duplicate") {
+                                alert("error");
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#txtEmail").val("Email Alreay Existed");
+                                $('#lblCustomerRegistration').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                SendSms();
+                                SendEmail();
+                                Clear();
+                                StatusMessage(2);
+                            }
+                        },
+                        error: function (err) {
+
+                            $('#lblCustomerRegistration').text(err.statusText);
+                        }
+                    });
+                
+            }
+
+        }
+        //
+            else
+               {
+                   if (!FirstName.match(/^[a-zA-Z ]*$/)) {
+
+                     
+                       $("#lblCustomerRegistration").text("Please Enter Valid First Name");
+                       $("#txtFirstName").focus();
+                   }
+                   else if (!LastName.match(/^[a-zA-Z ]*$/)) {
+                   
+                       $("#lblCustomerRegistration").text("Please Enter Valid Last Name");
+                       $("#txtLastName").focus();
+                   }
+               }
+        } else {
+            if ($("#txtFirstName").val() == '') {
+
+                $("#lblCustomerRegistration").text("Please Enter First Name");
+                $("#txtFirstName").focus();
+                $(window).scrollTop(0);
+            }
+            else if ($("#txtLastName").val() == '') {
+
+                $("#lblCustomerRegistration").text("Please Enter  Last Name");
+                $("#txtLastName").focus();
+                $(window).scrollTop(0);
+            }
+            else if ($("#txtEmail").val() == '') {
+
+                $("#lblCustomerRegistration").text("Please Enter  Email");
+                $("#txtEmail").focus();
+                $(window).scrollTop(0);
+            }
+            else if ($("#txtProfileName").val() == '') {
+                $("#lblCustomerRegistration").text("Please Enter Profile Name");
+                $("#txtProfileName").focus();
+                $(window).scrollTop(0);
+            }
+            else if ($("#txtPasssword").val() == '') {
+
+                $("#lblCustomerRegistration").text("Please Enter  Password");
+                $("#txtPasssword").focus();
+
+                $(window).scrollTop(0);
+            }
+            else if ($('#txtPostalcode').val() == 0) {
+
+                $("#lblCustomerRegistration").text("Please Enter Postal Code");
+                $("#txtPostalcode").focus();
+                $(window).scrollTop(0);
+            }
+
+        }
+
+    }
+
+
+    function SendSms() {
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Upload/SendSMS",
+            data: { "mobile": $("#txtPhoneNumber").val() },
+            cache: false,
+            success: function (r) {
+
+            }
+        });
+    }
+
+    function SendEmail() {
+        var Email = $("#txtEmail").val();
+        var password = $("#txtPasssword").val();
+        //  var Message = "Welcome To Salon your EmailId =" + Email + " and Your Passwprd=" + password + "Thank you";
+        var Content = "Thank you for Registering with Salon.  Your Salon Login Credentials are : <br/><br/> UserName : " + $('#txtEmail').val() + "  <br/> Password :" + $('#txtPasssword').val() + " ";
+   
+        $.ajax({
+            type: "GET",
+            url: URL + "api/emailTemplateTypes/SendEmail",
+            data: { "Email": $('#txtEmail').val(), "Mobile": $('#txtPasssword').val(), "TemplateTypeId": 1, "Content": Content, "Name": $("#txtFirstName").val() + $("#txtLastName").val() },
+            cache: false,
+            success: function (r) {
+            }
+        });
+    }
+
+    function Clear() {
+        $("#txtFirstName").val("");
+        $("#txtLastName").val("");
+        $("#txtEmail").val("");
+        $("#txtPostalcode").val("");
+        $("#txtPasssword").val("");
+        $("#txtConfirmPassword").val("");
+        $("#txtProfileName").val("");
+        $("#txtNote").val("");
+        $("#ddlMemberType").val("0");
+        //$("#ddlGender").val("0");-->
+        $("#txtPhoneNumber").val("");
+        $("#lblCustomerRegistration").text(" ");
+        $('#chkAgree').attr('checked', false);
+        $('#chkReceive').attr('checked', false);
+        $("#dvSuccess").css({ display: "none" });
+        $("#dvErrorStatus").css({ display: "none" });
+    }
+    function StatusMessage(value) {
+        localStorage.setItem("SalonServicesMessage", value);
+         window.location.href = '@Url.Action("Clients", "Salon")';
+    }
+</script>

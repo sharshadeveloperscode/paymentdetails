@@ -1,0 +1,462 @@
+﻿
+@{
+    ViewBag.Title = "Reviews";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/dist/css/jquery.rateyo.min.css" rel="stylesheet" />
+<script src="~/dist/js/jquery.rateyo.js"></script>
+<style>
+    /* Style the tab */
+    .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+    }
+
+        /* Style the buttons inside the tab */
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+        }
+
+            /* Change background color of buttons on hover */
+            .tab button:hover {
+                background-color: #ddd;
+            }
+
+            /* Create an active/current tablink class */
+            .tab button.active {
+                background-color: #ccc;
+            }
+
+    /* Style the tab content */
+    .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
+    }
+</style>
+
+<section class="content-header">
+    <h1>
+        Reviews
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Reviews</a></li>
+    </ol>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+
+                        <label id="lblVoucherType"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                <div class="box-body table-responsive">
+               <input type="submit" class="btn btn-danger" id="btnBack" value="Back" style="width:100px;float:right;" onclick="window.location.href = '@Url.Action("SalonReviews","Salon")'"  />
+                </div>
+                <div class="box-body table-responsive">
+                    <div class="tab">
+                        <button class="tablinks active" onclick="openCity(event, 'salon')">Salon Reviews</button>
+                        <button class="tablinks" onclick="openCity(event, 'Services')">Services Reviews</button>
+                        <button class="tablinks" onclick="openCity(event, 'Stylists')">Stylist Reviews</button>
+                    </div>
+                    <div id="salon" class="tabcontent active" style="display: block;">
+                        <p>
+                            <table id="tblBillings" style="width: 100%" class="table table-bordered table-hover dataTable">
+
+                                <thead>
+                                    <tr>
+                                        <th>Venue Name</th>
+                                        <th>Posted By</th>
+                                        <th>Star Rating</th>
+                                        <th>Comment</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblBillingsBody"></tbody>
+                            </table>
+                        </p>
+                    </div>
+
+                    <div id="Services" class="tabcontent">
+                        <p>
+                            <table id="tblServices" style="width: 100%" class="table table-bordered table-hover dataTable">
+
+                                <thead>
+                                    <tr>
+                                        <th>Service Name</th>
+                                        <th>Posted By</th>
+                                        <th>Star Rating</th>
+                                        <th>Comment</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblServicesBody"></tbody>
+                            </table>
+                        </p>
+                    </div>
+
+                    <div id="Stylists" class="tabcontent">
+                        <p>
+                            <table id="tblEmployees" style="width: 100%" class="table table-bordered table-hover dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>Employee Name</th>
+                                        <th>Posted By</th>
+                                        <th>Star Rating</th>
+                                        <th>Comment</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblEmployeesBody"></tbody>
+                            </table>
+                        </p>
+                    </div>
+
+                    <script>
+                        function openCity(evt, cityName) {
+                            var i, tabcontent, tablinks;
+                            tabcontent = document.getElementsByClassName("tabcontent");
+                            for (i = 0; i < tabcontent.length; i++) {
+                                tabcontent[i].style.display = "none";
+                            }
+                            tablinks = document.getElementsByClassName("tablinks");
+                            for (i = 0; i < tablinks.length; i++) {
+                                tablinks[i].className = tablinks[i].className.replace(" active", "");
+                            }
+                            document.getElementById(cityName).style.display = "block";
+                            evt.currentTarget.className += " active";
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+    window.onload = function () {
+        // ratings();
+        GetAll();
+        GetServiceReviews();
+        GetEmployeeReviews();
+    }
+    function GetAll() {
+        $.ajax({
+            type: 'GET',
+            url: URLLink + "api/SalonReviews/GetSalonReviewsById?SalonsId=" + sessionStorage.getItem("CSalonsId"),
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+
+                if (json[0].Message == "Error") {
+                    $('#tblBillings').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblBillings').text("Error");
+                }
+                else if (json[0].Message == "NoData") {
+                    $('#tblBillings').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    // $('#lblBillings').text("No Data");
+                }
+
+                else if (json[0].Message == "Success") {
+                    $('#tblBillings').show();
+                    if ($.fn.dataTable.isDataTable('#tblBillings')) {
+                        $('#tblBillings').DataTable().destroy();
+                    }
+                    $('#tblBillingsBody').empty();
+                    for (var i = 0; i < json.length; i++) {
+                        // $("#NameandMail").val(json[i].Email);
+                        // alert(json[i].Email);
+                        //  $('#txtservicename').val(json[i].TreatmentTitle);
+                        tr = $('<tr/>');
+                        //tr.append("<td>" + json[i].SalonReviewsId + "</td>");
+                        tr.append("<td><a href='#' onclick='Comments(" + json[i].SalonReviewsId + ")'>" + json[i].BusinessName + "</a></td>");
+                        tr.append("<td>" + json[i].CustomerName + "</td>");
+                        //   tr.append("<td>" + json[i].OverallSatisfaction + "</td>");
+
+                        var data = '';
+                        data += '<div class="col-md-6 ">'
+                        data += '<i style="top:10px;margin-left:-7px"></i>'
+                        data += '<div class="caption jq-ry-container" style="margin-top:-14px;">'
+                        data += '<div class="caption rateYo" readonly id="salonrating' + json[i].SalonReviewsId + '">'
+                        data += '</div>'
+                        data += '</div>'
+                        data += '</div>'
+                        tr.append("<td>" + data + "</td>");
+                        //  tr.append("<td>" + json[i].Comment + "</td>");
+                        tr.append("<td><span style='display: inline-block;width: 100px;white-space: nowrap;overflow: hidden !important;text-overflow: ellipsis;'>" + json[i].Comment + "</span></td>");
+                        if (json[i].IsActive == 1) {
+                            tr.append("<td>Active</td>");
+                        }
+                        else if (json[i].IsActive == 0) {
+                            tr.append("<td>Deactive</td>");
+                        }
+                        if (json[i].IsActive == 1) {
+                            //  tr.append("<td>" + "Active" + "</td>");
+                            tr.append("<td> <a href='#' id='edit" + i + "' title='Deactivate' onclick='UpdateStatus(" + json[i].SalonReviewsId + ",0)' ><i class='fa fa-check nav_action_icon'></i> </a></td>");
+                        }
+                        else if (json[i].IsActive == 0) {
+
+                            tr.append("<td> <a href='#' id='edit" + i + "' title='Activate' onclick='UpdateStatus(" + json[i].SalonReviewsId + ",1)''><i class='fa fa-ban nav_action_icon'></i> </a></td>");
+                        }
+                        //  tr.append("<td><a href='#' id='edit" + i + "' onclick='Edit(" + json[i].SalonReviewsId + ")' class='btn btn-success'><i class='fa fa-pencil'></i> </a></td>");
+                        $('#tblBillings').append(tr);
+                        ratings(json[i].OverallSatisfaction, json[i].SalonReviewsId);
+                    }
+                    $('#tblBillings').DataTable({
+
+                        bsort: false,
+                        dom: 'Bfrtip',
+                        buttons: [
+                             'excel', 'pdf'
+                        ],
+                        select: true
+                    });
+                }
+            },
+            error: function (err) {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "none" });
+                $('#tblSalonComment').text(err.StatusText);
+            }
+        });
+
+
+    }
+
+    function Comments(SalonReviewsId) {
+        sessionStorage.setItem("CSalonReviewsId", SalonReviewsId);
+        window.location.href = "/Salon/Comment";
+    }
+
+    function GetServiceReviews() {
+        $.ajax({
+            type: 'GET',
+            url: URLLink + "api/SalonReviews/GetServicesReviewBySalonsId?SalonsId=" + sessionStorage.getItem("CSalonsId"),
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+                if (json[0].Message == "Error") {
+                    // $('#tblServices').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "none" });
+                    $('#tblServices').text("Error");
+                }
+                else if (json[0].Message == "NoData") {
+                    //  $('#tblServices').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "none" });
+                    // $('#lblBillings').text("No Data");
+                }
+
+                else if (json[0].Message == "Success") {
+                    $('#tblServices').show();
+                    if ($.fn.dataTable.isDataTable('#tblServices')) {
+                        $('#tblServices').DataTable().destroy();
+                    }
+                    $('#tblServicesBody').empty();
+                    for (var i = 0; i < json.length; i++) {
+                        tr = $('<tr/>');
+                        //tr.append("<td>" + json[i].SalonReviewsId + "</td>");
+                        tr.append("<td><a href='#' onclick='Comments(" + json[i].SalonReviewsId + ")'>" + json[i].TreatmentTypeId + "</a></td>");
+                        tr.append("<td>" + json[i].CustomerName + "</td>");
+                        var data = '';
+                        data += '<div class="col-md-6 ">'
+                        data += '<i style="top:10px;margin-left:-7px"></i>'
+                        data += '<div class="caption jq-ry-container" style="margin-top:-14px;">'
+                        data += '<div class="caption rateYo" readonly id="salonrating' + json[i].SalonReviewsId + '">'
+                        data += '</div>'
+                        data += '</div>'
+                        data += '</div>'
+                        tr.append("<td>" + data + "</td>");
+                        tr.append("<td><span style='display: inline-block;width: 100px;white-space: nowrap;overflow: hidden !important;text-overflow: ellipsis;'>" + json[i].Comment + "</span></td>");
+                        if (json[i].IsActive == 1) {
+                            tr.append("<td>Active</td>");
+                        }
+                        else if (json[i].IsActive == 0) {
+                            tr.append("<td>Deactive</td>");
+                        }
+                        if (json[i].IsActive == 1) {
+                            //  tr.append("<td>" + "Active" + "</td>");
+                            tr.append("<td> <a href='#' id='edit" + i + "' title='Deactivate' onclick='UpdateStatus(" + json[i].SalonReviewsId + ",0)' ><i class='fa fa-check nav_action_icon'></i> </a></td>");
+                        }
+                        else if (json[i].IsActive == 0) {
+
+                            tr.append("<td> <a href='#' id='edit" + i + "' title='Activate' onclick='UpdateStatus(" + json[i].SalonReviewsId + ",1)''><i class='fa fa-ban nav_action_icon'></i> </a></td>");
+                        }
+                        $('#tblBillings').append(tr);
+                        ratings(json[i].OverallSatisfaction, json[i].SalonReviewsId);
+                    }
+                }
+                $('#tblServices').DataTable({
+
+                    bsort: false,
+                    dom: 'Bfrtip',
+                    buttons: [
+                         'excel', 'pdf'
+                    ],
+                    select: true
+                });
+            },
+            error: function (err) {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "none" });
+                $('#tblSalonComment').text(err.StatusText);
+            }
+        });
+
+
+    }
+
+    function GetEmployeeReviews() {
+        $.ajax({
+            type: 'GET',
+            url: URLLink + "api/SalonReviews/GetEmployeeReviewBySalonsId?SalonsId=" + sessionStorage.getItem("CSalonsId"),
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+               // alert(json[0].ErrorMessage);
+                if (json[0].Message == "Error") {
+                    // $('#tblServices').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "none" });
+                    $('#tblEmployees').text("Error");
+                }
+                else if (json[0].Message == "NoData") {
+                    //  $('#tblEmployees').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "none" });
+                    // $('#lblBillings').text("No Data");
+                }
+
+                else if (json[0].Message == "Success") {
+                    $('#tblEmployees').show();
+                    if ($.fn.dataTable.isDataTable('#tblEmployees')) {
+                        $('#tblEmployees').DataTable().destroy();
+                    }
+                    $('#tblEmployeesBody').empty();
+                    for (var i = 0; i < json.length; i++) {
+                        tr = $('<tr/>');
+                        //tr.append("<td>" + json[i].SalonReviewsId + "</td>");
+                        tr.append("<td><a href='#' onclick='Comments(" + json[i].SalonReviewsId + ")'>" + json[i].EmployeeName + "</a></td>");
+                        tr.append("<td>" + json[i].CustomerName + "</td>");
+                        var data = '';
+                        data += '<div class="col-md-6 ">'
+                        data += '<i style="top:10px;margin-left:-7px"></i>'
+                        data += '<div class="caption jq-ry-container" style="margin-top:-14px;">'
+                        data += '<div class="caption rateYo" readonly id="salonrating' + json[i].SalonReviewsId + '">'
+                        data += '</div>'
+                        data += '</div>'
+                        data += '</div>'
+                        tr.append("<td>" + data + "</td>");
+                        tr.append("<td><span style='display: inline-block;width: 100px;white-space: nowrap;overflow: hidden !important;text-overflow: ellipsis;'>" + json[i].Comment + "</span></td>");
+                        if (json[i].IsActive == 1) {
+                            tr.append("<td>Active</td>");
+                        }
+                        else if (json[i].IsActive == 0) {
+                            tr.append("<td>Deactive</td>");
+                        }
+                        if (json[i].IsActive == 1) {
+                            //  tr.append("<td>" + "Active" + "</td>");
+                            tr.append("<td> <a href='#' id='edit" + i + "' title='Deactivate' onclick='UpdateStatus(" + json[i].SalonReviewsId + ",0)' ><i class='fa fa-check nav_action_icon'></i> </a></td>");
+                        }
+                        else if (json[i].IsActive == 0) {
+
+                            tr.append("<td> <a href='#' id='edit" + i + "' title='Activate' onclick='UpdateStatus(" + json[i].SalonReviewsId + ",1)''><i class='fa fa-ban nav_action_icon'></i> </a></td>");
+                        }
+                        $('#tblBillings').append(tr);
+                        ratings(json[i].OverallSatisfaction, json[i].SalonReviewsId);
+                    }
+                }
+                $('#tblEmployees').DataTable({
+                    bsort: false,
+                    dom: 'Bfrtip',
+                    buttons: [
+                         'excel', 'pdf'
+                    ],
+                    select: true
+                });
+            },
+            error: function (err) {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "none" });
+                $('#tblSalonComment').text(err.StatusText);
+            }
+        });
+
+
+    }
+
+
+    function ratings(rate, id) {
+
+        $("#salonrating" + id).rateYo({
+            numStars: 5,
+            starWidth: "20px",
+            rating: rate
+        });
+        $("#rateYoAmbience").rateYo({
+            // alert($("#rateYo").rateYo("rating"));
+            numStars: 5,
+            starWidth: "20px",
+            rating: 3.6
+        });
+        $("#rateYoStaff").rateYo({
+            // alert($("#rateYo").rateYo("rating"));
+            numStars: 5,
+            starWidth: "20px"
+            // rating: 3.6
+        });
+        $("#rateYoCleanliness").rateYo({
+            // alert($("#rateYo").rateYo("rating"));
+            numStars: 5,
+            starWidth: "20px"
+            // rating: 3.6
+        });
+        $("#rateYoValue").rateYo({
+            // alert($("#rateYo").rateYo("rating"));
+            numStars: 5,
+            starWidth: "20px"
+            // rating: 3.6
+        });
+
+    }
+</script>

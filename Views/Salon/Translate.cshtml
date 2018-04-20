@@ -1,0 +1,42 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Translate English to Hindi</title>
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("elements", "1", {
+            packages: "transliteration"
+          });
+      function onLoad() {
+        var options = {
+            sourceLanguage:
+                google.elements.transliteration.LanguageCode.ENGLISH,
+            destinationLanguage:
+                [google.elements.transliteration.LanguageCode.HINDI],
+            shortcutKey: 'ctrl+g',
+            transliterationEnabled: true
+        };
+
+        var control =
+            new google.elements.transliteration.TransliterationControl(options);
+
+        // Enable transliteration in the editable elements with id
+        // 'transliterateDiv'.
+        control.makeTransliteratable(['transliterateDiv']);
+        control.makeTransliteratable(['transliterateDiv2']);
+      }
+      google.setOnLoadCallback(onLoad);
+    </script>
+</head>
+<body>
+    <textarea name="description" cols="100" rows="10" style="border:1px solid #999999; color:#333333; font-size:12px;" id="transliterateDiv"></textarea>
+    <textarea name="description2" cols="100" rows="10" style="border:1px solid #999999; color:#333333; font-size:12px;" id="transliterateDiv2"></textarea>
+</body>
+</html> 

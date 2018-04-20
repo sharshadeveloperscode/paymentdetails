@@ -1,0 +1,285 @@
+﻿
+@{
+    ViewBag.Title = "emailTemplateTypes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Content/ckeditor/ckeditor.js"></script>
+<body>
+    <section class="content-header">
+        <h1>
+            EmailTemplateType
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Email</a></li>
+            <li class="active">Create EmailTemplateType</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lblemailTemplateTypes"></label>
+                        </div>
+                        <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lbl_status"></label>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive">
+                        <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                            <tr><td colspan="4"><label  style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                            <tr>
+
+                                <td style="width:30%">
+                                    Template:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select id="ddlTempplate" class="form-control">
+                                        <option value="0">-Select-</option>
+                                    </select>
+                                    @*<input type="text" maxlength="40" placeholder="Enter emailTemplateTypes Name" id="txtemailTemplateTypes" name="txtemailTemplateTypes" title="Enter Alphabets only" class="form-control" required />*@
+                                </td>
+
+                            </tr>
+                            <tr>
+
+                                <td style="width:30%">
+                                    Template Name:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+
+                                <td>
+                                    <input type="text" id="txtTemplateName" class="form-control" required/>
+                                    @*<input type="text" maxlength="40" placeholder="Enter emailTemplateTypes Name" id="txtemailTemplateTypes" name="txtemailTemplateTypes" title="Enter Alphabets only" class="form-control" required />*@
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td>
+                                    Description :<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <textarea id="txtTemplate" rows="6" style="resize:none" class="form-control" required ></textarea>
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="text-align:right">
+                                    <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                    <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                    <input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />
+                                    <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("emailTemplateTypesList", "Salon")';" style="width:100px;" />
+                                    <input type="text" hidden="hidden" id="txtTemplateId" name="TemplateId" />
+                                </td>
+                            </tr>
+                        </table>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</body>
+<script type="text/javascript">
+
+    CKEDITOR.replace('txtTemplate');
+
+          var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+        var UserId = localStorage.getItem("UserId");
+        var RoleId = localStorage.getItem("RoleId");
+        var EditTemplateId = localStorage.getItem("EditTemplateId");
+
+        window.onload = function () {
+            if (UserId != "null" || UserId != null && RoleId == "1") {
+
+                if (EditTemplateId == "null") {
+                        $('#btnEdit').hide();
+                        $('#btnSave').show();
+                    }
+                    else {
+                    BindemailTemplateTypes(EditTemplateId);
+                        $('#btnEdit').show();
+                        $('#btnSave').hide();
+                        $('#btnReset').hide();
+                    }
+
+            }
+            else {
+                window.location.href = '@Url.Action("Logout", "Salon")';
+            }
+        }
+
+
+    //}
+    Template();
+    function Template() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/emailTemplateTypes/GetdataTemplateIsActive",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].TemplateType, data[i].TemplateTypeId);
+                    $("#ddlTempplate").val("");
+                    $('#ddlTempplate').append(opt);
+                }
+
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+    function BindemailTemplateTypes(TemplateId) {
+            $("#lbl_status").text("");
+            Clear();
+         //   var Description = CKEDITOR.instances.txtTemplate.setData();
+            $.ajax({
+                url: URL + "api/emailTemplateTypes/GetbyId",
+                data:{"TemplateId":TemplateId},
+                type: "GET",
+                cache: false,
+                success: function (r) {
+                    $('#btnEdit').show();
+                    $('#btnSave').hide();
+                    console.log(r);
+                    $("#txtTemplateId").val(TemplateId);
+                    $("#ddlTempplate").val(r[0].TemplateTypeId);
+                    $("#txtTemplateName").val(r[0].TemplateName)
+                  //  $("#txtTemplate").val(r[0].Template);
+                    CKEDITOR.instances.txtTemplate.setData(r[0].Template, {
+                        callback: function () {
+                            this.checkDirty(); // true
+                        }
+                    });
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblemailTemplateTypes').text(err.statusText);
+                }
+            })
+        }
+
+    function Save() {
+       
+            $("#lbl_status").text("");
+            $("#lblemailTemplateTypes").text(' ');
+            var Description = CKEDITOR.instances.txtTemplate.getData();
+            if ($("#ddlTempplate").val() != 0 && Description != '') {
+                var MemberTypeName = $("#txtemailTemplateTypes").val();
+                var CreatedBy = UserId;
+              
+                    $.ajax({
+                        url: URL + "api/emailTemplateTypes/Insert",
+                        //is active
+                        data: { "TemplateName": $("#txtTemplateName").val(), "Template": CKEDITOR.instances.txtTemplate.getData(), "IsActive": 1, "CreatedBy": CreatedBy, "TemplateTypeId": $("#ddlTempplate").val(), },
+                        type: "GET",
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblemailTemplateTypes").text("emailTemplateTypes Name Already Existed");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblemailTemplateTypes').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                Clear();
+                                StatusMessage(2);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblemailTemplateTypes').text(err.statusText);
+                        }
+                    });
+
+            }    if ($("#txtemailTemplateTypes").val() == '') {
+                $("#lblemailTemplateTypes").text("Please Enter EmailTemplate Name");
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#txtemailTemplateTypes").focus();
+            }
+            else if ($("#txtTemplate").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblemailTemplateTypes").text("Please Enter Template ");
+                $("#txtTemplate").focus();
+            }
+        }
+
+        function Clear() {
+            $("#txtTemplateId").val("");
+            $("#txtemailTemplateTypes").val("");
+            $("#txtTemplate").val(' ');
+            $("#lbl_status").text("");
+            $("#lblemailTemplateTypes").text(" ");
+            $('#btnEdit').hide();
+            $('#btnSave').show();
+            $("#dvSuccess").css({ display: "none" });
+            $("#dvErrorStatus").css({ display: "none" });
+        }
+
+
+
+        function Update() {
+            $("#lbl_status").text("");
+            $("#lblemailTemplateTypes").text(' ');
+            if ($("#txtemailTemplateTypes").val() != '' && $("#txtTemplate").val() != '') {
+                var emailTemplateTypes = $("#txtemailTemplateTypes").val();
+                var UpdatedBy = UserId;
+               
+                    $.ajax({
+                        url: URL + "api/emailTemplateTypes/Update",
+                        data: { "TemplateName": $("#txtTemplateName").val(), "Template": $("#txtTemplate").val(), "UpdatedBy": UpdatedBy, "TemplateId": $("#txtTemplateId").val(), "TemplateTypeId": $("#ddlTempplate").val(), },
+                        cache: false,
+                        type: "GET",
+                        dataType: 'json',
+                        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblemailTemplateTypes").text("emailTemplateTypes Name Already Existed.");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblemailTemplateTypes').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                Clear();
+                                StatusMessage(1);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblemailTemplateTypes').text(err.statusText);
+                        }
+                    });
+               
+            }
+            if ($("#txtemailTemplateTypes").val() == '') {
+                $("#lblemailTemplateTypes").text("Please Enter EmailTemplateType Name");
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#txtemailTemplateTypes").focus();
+            }
+            else if ($("#txtTemplate").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblemailTemplateTypes").text("Please Enter Template ");
+                $("#txtTemplate").focus();
+            }
+        }
+
+        function StatusMessage(value) {
+            localStorage.setItem("emailTemplateTypesMessage", value);
+            window.location.href = '@Url.Action("emailTemplateTypesList", "Salon")';
+        }
+</script>

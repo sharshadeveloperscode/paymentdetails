@@ -1,0 +1,248 @@
+﻿
+@{
+    ViewBag.Title = "SalonEmployeesList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <h1>
+        Venue Employees
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href=""><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Venue Employees</a></li>
+        <li class="active">Venue Employees List</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+
+                        <label id="lblSalonEmployees"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                <div class="box-body table-responsive">
+                    <input type="button" class="btn btn-primary" value="Add Venue Employees " onclick="window.location.href='@Url.Action("SalonEmployees", "Salon")';" style="text-align:left" />
+
+                    <input type="button" value="Back" style="width:100px;float:right" class="btn btn-danger" onclick="window.location.href='@Url.Action("BusinessDashboard", "Salon")';" />
+
+                </div>
+                <div class="box-body table-responsive">
+                    <table id="tblSalonEmployees" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+
+                                <th>Employee Name</th>
+                                <th>Job Title</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table1"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+<script type="text/javascript">
+    var WebURL = [location.protocol, '//', location.host].join('') + '/';
+
+
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+
+    window.onload = function () {
+        localStorage.setItem("EditSalonEmployeesId", "null");
+        GetAll();
+        //if (UserId != "null" && RoleId == "1") {
+        //var Message = localStorage.getItem("SalonEmployeesMessage");
+        //if (Message == "1") {
+        //   // $("#dvErrorStatus").css({ display: "none" });
+        //  //  $("#dvSuccess").css({ display: "block" });
+        //    //  $("#lbl_status").text("SalonEmployees Updated Successfully");
+        //    $("#myModal3").css('display', "block");
+        //    $("#lblupdated").text("Employee Updated Successfully");
+        //    GetAll();
+        //}
+        //else if (Message == "2") {
+        //  //  $("#dvErrorStatus").css({ display: "none" });
+        //   // $("#dvSuccess").css({ display: "block" });
+        //    // $("#lbl_status").text("SalonEmployees Created Successfully");
+        //    $("#myModal3").css('display', "block");
+        //    $("#lblupdated").text("Employee Created Successfully");
+        //    GetAll();
+        //}
+        //else {
+        //    $("#dvErrorStatus").css({ display: "none" });
+        //    $("#dvSuccess").css({ display: "none" });
+        //    GetAll();
+        //}
+        @*}
+        else {
+            window.location.href = '@Url.Action("LockScreen", "CMS")';
+        }*@
+    }
+
+
+    function GetAll() {
+
+        localStorage.setItem("SalonEmployeesMessage", "null");
+        $('#table1').text('');
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+        // GetDataUserbyId(int SalonsId)
+
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                $.ajax({
+                    type: 'GET',
+                    url: URLLink + "api/SalonEmployees/GetDataUserbyId?SalonsId=" + SalonsId,
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+                        if (json[0].Message == "Error") {
+                            //  $('#tblSalonEmployees').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblSalonEmployees').text("Error");
+
+                        }
+                        else if (json[0].Message == "NoData") {
+                            // $('#tblSalonEmployees').hide();
+                            //  $("#dvSuccess").css({ display: "none" });
+                            // $("#dvErrorStatus").css({ display: "block" });
+                            // $('#lblSalonEmployees').text("No Data");
+                        }
+                        else if (json[0].Message == "Success") {
+                            $('#tblSalonEmployees').show();
+                            if ($.fn.dataTable.isDataTable('#tblSalonEmployees')) {
+                                $('#tblSalonEmployees').DataTable().destroy();
+                            }
+                            $('#table1').empty();
+                            for (var i = 0; i < json.length; i++) {
+                                tr = $('<tr/>');
+                                tr.append("<td>" + json[i].EmployeeName + "</td>");
+                                tr.append("<td>" + json[i].JobTitle + "</td>");
+                                tr.append("<td>" + json[i].Email + "</td>");
+
+                                if (json[i].IsActive == 1) {
+                                    tr.append("<td><a href='#' id='delete" + i + "'   title='Deactivate' onclick='UpdateStatus(" + json[i].SalonEmployeesId + ",0)'><i class='fa fa-check nav_action_icon'></i> </a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].SalonEmployeesId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+                                }
+                                else if (json[i].IsActive == 0) {
+                                    tr.append("<td><a href='#' id='delete" + i + "'   title='Activate' onclick='UpdateStatus(" + json[i].SalonEmployeesId + " ,1)'> <i class='fa fa-ban nav_action_icon'></i></a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].SalonEmployeesId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+                                }
+                                // tr.append("<td><a href='#' id='delete" + i + "' class='fa fa-trash-o' onclick='Delete(" + json[i].RoleId + ")'></a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].RoleId + ")' class='fa fa-pencil'></a></td>");
+                                $('#tblSalonEmployees').append(tr);
+                            }
+
+                        }
+
+                        $('#tblSalonEmployees').DataTable({
+                            select: {
+                                style: 'multi'
+                            },
+                            dom: 'Bfrtip',
+                            buttons: [
+                                  'excel', 'pdf'
+                            ],
+                            select: true
+                        });
+                        $('#preloader').hide();
+                    },
+                    error: function (err) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblSalonEmployees').text("Problem With Server");
+                    }
+                });
+            },
+            error: function (err) {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblSalonEmployees').text("Problem With Server");
+            }
+        });
+
+    }
+    function Edit(PersonId) {
+        localStorage.setItem("EditSalonEmployeesId", PersonId);
+        window.location.href = '@Url.Action("SalonEmployees", "Salon")';
+    }
+
+
+    function UpdateStatus(SalonEmployeesId, Status) {
+        $("#lbl_status").text("");
+        var UserId = localStorage.getItem("UserId");
+        var StatusText = '';
+        var UpdateStatusText = '';
+        if (Status == 1) {
+            StatusText = "active";
+            UpdateStatusText = "activated";
+        }
+        else if (Status == 0) {
+            StatusText = "deactive";
+            UpdateStatusText = "deactivated";
+        }
+        if (confirm("Are you sure to  " + StatusText + " this Employee?") == true) {
+            $.ajax({
+                url: URLLink + "api/SalonEmployees/UpdateStatus",
+                data: { "Status": Status, "UpdatedBy": UserId, "SalonEmployeesId": SalonEmployeesId },
+                // UpdateStatus(int Status, int UpdatedBy, int DepartmentId)
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblSalonEmployees").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblSalonEmployees').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblSalonEmployees').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+                        GetAll();
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("Salon Employee " + UpdateStatusText + " Successfully");
+                    }
+                },
+                error: function (err) {
+                    //  alert(err.StatusText);
+                }
+            });
+        }
+        else {
+
+        }
+    }
+
+
+</script>
+
+

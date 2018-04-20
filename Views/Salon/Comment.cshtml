@@ -1,0 +1,220 @@
+﻿
+@{
+    ViewBag.Title = "Comment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<section class="content-header">
+    <h1>
+        User Comments
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+        <li><a href="#">User Comments</a></li>
+      
+
+    </ol>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+
+                        <label id="lblCustomer"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+
+                    <input type="button" value="Back" style="width:100px;float:right" class="btn btn-danger" onclick="window.location.href='@Url.Action("Reviews", "Salon")';" />
+                </div>
+               
+                
+                  
+               
+                <div class="box-body table-responsive">
+                    <table id="tblCustomer" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                                @*<th>Comment Id</th>
+                                <th>Salon ReviewId</th>*@
+                                <th>Comment</th>
+                                <th>Posted By</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblCustomerBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script type="text/javascript">
+  
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+
+    window.onload = function () {
+        localStorage.setItem("EditCustomerId", "null");
+        //if (UserId != "null" && RoleId == 1 && UserId != null) {
+        var Message = localStorage.getItem("CustomerMessage");
+        if (Message == "1") {
+          //  $("#dvErrorStatus").css({ display: "none" });
+          //  $("#dvSuccess").css({ display: "block" });
+           // $("#lbl_status").text("Customer Updated Successfully");
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("Customer Updated Successfully");
+            GetAll();
+        }
+        else if (Message == "2") {
+           // $("#dvErrorStatus").css({ display: "none" });
+           // $("#dvSuccess").css({ display: "block" });
+            // $("#lbl_status").text("Customer Created Successfully");
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("Customer Created Successfully");
+            GetAll();
+        }
+        else {
+            $("#dvErrorStatus").css({ display: "none" });
+            $("#dvSuccess").css({ display: "none" });
+            GetAll();
+        }
+
+    }
+
+
+    function GetAll() {
+        localStorage.setItem("CustomerMessage", "null");
+        $('#tblCustomerBody').text('');
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+        $.ajax({
+            type: 'GET',
+            url: URLLink + "api/Comment/GetComments?SalonReviewsId="+sessionStorage.getItem("CSalonReviewsId"),
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+                if (json[0].Message == "Error") {
+                    $('#tblCustomer').hide();
+                    $('#lbl_status').text("No Customer Found");
+                    $('#lbl_status').css("color", "red");
+                }
+                else if (json[0].Message == "Success") {
+                    $('#tblCustomer').show();
+                    if ($.fn.dataTable.isDataTable('#tblCustomer')) {
+                        $('#tblCustomer').DataTable().destroy();
+                    }
+                    $('#tblCustomerBody').empty();
+
+                    for (var i = 0; i < json.length; i++) {
+                        tr = $('<tr/>');
+
+                        //tr.append("<td>" + json[i].CommentId + "</td>");
+                        //tr.append("<td>" + json[i].SalonReviewsId + "</td>");
+                        tr.append("<td>" + json[i].Comment + "</td>");
+                        tr.append("<td>" + json[i].FirstName + " " + json[i].LastName + "</td>");
+                        if (json[i].IsActive == 1) {
+                          
+                            tr.append("<td><a href='#' id='delete" + i + "' title='Deactivate'  onclick='UpdateStatus(" + json[i].CommentId + " ,0)'><i class='fa fa-check nav_action_icon'></i> </a></td>");
+                        }
+                        else if (json[i].IsActive == 0) {
+                         
+                            tr.append("<td><a href='#' id='delete" + i + "' title='Activate' onclick='UpdateStatus(" + json[i].CommentId + ",1)'><i class='fa fa-ban nav_action_icon'></i> </a></td>");
+                        }
+                        $('#tblCustomer').append(tr);
+                    }
+                  
+                }
+                $('#tblCustomer').DataTable({
+                    bsort: false,
+                    dom: 'Bfrtip',
+                    buttons: [
+                         'excel', 'pdf'
+                    ],
+                    select: true
+                });
+            },
+            error: function (err) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblCustomer').text(err.StatusText);
+            }
+        });
+    }
+
+    function Edit(CustomerId) {
+        localStorage.setItem("EditCustomerId", CustomerId);
+        window.location.href = '@Url.Action("Customers", "Salon")';
+    }
+
+    function UpdateStatus(CommentId, Status) {
+
+       
+
+        $("#lbl_status").text("");
+        var UserId = localStorage.getItem("UserId");
+        var StatusText = '';
+        var UpdateStatusText = '';
+        if (Status == 1) {
+            StatusText = "active";
+            UpdateStatusText = "activated";
+        }
+        else if (Status == 0) {
+            StatusText = "deActive";
+            UpdateStatusText = "deactivated";
+        }
+       
+        if (confirm("Are you sure to  " + StatusText + " this Comment?") == true) {
+            $.ajax({
+                url: URLLink + "api/Comment/UpdateStatus",
+                data: { "IsActive": Status, "UpdatedBy": UserId, "CommentId": CommentId },
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+                   
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblCustomer").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblCustomer').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblCustomer').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+                        GetAll();
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("Comment " + UpdateStatusText + " Successfully");
+                    }
+                },
+                error: function (err) {
+                    alert(err.StatusText);
+                }
+            });
+        }
+        else {
+
+        }
+    }
+
+
+
+</script>
+
+
+

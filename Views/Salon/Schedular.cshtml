@@ -1,0 +1,69 @@
+﻿
+@{
+    ViewBag.Title = "Schedular";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+    <link rel='stylesheet' type='text/css' href='~/Content/libs/css/smoothness/jquery-ui-1.8.11.custom.css' />
+    <link rel='stylesheet' type='text/css' href='~/Content/jquery.weekcalendar.css' />
+    <style type='text/css'>
+        body {
+            font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+            margin: 0;
+        }
+
+        h1 {
+            margin: 0 0 1em;
+            padding: 0.5em;
+        }
+
+        p.description {
+            font-size: 0.8em;
+            padding: 1em;
+            position: absolute;
+            top: 3.2em;
+            margin-right: 400px;
+        }
+
+        #message {
+            font-size: 0.7em;
+            position: absolute;
+            top: 1em;
+            right: 1em;
+            width: 350px;
+            display: none;
+            padding: 1em;
+            background: #ffc;
+            border: 1px solid #dda;
+        }
+
+        #eventlist { list-style:none; }
+        #eventlist li { list-style:none; padding:3px; border-bottom:2px solid #eee;}
+        .eventtitle { font-weight:bold; }
+    </style>
+    <script type='text/javascript' src='~/Content/libs/jquery-1.4.4.min.js'></script>
+    <script type='text/javascript' src='~/Content/libs/jquery-ui-1.8.11.custom.min.js'></script>
+    <script type="text/javascript" src="~/Content/libs/date.js"></script>
+    <script type='text/javascript' src='~/Content/jquery.weekcalendar.js'></script>
+    <script type='text/javascript'>
+
+    </script>
+
+<body>
+
+    <div id='calendar'></div>
+   
+</body>
+
+@*<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>*@
+<script src="~/Content/index.js" type="text/javascript"></script>
+<script type="text/javascript">
+   jQuery(function ($) {
+       $('#eventlist').gCalReader({
+           calendarId: 'q80se6543bkb40g6fv2hkpburc@group.calendar.google.com',
+           apiKey: 'AIzaSyC9vh_c4nfuCVn-gl78TkRRlKk1Lopd8qU',
+         sortDescending: false
+        });
+	 });
+</script>

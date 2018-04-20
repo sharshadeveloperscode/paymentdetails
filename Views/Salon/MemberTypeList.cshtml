@@ -1,0 +1,263 @@
+﻿
+@{
+    ViewBag.Title = "MemberType List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="content-header">
+    <h1>
+        MemberType
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href=""><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Masters</a></li>
+        <li class="active">MemberType</li>
+    </ol>    
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+
+                        <label id="lblMemberType"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                <div class="box-body table-responsive">
+                    <input type="button" class="btn btn-primary" value="Add Member Type" onclick="window.location.href = '@Url.Action("MemberType", "Salon")';" style="text-align:left" />
+                </div>
+                <div class="box-body table-responsive">
+                    <table id="tblMemberType" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+
+                                <th>Member Type</th>
+                                @* <th>IsActive</th>*@
+
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblMemberTypeBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+<script type="text/javascript">
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+
+    window.onload = function () {
+       // GetAll();
+        localStorage.setItem("EditMemberTypeId", "null");
+
+        //if (UserId != "null" && RoleId == "1") {
+        var Message = localStorage.getItem("MemberTypeMessage");
+        if (Message == "1") {
+            $("#dvErrorStatus").css({ display: "none" });
+            $("#dvSuccess").css({ display: "block" });
+            $("#lbl_status").text("MemberType Updated Successfully");
+            GetAll();
+        }
+        else if (Message == "2") {
+            $("#dvErrorStatus").css({ display: "none" });
+            $("#dvSuccess").css({ display: "block" });
+            $("#lbl_status").text("MemberType Created Successfully");
+            GetAll();
+        }
+        else {
+            $("#dvErrorStatus").css({ display: "none" });
+            $("#dvSuccess").css({ display: "none" });
+            GetAll();
+        }
+    }
+
+
+    function GetAll() {
+
+        localStorage.setItem("MemberTypeMessage", "null");
+        $('#tblMemberTypeBody').text('');
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/MemberType/Getdata",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache:false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+
+                if (json[0].Message == "Error") {
+                    $('#tblMemberType').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblMemberType').text("Error");
+
+                }
+                else if (json[0].Message == "NoData") {
+                    $('#tblMemberType').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblMemberType').text("NoData");
+                }
+
+                else if (json[0].Message == "Success") {
+                    $('#tblMemberType').show();
+                    if ($.fn.dataTable.isDataTable('#tblMemberType')) {
+                        $('#tblMemberType').DataTable().destroy();
+                    }
+                    $('#tblMemberTypeBody').empty();
+                    for (var i = 0; i < json.length; i++) {
+
+                        tr = $('<tr/>');
+
+                        tr.append("<td>" + json[i].MemberTypeName + "</td>");
+
+                        if (json[i].IsActive == 1) {
+                          //  tr.append("<td>" + "Active" + "</td>");
+                            tr.append("<td><a href='#' id='delete" + i + "'  onclick='UpdateStatus(" + json[i].MemberTypeId + " ,0)'><i class='fa fa-check nav_action_icon'></i> </a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].MemberTypeId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+                        }
+                        else if (json[i].IsActive == 0) {
+
+                            tr.append("<td><a href='#' id='delete" + i + "'  onclick='UpdateStatus(" + json[i].MemberTypeId + ",1)'><i class='fa fa-ban nav_action_icon'></i> </a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].MemberTypeId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+                        }
+
+                        $('#tblMemberType').append(tr);
+                    }
+                    $('#tblMemberType').DataTable({
+                        select: {
+                            style: 'multi'
+                        },
+                        dom: 'Bfrtip',
+                        buttons: [
+                            'copyFlash',
+                            'csvFlash',
+                            'excelFlash',
+                            'pdfFlash'
+                        ],
+                        select: true
+                    });
+                }
+            },
+            error: function (err) {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblMemberType').text(err.StatusText);
+            }
+        });
+    }
+    //local
+    function Edit(MemberTypeId) {
+        localStorage.setItem("EditMemberTypeId", MemberTypeId);
+        window.location.href = '@Url.Action("MemberType", "Salon")';
+    }
+
+
+    function UpdateStatus(MemberTypeId, IsActive) {
+        $("#lbl_status").text("");
+        var UserId = localStorage.getItem("UserId");
+        var StatusText = '';
+        var UpdateStatusText = '';
+        if (IsActive == 1) {
+            StatusText = "Active";
+            UpdateStatusText = "Activated";
+        }
+        else if (IsActive == 0) {
+            StatusText = "DeActive";
+            UpdateStatusText = "DeActivated";
+        }
+        if (confirm("Are you Sure to  " + StatusText + " this MemberType?") == true) {
+            $.ajax({
+                url: URL + "api/MemberType/UpdateStatus",
+                data: { "Status": IsActive, "UpdatedBy": UserId, "MemberTypeId": MemberTypeId },
+                // UpdateStatus(int Status, int UpdatedBy, int DepartmentId)
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblMemberType").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblMemberType').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblMemberType').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+                        GetAll();
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("MemberType " + UpdateStatusText + " Successfully");
+                    }
+                },
+                error: function (err) {
+                    alert(err.StatusText);
+                }
+            });
+        }
+        else {
+
+        }
+    }
+
+///////////////////////////
+
+    function Delete(MemberTypeId) {
+        $("#lbl_status").text("");
+        if (confirm("Are you Sure to delete this MemberType?") == true) {
+          
+            $.ajax({
+                url: URL + "api/MemberType/Delete",
+                data: { "MemberTypeId": MemberTypeId },
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+                    $("#lblMemberType").text(" ");
+                    $("#txtMemberTypeId").val("");
+                    $("#txtMemberType").val("");
+                    $("#tblMemberType").text("");
+                    GetAll();
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblMemberType").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblMemberType').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblMemberType').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("MemberType Deleted Successfully");
+                    }
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblMemberType').text(err.StatusText);
+                }
+            });
+        } else {
+
+        }
+    }
+</script>

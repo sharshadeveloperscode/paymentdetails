@@ -1,0 +1,384 @@
+﻿
+@{
+    ViewBag.Title = "TreatmentType";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<body>
+    <section class="content-header">
+        <h1>
+            TreatmentType
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Treatment</a></li>
+            <li class="active">Create TreatmentType</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lblTreatmentType"></label>
+                            <label id="lblddlTreatmentType"></label>
+                        </div>
+                        <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lbl_status"></label>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive">
+                        <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                            <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                            <tr>
+                                <td>
+                                    Category :<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select id="ddlCategory" onchange="TreatmentTitle()" class="form-control">
+                                        <option value="0">--Select--</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Treatment Title :<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select id="ddlTreatmentTitle"  class="form-control">
+                                        <option value="0">--Select--</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            
+                              <tr>
+
+                                <td>
+                                    TreatmentType :<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" maxlength="40" placeholder="Enter TreatmentType " id="txtTreatmentType" name="txtTreatmentType" title="Enter Alphabets only" class="form-control" required />
+                                </td>
+                            </tr>
+                    
+
+                            <tr>
+                                <td colspan="4" style="text-align:right">
+                                    <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                    <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                    <input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />
+                                    <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("TreatmentTypeList", "Salon")';" style="width:100px;" />
+                                    <input type="text" hidden="hidden" id="txtTreatmentTypeId" name="TreatmentTypeId" />
+                                </td>
+                            </tr>
+                        </table>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+<script type="text/javascript">
+
+          var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+        var UserId = localStorage.getItem("UserId");
+        var RoleId = localStorage.getItem("RoleId");
+        var EditTreatmentTypeId = localStorage.getItem("EditTreatmentTypeId");
+
+        window.onload = function () {
+            if (UserId != "null" || UserId != null && RoleId == "1") {
+              
+                if (EditTreatmentTypeId == "null") {
+                    Category();
+                        $('#btnEdit').hide();
+                        $('#btnSave').show();
+                    }
+                else {
+                    BindTreatmentType(EditTreatmentTypeId);
+                   
+                        $('#btnEdit').show();
+                        $('#btnSave').hide();
+                        $('#btnReset').hide();
+                    }
+
+            }
+            else {
+                window.location.href = '@Url.Action("Logout", "Salon")';
+            }
+        }
+
+    function CategoryLoad(Category) {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Category/GetCategoryByIsActive",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].Category, data[i].CategoryId);
+                    $("#ddlCategory").val("");
+                    $('#ddlCategory').append(opt);
+                }
+              
+                $("#ddlCategory").val(Category);
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+        
+    }
+
+    function Category() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Category/GetCategoryByIsActive",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache:false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].Category, data[i].CategoryId);
+                    $("#ddlCategory").val("");
+                    $('#ddlCategory').append(opt);
+                }
+
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+  
+    function TreatmentTitle() {
+            $.ajax({
+                type: 'GET',
+                url: URL + "api/TreatmentTitle/GetbyCategoryIdByIsActvive",
+                data: { "CategoryId": $('#ddlCategory').val() },
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+
+                cache: false,
+                xhrFields: {
+                    withCredentials: false
+                },
+                success: function (data) {
+                    $("#ddlTreatmentTitle").empty();
+                    var opt = new Option('--Select--', '0');
+                    $('#ddlTreatmentTitle').append(opt);
+                    for (var i = 0; i < data.length; i++) {
+                         var opt = new Option(data[i].TreatmentTitle, data[i].TreatmentTitleId);
+                         $('#ddlTreatmentTitle').append(opt);
+                    }
+
+                },
+                error: function (err) {
+                    console.log(err.StatusText);
+                }
+            });
+        }
+
+    function TreatmentTitleLoad(CategoryId,TreatmentTitleId) {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/TreatmentTitle/GetbyCategoryIdByIsActvive",
+            data: { "CategoryId": CategoryId },
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].TreatmentTitle, data[i].TreatmentTitleId);
+                    $("#ddlTreatmentTitle").val("");
+                    $('#ddlTreatmentTitle').append(opt);
+                }
+               
+                $('#ddlTreatmentTitle').val(TreatmentTitleId);
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+    function BindTreatmentType(TreatmentTypeId) {
+            $("#lbl_status").text("");
+            Clear();
+
+            $.ajax({
+                url: URL + "api/TreatmentType/GetDatabyIdByIsActive",
+
+                data: { "TreatmentTypeId": TreatmentTypeId },
+                type: "GET",
+                cache: false,
+                success: function (r) {
+
+                    $('#btnEdit').show();
+                    $('#btnSave').hide();
+                    console.log(r);
+                    CategoryLoad(r[0].CategoryId);
+                    $("#txtTreatmentTypeId").val(TreatmentTypeId);
+                    $("#txtTreatmentType").val(r[0].TreatmentType);
+                    TreatmentTitleLoad(r[0].CategoryId, r[0].TreatmentTitleId);
+                   // $('#ddlCity').val(r[0].CityId);y
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblTreatmentType').text(err.statusText);
+                }
+            })
+        }
+
+        function Save() {
+            $("#lbl_status").text("");
+            $("#lblTreatmentType").text("");
+            if ($("#txtTreatmentType").val() != '' && $("#ddlTreatmentTitle").val() != 0) {
+                var TreatmentType = $("#txtTreatmentType").val();
+                //doubt
+                var TreatmentTitleId = $("#ddlTreatmentTitle").val();
+
+                var CreatedBy = UserId;
+                //Insert(string AreaName, int CityId, int IsAcitve, int CreatedBy)
+                if (TreatmentType.match(/^[a-zA-Z ]*$/)) {
+                    $.ajax({
+                        url: URL + "api/TreatmentType/Insert",
+                        //is active
+                        data: { "TreatmentType": $("#txtTreatmentType").val(), "TreatmentTitleId": $("#ddlTreatmentTitle").val(), "IsAcitve": 1, "CreatedBy": CreatedBy },
+                        type: "GET",
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblTreatmentType").text("TreatmentType  Already Existed.");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblTreatmentType').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                Clear();
+                                StatusMessage(2);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblTreatmentType').text(err.statusText);
+                        }
+                    });
+                } else {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblTreatmentType").text("Please Enter Valid TreatmentType ");
+                }
+            }
+            else {
+                if ($("#ddlCategory").val() == 0) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblTreatmentType").text("Please Select Category");
+                    $("#ddlCategory").focus();
+                }
+           else if ($("#ddlTreatmentTitle").val() == 0)
+                {
+                    $("#dvErrorStatus").css({ display: "block" });
+
+                    $("#lblTreatmentType").text("Please Select Title ");
+                    $("#ddlTreatmentTitle").focus();
+                }
+             else if ($("#txtTreatmentType").val() == '')
+                {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblTreatmentType").text("Please Enter TreatmentType ");
+
+                    $("#txtTreatmentType").focus();
+                }
+               
+            }
+        }
+        function Clear() {
+
+            $("#txtTreatmentTypeId").val("");
+            $("#txtTreatmentType").val("");
+            $("#ddlTreatmentTitle").val("0");
+            $("#ddlCategory").val("0");
+            $("#lbl_status").text("");
+            $("#lblTreatmentType").text(" ");
+            $('#btnEdit').hide();
+            $('#btnSave').show();
+            $("#dvSuccess").css({ display: "none" });
+            $("#dvErrorStatus").css({ display: "none" });
+        }
+
+
+
+        function Update() {
+            $("#lbl_status").text("");
+            if ($("#ddlCategory").val() != 0 && $("#ddlTreatmentTitle").val() != 0 && $("#txtTreatmentType").val() != '') {
+                var TreatmentTitle = $("#txtTreatmentType").val();
+                var UpdatedBy = UserId;
+                if (TreatmentTitle.match(/^[a-zA-Z ]*$/)) {
+                    // Update(string CityName,int UpdatedBy,int Cityid)
+                    $.ajax({
+                        url: URL + "api/TreatmentType/Update",
+                        data: { "TreatmentType": $("#txtTreatmentType").val(), "TreatmentTitleId": $("#ddlTreatmentTitle").val(), "UpdatedBy": UpdatedBy, "TreatmentTypeId": $("#txtTreatmentTypeId").val() },
+                        cache:false,
+                        type: "GET",
+                        dataType: 'json',
+                        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblTreatmentType").text("TreatmentTitle  Already Existed.");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblTreatmentType').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                Clear();
+                                StatusMessage(1);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblTreatmentType').text(err.statusText);
+                        }
+                    });
+                } else {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblTreatmentType").text("Please Enter Valid Title ");
+                }
+            }
+            else {
+                if ($("#ddlCategory").val() == 0) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblTreatmentType").text("Please Select Category");
+                    $("#ddlCategory").focus();
+                }
+                else if ($('#ddlTreatmentTitle').val() == 0) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblTreatmentType").text("Please Select Treatment Title");
+                    $("#ddlTreatmentTitle").focus();
+                }
+                else if ($('#txtTreatmentType').val() == '') {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblTreatmentType").text("Please Enter Treatment Type");
+                    $("#txtTreatmentType").focus();
+                }
+            }
+        }
+
+        function StatusMessage(value) {
+            localStorage.setItem("TreatmentTypeMessage", value);
+            window.location.href = '@Url.Action("TreatmentTypeList", "Salon")';
+        }
+</script>

@@ -1,0 +1,589 @@
+﻿
+@{
+    ViewBag.Title = "AddScheduler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="featured-ads">
+
+    <div class="container">
+
+        <h2>
+            Add Booking
+        </h2>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="well-block">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="heading-title heading-title-inner">
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="well-title ">
+                        <label style="color:red" id="lblAddscheduler">* Mark Fields Are Required</label><label id="lblSuccess" style="color:green"></label>
+                        <hr class="style1">
+                    </div>
+
+                    <!-- Form start -->
+                    <div class="row">
+                      
+
+                        <div class="col-md-6">
+                            <div class="form-grp">
+                                <label class="control-label" for="member type"> Select Customer</label><label style="color:red">*</label>
+                                <select class="form-control select2" placeholder="-Select-"  id="ddlCustomer" style="width:306px; position:bottom !important;">
+                                    <option value="0">-Select-</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-grp">
+                                <label class="control-label" for="manage your bookings">Treatment Title</label><label style="color:red">*</label>
+                                <select class="form-control" id="SelectCategory" onchange="Employees()" style="width:306px; position:bottom !important;">
+                                    <option value="0">-Select-</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-grp">
+                                <label class="control-label" for="manage your bookings">Select Employee</label><label style="color:red">*</label>
+                                <select class="form-control" id="employee_id" style="width:306px; position:bottom !important;">
+                                    <option value="0">-Select-</option>
+                                </select>
+                            </div>
+                        </div>
+                         <div class="col-md-6">
+                            <div class="form-grp">
+                                <label class="control-label " for="manage your bookings">Select Date</label><label style="color:red">*</label>
+                                <input id="selectedDate" name="Date" type="text" placeholder="Select Date" class="form-control input-md " onchange="dateSelected()">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row">
+                                <h4>3. Select Time</h4>
+                                <div class="col-md-12">
+                                    <div class="list-group">
+                                        <p id="feedback">
+                                            <span>You've selected:</span>
+                                            <span id="select-result">none</span>.
+                                        </p>
+                                        <div class="slot-list" style="height:268px;">
+                                            <ol id="selectable" class="ui-selectable">
+                                                @*<li class="ui-widget-content" id="09:00">09:00<span class="price pull-right"> £30.00</span></li>
+                                <li class="ui-widget-content" id="09:35">09:35<span class="price pull-right"> £30.00</span></li>
+                                <li class="ui-widget-content" id="10:10">10:10<span class="price pull-right"> £30.00</span></li>
+                                <li class="ui-widget-content" id="10:45">10:45<span class="price pull-right"> £30.00</span></li>
+                                <li class="ui-widget-content" id="11:20">11:20<span class="price pull-right"> £30.00</span></li>
+                                <li class="ui-widget-content" id="11:55">11:55<span class="price pull-right"> £30.00</span></li>
+                                <li class="ui-widget-content" id="12:30">12:30<span class="price pull-right"> £30.00</span></li>
+                                <li class="ui-widget-content" id="13:05">13:05<span class="price pull-right"> £30.00</span></li>
+                                <li class="ui-widget-content" id="13:40">13:40<span class="price pull-right"> £30.00</span></li>
+                                <li class="ui-widget-content" id="14:15">14:15<span class="price pull-right"> £30.00</span></li>
+                                <li class="ui-widget-content" id="14:50">14:50<span class="price pull-right"> £30.00</span></li>
+                                <li class="ui-widget-content" id="15:25">15:25<span class="price pull-right"> £30.00</span></li>
+                                <li class="ui-widget-content" id="16:00">16:00<span class="price pull-right"> £30.00</span></li>
+                                <li class="ui-widget-content" id="16:35">16:35<span class="price pull-right"> £30.00</span></li>
+                                <li class="ui-widget-content" id="17:10">17:10<span class="price pull-right"> £30.00</span></li>*@
+                                            </ol>
+
+                                        </div>
+                                        <style>
+                                            #feedback {
+                                                font-size: 1.1em;
+                                            }
+
+                                            #selectable {
+                                                list-style-type: none;
+                                                margin: 0;
+                                                padding: 0;
+                                                width: 100%;
+                                                height: 308px;
+                                               
+                                            }
+
+                                                #selectable li {
+                                                    margin: 3px;
+                                                    padding: 0.4em;
+                                                    font-size: 1.1em;
+                                                    height: 39px;
+                                                     background-color: #fff;
+                                                }
+
+                                            .slot-list {
+                                                margin: 0;
+                                                padding: 0;
+                                                width: 100%;
+                                                height: 308px;
+                                                overflow: scroll;
+                                            }
+                                        </style>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <button class="btn btn-warning btn-lg pull-right business-btn-margin;" onclick="Save()" type="submit">
+                                Submit
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+   
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+        var UserId = localStorage.getItem("UserId");
+
+    window.onload = function () {
+        BindCustomer();
+      //  Customer();
+        $("#selectedDate").datepicker();
+    }
+    function BindCustomer() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Salonscheduler/Getdata",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                $('#preloader').hide();
+                $("#ddlCustomer").empty();
+                $('#ddlCustomer').append("<option value='0'>-Select-</option>");
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].FirstName+data[i].LastName, data[i].UserId);
+                    $("#ddlCustomer").val("");
+                    $('#ddlCustomer').append(opt);
+                }
+
+            },
+            error: function (err) {
+                $('#preloader').hide();
+                console.log(err.StatusText);
+            }
+        });
+
+    }
+   
+
+    SelectService();
+    // To get the dropdown values of services
+    function SelectService() {
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (data) {
+                var SalonsId = data[0].SalonsId;
+                $.ajax({
+                    type: 'GET',
+                    url: URL + "api/SalonServices/GetDatabySalonsIdIsActive",
+                    data: { "SalonsId": SalonsId },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    cache: false,
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success:function(data){
+                        var city="";
+                        var CategoryName = [];
+                        var CategoryId = [];
+                        for (var i = 0; i < data.length; i++) {           
+                            if ($.inArray(data[i].Category, CategoryName) > -1) {} 
+                            else {            
+                                CategoryName.push(data[i].Category);   
+                                CategoryId.push(data[i].CategoryId);     
+                            }
+                        }
+                 
+                        for(var j =0; j<CategoryName.length;j++){
+                            city+='<optgroup class="optgroupe" label='+CategoryName[j]+'>';
+                            for(var i=0; i<data.length;i++){
+                                if(CategoryId[j] == data[i].CategoryId){
+                                    city += '<option value=' + data[i].SalonServicesId + '>' + data[i].TreatmentType + '</option>';
+                                }
+                         
+                            }
+                            city+='</optgroup>';
+ 
+                        }
+                        $('#SelectCategory').append(city);
+                        //Employees();
+                 
+                    },
+                    error: function (err) {
+                        console.log(err.StatusText);
+                    }
+                });
+
+            }
+        })
+        
+    }
+    function Employees() {
+
+        SalonServicesId = $('#SelectCategory').val();
+       
+        $.ajax({
+            type: 'GET',
+            url: URL + 'api/Search/EmployeesbasedonSalons?SalonServicesId=' + SalonServicesId,
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                $('#employee_id').empty();
+                var city = "<option value='0'>--Select--</option>";
+
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].IsActive == '1') {
+                        //  var idvalue = data[i].SalonEmployeesId + " :" + data[i].EmployeeServicesId;
+
+                        city += '<option value=' + data[i].EmployeeServicesId + ' >' + data[i].EmployeeName + '</option>';
+                    }
+                }
+                $('#employee_id').append(city);
+
+
+            }
+
+        })
+    }
+
+    function dateSelected() {
+     
+        $.ajax({
+            type: 'GET',
+            url: 'http://hogarbarber.developerscode.in/' + 'api/EmployeeServices/GetDatabyId',
+            data: { "EmployeeServicesId": $('#employee_id').val() },
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+
+            success: function (data) {
+              
+
+                if (data[0].Message == "Success") {
+                    var SalonEmployeesId = data[0].SalonEmployeesId;
+                    //var SalonEmployeesId = data[0].SalonEmployeesId;
+                    var date1 = new Date($('#selectedDate').val());
+                    var month = ("0"+(date1.getMonth() + 1)).slice(-2);
+                    var day = ("0" + date1.getDate()).slice(-2);                    
+                    var date2 = date1.getFullYear() + "-"+month + "-"+day;
+                    
+                    
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://localhost:51133/' + 'api/Search/ViewEmployeeAvailableTimings',
+                        data: { "SalonServicesId": $('#SelectCategory').val(), "SalonEmployeesId": SalonEmployeesId, "Date": date2 },
+                        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                        xhrFields: {
+                            withCredentials: false
+                        },
+                        success: function (data) {
+                          //  alert(data[0].Message);
+                            console.log(data[0]);
+                            if (data[0].Message == "Success") {
+
+                               
+                                var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                                var bookingdate = $('#selectedDate').val();
+                                var Price = $('#final_order').text();
+
+                                var bdate = new Date(bookingdate);
+                                var count = bdate.getDay();
+
+                                if ($('#employee_id').val() == '0') {
+                                   // alert("please select employee");
+                                }
+                                else {
+                                    $('#selectable').empty();
+                                    var StartTime = data[0].BStartTime;
+                                    var EndTime = data[0].BEndTime;
+                                  //  alert(StartTime);
+                                  //  alert(EndTime);
+                                    var countvalue = $('#radioservice:checked').val();
+                                   // var duration = $('#txtDuration' + countvalue).text();
+                                  //  alert(data[0].Duration);
+                                    var duration = data[0].Duration;
+                                   
+                                    duration = duration.slice(0, -3);
+                                    Price = data[0].Price;
+                                    //duration = 20;
+
+                                    // salon available timings
+                                    var starttimearray = [];
+                                    var endtimearray = [];
+                                    starttimearray = StartTime.split(':');
+                                    endtimearray = EndTime.split(':');
+
+                                    var repeatstarttime = parseInt(starttimearray[0]);
+                                    var repeatendtime = parseInt(starttimearray[1]);
+
+                                    var repeatstarttime2 = parseInt(starttimearray[0]);
+                                    var repeatendtime2 = parseInt(starttimearray[1]);
+
+
+                                    // total minutes
+                                    var starttimeminutes = (repeatstarttime * 60) + repeatendtime;
+                                    var endtimeminutes = (parseInt(endtimearray[0]) * 60) + parseInt(endtimearray[1]);
+                                    var totalduration = (endtimeminutes - starttimeminutes) / parseInt(duration);
+
+
+                                    var unavailabletime = data[0].UnStartTime;
+                                    var unavailableendtime = data[0].UnEndTime;
+
+                                    // employee unavailability timings
+                                    var unavaialbalearray = [];
+                                    unavaialbalearray = unavailabletime.split(':');
+                                    var unavailablestarttime1 = parseInt(unavaialbalearray[0]);
+                                    var unavailablestarttime2 = parseInt(unavaialbalearray[1]);
+
+                                    var unavailableendtimearray = [];
+                                    unavailableendtime = unavailableendtime.split(':');
+                                    var unavailableendtime1 = parseInt(unavailableendtime[0]);
+                                    var unavailableendtime2 = parseInt(unavailableendtime[1]);
+
+                                    var unavailabletotalhourstimingsarray = [];
+                                    var unavailabletotalminutestimingsarray = [];
+
+                                    var unstarttimeminutes = (unavailablestarttime1 * 60) + unavailablestarttime2;
+                                    var unendtimeminutes = (unavailableendtime1 * 60) + unavailableendtime2;
+
+                                    var totalduration2 = (unendtimeminutes - unstarttimeminutes) / parseInt(duration);
+
+
+                                    for (var i = 0; i < totalduration2 ; i++) {
+                                        if (unavailablestarttime2 >= 60) {
+                                            unavailablestarttime2 = unavailablestarttime2 - 60;
+                                            unavailablestarttime1 = unavailablestarttime1 + 1;
+                                            unavailabletotalhourstimingsarray.push(unavailablestarttime1);
+                                            unavailabletotalminutestimingsarray.push(unavailablestarttime2);
+                                            unavailablestarttime2 = unavailablestarttime2 + parseInt(duration);
+                                        } else {
+                                            unavailabletotalhourstimingsarray.push(unavailablestarttime1);
+                                            unavailabletotalminutestimingsarray.push(unavailablestarttime2);
+                                            unavailablestarttime2 = unavailablestarttime2 + parseInt(duration);
+                                        }
+                                    }
+
+                                    var openinghoursstarttimearray = [];
+                                    var openingminutesstarttimearray = [];
+                                    var dummyarray = [];
+
+                                    var startopeninghour1 = parseInt(starttimearray[0]);
+                                    var startopeningminute1 = parseInt(starttimearray[1]);
+
+                                    var endopeninghour2 = parseInt(endtimearray[0]);
+                                    var endopeningminute2 = parseInt(endtimearray[1]);
+
+
+                                    for (var i = 0; i < totalduration ; i++) {
+                                        if (startopeningminute1 >= 60) {
+                                            startopeningminute1 = startopeningminute1 - 60;
+                                            startopeninghour1 = startopeninghour1 + 1;
+                                            openinghoursstarttimearray.push(startopeninghour1);
+                                            openingminutesstarttimearray.push(startopeningminute1);
+                                            dummyarray.push(i + "-" + startopeningminute1);
+                                            startopeningminute1 = startopeningminute1 + parseInt(duration);
+                                        } else {
+                                            openinghoursstarttimearray.push(startopeninghour1);
+                                            openingminutesstarttimearray.push(startopeningminute1);
+                                            dummyarray.push(i + "-" + startopeningminute1);
+                                            startopeningminute1 = startopeningminute1 + parseInt(duration);
+                                        }
+                                    }
+
+                                    //if (parseInt(unavaialbalearray[0]) == repeatstarttime && parseInt(unavaialbalearray[1]) == repeatendtime) {
+                                    //    repeatendtime = repeatendtime + parseInt(duration);
+                                    //}
+                                    //else
+                                    for (var i = 0; i < totalduration ; i++) {
+                                        for (var j = 0; j < unavailabletotalhourstimingsarray.length; j++) {
+                                            //   
+                                            if (parseInt(unavailabletotalhourstimingsarray[j]) == parseInt(openinghoursstarttimearray[i]) && parseInt(unavailabletotalminutestimingsarray[j]) == parseInt(openingminutesstarttimearray[i])) {
+                                                var index = openinghoursstarttimearray.indexOf(parseInt(openinghoursstarttimearray[i]));
+                                                openinghoursstarttimearray.splice(index, 1);
+
+                                                var index1 = dummyarray.indexOf(dummyarray[i]);
+                                                openingminutesstarttimearray.splice(index1, 1);
+                                                // alert(openinghoursstarttimearray);
+                                                //   repeatendtime = repeatendtime + parseInt(duration);
+                                                //  alert("if");
+                                                //   alert(parseInt(unavailabletotalhourstimingsarray[j]) + " == " + parseInt(openinghoursstarttimearray[i]));
+                                                //  alert(parseInt(unavailabletotalminutestimingsarray[j]) + " == " + parseInt(openingminutesstarttimearray[i]));
+                                            }
+                                            else {
+
+                                                // $('#selectable').append('<li class="ui-widget-content" id="09:00">' + openinghoursstarttimearray[i] + ':' + openingminutesstarttimearray[i] + '<span class="price pull-right"> £30.00</span></li>');
+
+                                                //   alert("else");
+                                                //   alert(parseInt(openinghoursstarttimearray[i]) + " == " + parseInt(openingminutesstarttimearray[i]));
+                                                //if (parseInt(endtimearray[0]) == repeatstarttime && repeatendtime > (endtimearray[1] - parseInt(duration))) {
+                                                //    repeatendtime = repeatendtime + parseInt(duration);
+                                                //}
+                                                //else {
+                                                //    if (parseInt(repeatendtime) >= 60) {
+                                                //        repeatstarttime = repeatstarttime + 1;
+                                                //        repeatendtime = repeatendtime - 60;
+                                                //        $('#selectable').append('<li class="ui-widget-content" id="09:00">' + repeatstarttime + ':' + repeatendtime + '<span class="price pull-right"> £30.00</span></li>');
+                                                //        repeatendtime = repeatendtime + parseInt(duration);
+                                                //    }
+                                                //    else {
+                                                //        $('#selectable').append('<li class="ui-widget-content" id="09:00">' + repeatstarttime + ':' + repeatendtime + '<span class="price pull-right"> £30.00</span></li>');
+                                                //        repeatendtime = repeatendtime + parseInt(duration);
+                                                //    }
+                                                //}
+
+                                            }
+                                        }
+
+                                    }
+
+                                    for (var k = 0; k < openinghoursstarttimearray.length; k++) {
+                                        $('#selectable').append('<li class="ui-widget-content" id="liselectedtime' + k + '" onclick="TimeSelected(' + k + ')"><span id="txtSelectedTime' + k + '">' + openinghoursstarttimearray[k] + ':' + openingminutesstarttimearray[k] + '</span><span class="price pull-right"> £' + Price + '</span></li>');
+                                    }
+
+                                }
+                            }
+
+
+
+
+                        }
+
+                    });
+
+
+                }
+
+
+            }
+
+        });
+
+
+    }
+
+    var m = 0;
+    function TimeSelected(k) {
+        $('#liselectedtime' + m).css("background", "#fff")
+        var value = $('#txtSelectedTime' + k).text();
+        localStorage.setItem("SelectedTime", value);
+        $('#liselectedtime' + k).css("background", "#13afeb");
+        m = k;
+    }
+
+    function Save() {
+
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+               
+                var BookingTime = localStorage.getItem("SelectedTime");
+                var SalonServicesId = $('#SelectCategory').val();
+                var SalonsId = json[0].SalonsId;
+                var date1 = new Date($('#selectedDate').val());
+                var month = ("0" + (date1.getMonth() + 1)).slice(-2);
+                var day = ("0" + date1.getDate()).slice(-2);
+                var date2 = date1.getFullYear() + "-" + month + "-" + day;
+        
+                var PaymentStatus = "Pending";
+                var PaymentType = "";
+                var IsActive = "0";
+                var CreatedDate = new Date();
+
+                $.ajax({
+                    type: 'GET',
+                    url: 'http://hogarbarber.developerscode.in/' + 'api/SalonCheckout/Insert',
+                    data: {
+                        "EmployeeServicesId": $('#employee_id').val(), "BookingDate": date2,
+                        "BookingTime": BookingTime, "PaymentStatus": PaymentStatus, "PaymentType": PaymentType, "IsAcitve": IsActive, "CreatedDate": ""
+                    },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    xhrFields: {
+                        withCredentials: false
+                    },
+
+                    success: function (data) {
+                        if (data[0].Message == "Success") {
+                            var SalonCheckoutId = data[0].SalonCheckoutId;
+                            localStorage.setItem("SalonCheckoutId", SalonCheckoutId);
+                            PaymentInsert(UserId)
+                           
+                        }
+                    }
+                })
+            }
+        })
+    }
+
+    function PaymentInsert(UserId) {
+        var PaymentType = "PAYATVENUE";
+        var PaymentStatus = "Pending";
+        var IsActive = "0";
+        var CreatedBy = UserId;
+        $.ajax({
+            type: 'GET',
+            url: 'http://hogarbarber.developerscode.in/' + 'api/Payment/Insert',
+            data: {
+                "UserId": $("#ddlCustomer").val(), "PaymentType": PaymentType,
+                "PaymentStatus": PaymentStatus, "IsAcitve": IsActive, "CreatedBy": CreatedBy
+            },
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+
+            success: function (data) {
+                if (data[0].Message == "Success") {
+                    var PaymentsId = data[0].PaymentsId;
+                    var SalonCheckoutId = localStorage.getItem("SalonCheckoutId");
+                    var EmployeeServicesId = $('#employee_id').val();
+                    var PaymentType = "PAYATVENUE";
+                    var PaymentStatus = "Pending";
+                    var UpdatedBy = UserId;
+                      if (UpdatedBy == null)
+                            UpdatedBy = 1;
+                      var UpdatedDate = new Date();
+                       
+                        $.ajax({
+                            type: 'GET',
+                            url: 'http://hogarbarber.developerscode.in/' + 'api/SalonCheckout/Update',
+                            data: {
+                                "PaymentStatus": PaymentStatus, "PaymentType": PaymentType,
+                                "PaymentsId": PaymentsId, "UpdatedBy": UpdatedBy, "UpdatedDate": "", "SalonCheckoutId": SalonCheckoutId
+                            },
+                            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                            xhrFields: {
+                                withCredentials: false
+                            },
+
+                            success: function (data) {
+                                if (data[0].Message == "Success") {
+
+                                    window.location.href = "http://hogarbarber.developerscode.in/Salon/SalonsScheduler";
+
+
+                                }
+                            }
+                        })
+                    }
+                }
+        })
+    }
+</script>

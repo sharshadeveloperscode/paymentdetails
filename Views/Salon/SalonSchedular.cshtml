@@ -1,0 +1,1907 @@
+﻿
+@{
+    ViewBag.Title = "SalonSchedular";
+    Layout = null;
+}
+<html>
+<head>
+    @*dropdown script*@
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/css/bootstrap.min.css"
+          rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    @*calender script*@
+
+    <link href="~/Content/libs/css/smoothness/jquery-ui-1.8.11.custom.css" rel="stylesheet" />
+    <link rel='stylesheet' type='text/css' href='~/Content/jquery.weekcalendar.css' />
+    <link href="~/Content/skins/default.css" rel="stylesheet" />
+    <link href="~/Content/skins/gcalendar.css" rel="stylesheet" />
+    @*<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>*@
+
+    <script src="~/Content/libs/jquery-1.4.4.min.js"></script>
+    <script src="~/Content/libs/jquery-ui-1.8.11.custom.min.js"></script>
+    <script src="~/Content/libs/jquery-ui-i18n.js"></script>
+    <script src="~/Content/libs/date.js"></script>
+    <script src="~/Content/jquery.weekcalendar.js"></script>
+    @*<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>*@
+    <style>
+        /*.multiselect {
+            width: 200px;
+        }*/
+
+        .selectBox {
+            position: relative;
+        }
+
+            .selectBox select {
+                width: 100%;
+                font-weight: bold;
+            }
+
+        .overSelect {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        #checkboxes {
+            display: none;
+            border: 1px #dadada solid;
+        }
+
+            #checkboxes label {
+                display: block;
+            }
+
+                #checkboxes label:hover {
+                    background-color: #1e90ff;
+                }
+    </style>
+    <style>
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 10px;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 40%;
+            height: 280px;
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+            .close:hover,
+            .close:focus {
+                color: #000;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+        .wc-hour-header.ui-state-active, .wc-hour-header.ui-state-default {
+            margin-top: 10px;
+            /*height: 46px;*/
+        }
+
+        .wc-time-header-cell {
+            /*height: 78px !important;*/
+        }
+
+        /* The Modal (background) */
+        .modal3 {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        /* Modal Content */
+        .modal-content3 {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            width: 130%;
+            height: 370px;
+        }
+
+
+
+
+        /* The Close Button */
+        .close3 {
+            color: white;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: -18px;
+            margin-right: 10px;
+        }
+
+            .close3:hover,
+            .close3:focus {
+                color: #fff;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+        .modal-header3 {
+            padding: 20px 16px;
+            background-color: #3c8dbc;
+            color: white;
+        }
+
+        .modal-body3 {
+            padding: 2px 16px;
+        }
+
+        .modal-footer3 {
+            padding: 19px 20px 20px;
+            margin-top: 15px;
+            text-align: right;
+        }
+    </style>
+
+</head>
+<body>
+    <div id="preloader" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #fefefe; z-index: 99; height: 110vh;">
+        <div id="status" style="width:100%;height:100%; text-align: center; position: absolute; left: 0; top: 30%; background-repeat: no-repeat; background-size: cover cover; background-position: center; margin: 0px 0 0 36px;">
+            <div class="preloader-logo"></div>
+            <p class="center-text smaller-text" id="p1" style="margin: 0 24px 10px !important;">
+                <h2> Loading .. </h2><br />
+                <img src="~/img/preload.gif" />
+            </p>
+        </div>
+    </div>
+    <div id="myModal3" class="modal3">
+        <!-- Modal content -->
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <div class="modal-content3">
+                <div class="modal-header3">
+                    <span class="close3" onclick="ModalClose()">&times;</span>
+                </div>
+                <div class="modal-body3" id="lblBody">
+                    <label id="txtErrorStatus"></label>
+                </div>
+                <div class="modal-footer3">
+                    <input type="button" style="margin-top: -15px;" class="btn btn-default" onclick="ModalClose()" value="OK" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <section class="content-header" style="background: #3C8DBC;color:white;height:70px;">
+        <label style="margin-top: 19px; margin-left: 11px;">
+            Salon
+        </label>
+    </section>
+    <div class="box-body table-responsive">
+        <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <label id="lblScheduler"></label>
+        </div>
+        <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <label id="lbl_status"></label>
+        </div>
+    </div>
+    <section class="content">
+        <div class="col-md-12">
+            <div class="nav-tabs-custom">
+                <div class="tab-content">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label id="lblCustomerRegistration" style="color:red"></label>
+                            <label id="lblCustomer" style="color:green"></label>
+                            <div class="tab-pane" id="timeline">
+                                <!-- The timeline -->
+                                <div class="box-body">
+                                    <section>
+                                        <div id="myModal" class="modal">
+
+                                            <!-- Modal content -->
+                                            <div class="modal-content">
+                                                <span class="closeon" style="float: right;font-size: 28px;font-weight: bold;margin-top: -18px;margin-right: 10px;" onclick="closeevent()">&times;</span>
+                                                <p>
+                                                    <ul class="nav nav-tabs">
+                                                        <li class="active">
+                                                            <a data-toggle="tab" href="#home"><i class="fa fa-home"> </i> BOOK A SERVICE </a>
+                                                        </li>
+                                                        <li>
+                                                            <a data-toggle="tab" href="#menu1"><i class="fa fa-calendar"> </i> BLOCK TIME </a>
+                                                        </li>
+                                                    </ul>
+                                                    <div class="tab-content">
+                                                        <div id="home" class="tab-pane fade in active">
+                                                            <div id="table-table-tab" class="tab-pane fade in active">
+                                                                <table class="table">
+                                                                    <tr>
+                                                                        <td>Customer Name :</td>
+                                                                        <td><input type="text" id="txtCustomerName" onkeypress="GetCustomers()" placeholder="Enter Customer Name" class="form-control" /></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Services : </td>
+                                                                        <td>
+                                                                            <select class="form-control" id="ddlServices" onchange="GetPrice()"></select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Booking Time : </td>
+                                                                        <td>
+                                                                            <select class="form-control" id="ddlBookingServiceTime"></select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2" align="right"><input type="button" value="ADD" onclick="SaveService()" class="btn btn-primary" /></td>
+                                                                    </tr>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        <div id="menu1" class="tab-pane fade">
+                                                            <div>
+                                                                <table class="table">
+                                                                    <tr>
+                                                                        <td>
+                                                                            Start Date
+                                                                        </td>
+                                                                        <td>
+                                                                            <input type="date" class="form-control" id="txtStartDate" name="txtStartDate" />
+                                                                        </td>
+
+                                                                        <td>
+                                                                            Start Time
+                                                                        </td>
+                                                                        <td>
+                                                                            <select class="form-control " id="ddlStartTime">
+                                                                                <option value="0">--Select--</option>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>
+                                                                            End Date
+                                                                        </td>
+                                                                        <td>
+                                                                            <input type="date" class="form-control" id="txtEndDate" name="txtEndDate" />
+                                                                        </td>
+
+                                                                        <td>
+                                                                            End Time
+                                                                        </td>
+                                                                        <td>
+                                                                            <select class="form-control" id="ddlEndTime">
+                                                                                <option value="0">--Select--</option>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="4" align="right"><input type="button" value="Block Time" onclick="BlockTime()" class="btn btn-primary" /></td>
+                                                                    </tr>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                </p>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="date" class="form-control" id="txtMydate" onchange="ChangeDate()" />
+                                        </div>
+                                        <div class="col-md-3" style="">
+                                            <div class="multiselect">
+                                                <div class="selectBox" onclick="showCheckboxes()">
+                                                    <select class="form-control">
+                                                        <option>Select Employee</option>
+                                                    </select>
+                                                    <div class="overSelect"></div>
+                                                </div>
+                                                <div id="checkboxes">
+                                                </div>
+                                            </div>
+                                          
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="submit" class="btn btn-danger" id="btnBack" value="Back" style="width:100px;float:right;" onclick="window.location.href = '@Url.Action("BusinessDashboard", "Salon")';" />
+
+                                        </div>
+                                        <div class="clearfix"></div>
+                                        <br />
+                                        <br />
+                                    </section>
+                                </div>
+
+                                <div class="box-body">
+                                    <section>
+                                        <div>
+                                            <div id="calendar"></div>
+                                        </div>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.tab-pane -->
+                </div>
+                <!-- /.tab-content -->
+            </div>
+            <!-- /.nav-tabs-custom -->
+        </div>
+    </section>
+
+
+
+
+
+
+
+    <script>
+
+
+        var expanded = false;
+
+        function showCheckboxes() {
+            var checkboxes = document.getElementById("checkboxes");
+            if (!expanded) {
+                checkboxes.style.display = "block";
+                expanded = true;
+            } else {
+                checkboxes.style.display = "none";
+                expanded = false;
+            }
+        }
+    </script>
+
+    <script>
+        // Get the modal
+        var modal3 = document.getElementById('myModal3');
+
+        // Get the button that opens the modal
+        var btn3 = document.getElementById("myBtn3");
+
+        // Get the <span> element that closes the modal
+        var span3 = document.getElementsByClassName("close3")[0];
+
+        // When the user clicks the button, open the modal
+        btn3.onclick = function () {
+            modal3.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span3.onclick = function () {
+            modal3.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        //window.onclick = function (event) {
+        //    if (event.target == modal) {
+        //        modal.style.display = "none";
+        //    }
+        //}
+
+
+    </script>
+
+
+
+    <script type="text/javascript">
+
+
+        var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+        var UserId = localStorage.getItem("UserId");
+        var EmployeesArr = [];
+        var EmployeesIdsArr = [];
+        var mydate = new Date("12/15/2017");
+        window.onload = function () {
+            GetEmployees();
+        }
+
+        localStorage.setItem("BookingUserId", "0");
+        function ModalClose() {
+            $('#myModal3').css("display", "none");
+        }
+
+        // $('#txtMydate').on('changeDate', function (e) {
+
+        //  $('.datepicker').datepicker('hide');
+        // });
+
+        //var tdate = $('#txtMydate').datepicker("getDate");
+
+        //$calendar.weekCalendar('gotoDate', tdate);
+
+        function ChangeDate() {
+            //if ($("#txtMydate").datepicker("widget").is(":visible")) {
+            //    $('#txtMydate').datepicker('hide');
+            //}
+            $calendar = $('#calendar').weekCalendar();
+            mydate = new Date(format($('#txtMydate').val()));
+            // alert(e.date);
+            $calendar.weekCalendar('setDaysToShow', 1);
+            $calendar.weekCalendar('gotoDate', format($('#txtMydate').val()));
+            $calendar.weekCalendar('refresh');
+            // alert(format($('#txtMydate').val()));
+
+            //  CalenderData();
+        }
+        function format(inputDate) {
+            var date = new Date(inputDate);
+            if (!isNaN(date.getTime())) {
+                var day = date.getDate().toString();
+                var month = (date.getMonth() + 1).toString();
+                // Months use 0 index.
+
+                return (month[1] ? month : '0' + month[0]) + '/' +
+                   (day[1] ? day : '0' + day[0]) + '/' +
+                   date.getFullYear();
+            }
+        }
+
+        function GetEmployees() {
+            $.ajax({
+                type: "GET",
+                url: URL + "api/Salons/GetSalonIdByUserId",
+                data: { "UserId": UserId },
+                cache: false,
+                success: function (json) {
+                    var SalonsId = json[0].SalonsId;
+                    localStorage.setItem("SchedularSalonId", SalonsId);
+                    $.ajax({
+                        type: 'GET',
+                        url: URL + "api/SalonEmployees/GetDataUserbyId?SalonsId=" + SalonsId,
+                        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                        xhrFields: {
+                            withCredentials: false
+                        },
+                        success: function (json) {
+                            if (json.length > 0) {
+                                if (json[0].Message == "Error") {
+                                }
+                                else if (json[0].Message == "NoData") {
+                                }
+                                else if (json[0].Message == "Success") {
+                                    var options = "";
+                                    var optionsto = "";
+                                    for (var i = 0; i < json.length; i++) {
+                                        if (json[i].IsActive) {
+                                            EmployeesArr.push(json[i].EmployeeName);
+                                            EmployeesIdsArr.push(json[i].SalonEmployeesId);
+
+                                            //    optionsto += '<label class="container"> One <input type="checkbox" checked="checked"><span class="checkmark"></span> </label>';
+                                            options += "<option value=" + json[i].SalonEmployeesId + ">" + json[i].EmployeeName + "</option>";
+                                            optionsto += ' <label style="margin-left:8px;" for=' + json[i].SalonEmployeesId + '> <input type="checkbox" id="chk' + json[i].SalonEmployeesId + '" onchange="EmployeeChanged(' + json[i].SalonEmployeesId + ')" value=' + json[i].EmployeeName + ' checked /> ' + json[i].EmployeeName + '</label>';
+                                        }
+                                    }
+                                    //  $('#ddlEmployees').append(options);
+                                    $('#checkboxes').append(optionsto);
+
+                                    $calendar = $('#calendar').weekCalendar();
+                                    $calendar.weekCalendar('setDaysToShow', 1);
+                                    $calendar.weekCalendar('refresh');
+                                    CalenderData();
+                                }
+                            }
+                            else {
+                                $('#dvErrorStatus').css("display", "block");
+                                $('#lblScheduler').text("Please Add Employees.");
+                                $('#preloader').hide();
+                            }
+
+                        },
+                        error: function (err) {
+                        }
+                    });
+                },
+                error: function (err) {
+                }
+            });
+        }
+
+        function EmployeeChanged(id) {
+            if ($('#chk' + id).is(':checked')) {
+                EmployeesIdsArr.push(id);
+                EmployeesArr.push($('#chk' + id).val());
+                $('#checkboxes').css("display", "none");
+                //   $("#calendar").weekCalendar("refresh");
+                CalenderData();
+                // updateMessage();
+
+            }
+            else {
+                var index = EmployeesIdsArr.indexOf(id);
+                EmployeesIdsArr.splice(index, 1);
+                EmployeesArr.splice(index, 1);
+                $('#checkboxes').css("display", "none");
+                // $("#calendar").weekCalendar("refresh");
+                CalenderData();
+                // updateMessage();
+
+            }
+            //  CalenderData();
+        }
+
+        // (function ($) {
+
+
+        //  CalenderData();
+        function CalenderData() {
+            //jQuery(function ($) {
+            //    $('#eventlist').gCalReader({
+            //        calendarId: 'q80se6543bkb40g6fv2hkpburc@group.calendar.google.com',
+            //        apiKey: 'AIzaSyC9vh_c4nfuCVn-gl78TkRRlKk1Lopd8qU',
+            //        sortDescending: false
+            //    });
+            //});
+            //$.fn.gCalReader = function (options) {
+            //    var $div = $(this);
+
+            //    var defaults = $.extend({
+            //        calendarId: 'q80se6543bkb40g6fv2hkpburc@group.calendar.google.com',
+            //        apiKey: 'AIzaSyC9vh_c4nfuCVn-gl78TkRRlKk1Lopd8qU',
+            //        clientId: '503055486067-sjblj3h1l9olfihgk8io1ur6b4svjh0s.apps.googleusercontent.com',
+            //        dateFormat: 'LongDate',
+            //        errorMsg: 'No events in calendar',
+            //        maxEvents: 50,
+            //        //   futureEventsOnly: true,
+            //        sortDescending: true
+            //    },
+            //      options);
+
+            //    var s = '';
+            //    var feedUrl = 'https://www.googleapis.com/calendar/v3/calendars/' +
+            //      encodeURIComponent(defaults.calendarId.trim()) + '/events?key=' + defaults.apiKey +
+            //      '&orderBy=startTime&singleEvents=true';
+            var titlearray = [];
+            var eventids = [];
+            var empid = [];
+            var empname = [];
+
+            $.ajax({
+                type: "GET",
+                url: URL + "api/Salons/GetSalonIdByUserId",
+                data: { "UserId": localStorage.getItem("UserId") },
+                cache: false,
+                success: function (json) {
+                    $.ajax({
+                        url: URL + "api/SalonServices/GetEmployeeBookings?SalonId=" + json[0].SalonsId,
+                        dataType: 'json',
+                        success: function (data) {
+                            localStorage.setItem("EmployeeSalonId", json[0].SalonsId);
+                            console.log("Salon data");
+                            console.log(data);
+                            $('#preloader').hide();
+                            if (data.length > 0) {
+                                var j = 0;
+                                var eventData1;
+                                var opt;
+                                var events = [];
+                                var freebusys = [];
+                                var bstarthours = 0;
+                                var bendhours = 0;
+                                var inc = 0;
+                                var businessday = [];
+                                var kcount = 0;
+                                var inccount = [];
+                                for (var i = 0; i < data.length; i++) {
+                                    var BookingDate = new Date(data[i].BookingDate);
+                                    var StartDate = new Date(data[i].StartDate);
+                                    var EndDate = new Date(data[i].EndDate);
+                                    var BookingTimes = [];
+                                    var StartTimes = [];
+                                    var EndTimes = [];
+                                    var bookingtime = data[i].BookingTime;
+                                    var StartTime = data[i].StartTime;
+                                    var EndTime = data[i].EndTime;
+                                    var bs = data[i].OpeningTime;
+                                    var bc = data[i].ClosingTime;
+                                    var bhs = [];
+                                    var dur = parseInt(data[i].Duration.replace("min", ""));
+
+                                    bhs = bs.split(':');
+                                    bstarthours = bhs[0];
+
+                                    bhs = bc.split(':');
+                                    bendhours = bhs[0];
+
+                                    BookingTimes = bookingtime.split(':');
+                                    BookingDate.setHours(BookingTimes[0]);
+                                    BookingDate.setMinutes(BookingTimes[1]);
+
+                                    StartTimes = StartTime.split(':');
+                                    StartDate.setHours(StartTimes[0]);
+                                    StartDate.setMinutes(StartTimes[1]);
+
+                                    EndTimes = EndTime.split(':');
+                                    EndDate.setHours(EndTimes[0]);
+                                    EndDate.setMinutes(EndTimes[1]);
+
+                                    //  s = '<div class="eventtitle"></div>';
+                                    s = '<div class="eventtitle">' + data[i].Service + '</div>';
+                                    titlearray.push(data[i].Service);
+                                    //titlearray.push(i);
+                                    eventids.push(i);
+                                    //   s += '<div class="eventdate"> When: ' + BookingDate, defaults.dateFormat.trim() + '</div>';
+                                    s += '<div class="description"> description </div>';
+
+                                    // $($div).append('<li>' + s + '</li>');
+                                    var year = new Date(BookingDate).getFullYear();
+                                    var month = new Date(BookingDate).getMonth();
+                                    var day = new Date(BookingDate).getDate();
+                                    empname.push(data[i].EmployeeName);
+                                    empid.push(data[i].EmployeeId);
+                                    var mytest = data[i].EmployeeId;
+                                    //  $("#calendar").weekCalendar("refresh");
+                                    //  alert(dur);
+                                    var weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                                    for (var k = 0; k < EmployeesIdsArr.length; k++) {
+                                        if (mytest == EmployeesIdsArr[k]) {
+                                            events.push(
+                                              {
+                                                  "start": new Date(year, month, day, new Date(BookingDate).getHours(), new Date(BookingDate).getMinutes()),    //your artist variable
+                                                  "end": new Date(new Date(BookingDate).getFullYear(), new Date(BookingDate).getMonth(), new Date(BookingDate).getDate(), new Date(BookingDate).getHours(), new Date(BookingDate).getMinutes() + dur),   //your title variable
+                                                  "title": titlearray[j],  //your title variable
+                                                  "id": eventids[j], "userId": k
+                                              });
+
+                                            freebusys.push(
+                                               {
+                                                   'start': new Date(new Date(StartDate).getFullYear(), new Date(StartDate).getMonth(), new Date(StartDate).getDate(), new Date(StartDate).getHours(), new Date(StartDate).getMinutes()),
+                                                   'end': new Date(new Date(EndDate).getFullYear(), new Date(EndDate).getMonth(), new Date(EndDate).getDate(), new Date(EndDate).getHours(), new Date(EndDate).getMinutes()),
+                                                   'free': false,
+                                                   'userId': k
+                                               });
+                                        }
+                                    }
+
+                                    var index = weekday.indexOf(data[i].Day);
+                                    var d = new Date();
+
+                                    d.setDate(d.getDate() + (index + 7 - d.getDay()) % 7);
+
+                                    var index3 = businessday.indexOf(data[i].Day);
+
+                                    i
+
+                                    if (index3 == -1) {
+                                        inc = 0;
+                                        inccount.push(kcount);
+                                        businessday.push(data[i].Day);
+                                    }
+
+
+                                    if (inccount.length == kcount) {
+                                        kcount = 0;
+                                        inc = inc + +7;
+                                    }
+                                    else {
+                                        kcount++;
+                                    }
+
+                                    var c = d.getDate() + inc;
+                                    d.setDate(c);
+
+                                    if (weekday[d.getDay()] == data[i].Day) {
+                                        freebusys.push(
+                                                 {
+                                                     'start': new Date(new Date(d).getFullYear(), new Date(d).getMonth(), new Date(d).getDate(), 00, 00),
+                                                     'end': new Date(new Date(d).getFullYear(), new Date(d).getMonth(), new Date(d).getDate(), 23, 59),
+                                                     'free': false,
+                                                     'userId': eventids
+                                                     //'start': new Date(new Date(StartDate).getFullYear(), new Date(StartDate).getMonth(), new Date(StartDate).getDate(), new Date(StartDate).getHours(), new Date(StartDate).getMinutes()),
+                                                     //'end': new Date(new Date(EndDate).getFullYear(), new Date(EndDate).getMonth(), new Date(EndDate).getDate(), new Date(EndDate).getHours(), new Date(EndDate).getMinutes()),
+                                                     //'free': false,
+                                                     //'userId': k
+                                                 });
+
+                                        // inc = inc + +7;
+                                    }
+                                    //  else
+                                    //  {
+                                    var index4 = EmployeesIdsArr.indexOf(data[i].EmployeeId);
+
+
+                                    //   }
+                                    eventData1 = {
+                                        events, freebusys,
+                                        options: {
+                                            timeslotsPerHour: 2,
+                                            timeslotHeight: 50,
+                                            defaultFreeBusy: { free: true }
+                                        },
+                                    }
+                                    j++;
+
+                                }
+                            }
+                            else {
+                                var eventData1 = {
+                                    options: {
+                                        timeslotsPerHour: 2,
+                                        timeslotHeight: 50,
+                                        defaultFreeBusy: { free: true }
+                                    },
+                                    events: [
+                                      { 'id': 1, 'start': new Date(year, month, day, 12), 'end': new Date(year, month, day, 13, 00), 'title': 'Lunch with Sarah', userId: [1, 2] },
+                                      { 'id': 2, 'start': new Date(year, month, day, 14), 'end': new Date(year, month, day, 14, 40), 'title': 'Team Meeting', userId: 0 },
+                                      { 'id': 3, 'start': new Date(year, month, day + 1, 18), 'end': new Date(year, month, day + 1, 18, 40), 'title': 'Meet with Joe', userId: 1 },
+                                      { 'id': 4, 'start': new Date(year, month, day - 1, 8), 'end': new Date(year, month, day - 1, 9, 20), 'title': 'Coffee with Alison', userId: 1 },
+                                      { 'id': 5, 'start': new Date(year, month, day + 1, 14), 'end': new Date(year, month, day + 1, 15, 00), 'title': 'Product showcase', userId: 0 }
+                                    ],
+                                    freebusys: [
+                                      { 'start': new Date(year, month, day - 1, 8), 'end': new Date(year, month, day - 1, 18), 'free': true, userId: [0, 1, 2, 3] },
+                                      { 'start': new Date(year, month, day, 8), 'end': new Date(year, month, day + 0, 18), 'free': true, userId: [0, 1, 2, 3] },
+                                      { 'start': new Date(year, month, day + 1, 8), 'end': new Date(year, month, day + 1, 18), 'free': true, userId: [0, 3] },
+                                      { 'start': new Date(year, month, day + 2, 14), 'end': new Date(year, month, day + 2, 18), 'free': true, userId: 1 }
+                                    ]
+                                };
+                            }
+                            console.log("eventData1");
+                            console.log(eventData1);
+                            var $calendar = '';
+                            $("#calendar").weekCalendar("refresh");
+                            $('#calendar').weekCalendar('refetchEvents');
+                            $calendar = $('#calendar').weekCalendar({
+                                timeslotsPerHour: 2,
+                                scrollToHourMillis: 0,
+                                header: {
+                                    left: 'prev,next today',
+                                    center: 'title',
+                                    right: 'month,agendaWeek,agendaDay,listWeek'
+                                },
+                                data: eventData1,
+                                height: function ($calendar) {
+                                    return $(window).height() - $('h1').outerHeight(true);
+                                },
+                                eventRender: function (calEvent, $event) {
+                                    console.log("eventData1");
+                                    console.log(calEvent);
+                                    console.log(eventData1);
+                                    $event.find(".closeon").click(function () {
+                                        $('#calendar').fullCalendar('removeEvents', event._id);
+                                    });
+
+                                    if (calEvent.end.getTime() < new Date().getTime()) {
+                                        $event.css('backgroundColor', '#aaa');
+                                        $event.find('.wc-time').css({
+                                            backgroundColor: '#999',
+                                            border: '1px solid #888'
+                                        });
+                                    }
+                                    $('#preloader').hide();
+                                },
+                                eventClick: function (calEvent, element, dayFreeBusyManager,
+                                            calendar, clickEvent) {
+                                    var StartDate = new Date(calEvent.start);
+                                    var EndDate = new Date(calEvent.end);
+                                    //  alert(StartDate.toLocaleString());
+                                    $('#lblBody').text('');
+                                    var tab = '<br />Service : <p class="form-control">' + calEvent.title + '</p>' +
+                                        '<br />Start Time : <p class="form-control">' + StartDate.toLocaleString() + '</p>' +
+                                        '<br />End Time : <p class="form-control">' + EndDate.toLocaleString() + '</p>';
+                                    $('#lblBody').append(tab);
+                                    $('#myModal3').css("display", "block");
+                                    console.log("hello");
+                                    console.log(calEvent);
+                                },
+                                eventRefresh: function (calEvent, element) {
+                                    // alert(calEvent)
+                                    //$calendar = $('#calendar').weekCalendar();
+                                    //$calendar.weekCalendar('refresh');
+                                    return element;
+                                },
+                                calendarAfterLoad: function (calendar) {
+                                    // alert("hii");
+                                    //$("#calendar").weekCalendar("refresh");
+                                    //$('#calendar').weekCalendar('refetchEvents');
+                                },
+                                gotoDate: function (date) {
+
+                                    this._clearCalendar();
+                                    this._loadCalEvents(date);
+                                },
+                                eventNew: function (calEvent, $event, FreeBusyManager, calendar) {
+
+                                    var isFree = true;
+                                    GetSalonServices(calEvent.userId);
+                                    localStorage.setItem("CalEmployeeId", calEvent.userId);
+                                    localStorage.setItem("calEventstart", calEvent.start);
+                                    localStorage.setItem("calEventend", calEvent.end);
+                                    var d3 = new Date(calEvent.start);
+                                    var d4 = new Date(calEvent.end);
+                                    var time3 = ("0" + d3.getHours()).slice(-2) + ":" + ("0" + d3.getMinutes()).slice(-2);
+                                    var time4 = ("0" + d4.getHours()).slice(-2) + ":" + ("0" + d4.getMinutes()).slice(-2);
+                                    StarttimeEndTimeJobTitle(time3, time4);
+                                    var day3 = ("0" + d3.getDate()).slice(-2);
+                                    var month3 = ("0" + (d3.getMonth() + 1)).slice(-2);
+
+                                    var today3 = d3.getFullYear() + "-" + (month3) + "-" + (day3);
+
+                                    var day4 = ("0" + d4.getDate()).slice(-2);
+                                    var month4 = ("0" + (d4.getMonth() + 1)).slice(-2);
+
+                                    var today4 = d4.getFullYear() + "-" + (month4) + "-" + (day4);
+
+                                    $('#txtStartDate').val(today3);
+                                    $('#txtEndDate').val(today4);
+
+                                    $.each(FreeBusyManager.getFreeBusys(calEvent.start, calEvent.end), function () {
+                                        if (
+                                          this.getStart().getTime() != calEvent.end.getTime()
+                                          && this.getEnd().getTime() != calEvent.start.getTime()
+                                          && !this.getOption('free')
+                                        ) {
+                                            isFree = false;
+                                            return false;
+                                        }
+                                    });
+
+                                    if (!isFree) {
+                                        //   alert('looks like you tried to add an event on busy part !');
+                                        alert('looks like you tried to add an event on busy part !');
+                                        //  $('.modal-content3').css("height", "150px !important");
+                                        // $('#myModal3').css("display", "block");
+                                        $(calendar).weekCalendar('removeEvent', calEvent.id);
+                                        return false;
+                                    }
+                                    //  alert('You\'ve added a new event. You would capture this event, add the logic for creating a new event with your own fields, data and whatever backend persistence you require.');
+
+                                    calEvent.id = calEvent.userId + '_' + calEvent.start.getTime();
+                                    $(calendar).weekCalendar('updateFreeBusy', {
+                                        userId: calEvent.userId,
+                                        start: calEvent.start,
+                                        end: calEvent.end,
+                                        free: false
+                                    });
+                                    var dt = new Date();
+                                    var cdt = new Date(calEvent.start);
+                                    if (cdt > dt) {
+                                        $('#myModal').css("display", "block");
+
+                                    }
+                                    else {
+                                        // alert("Please Choose Future date");
+                                        alert('Please Choose Future date');
+                                        // $('.modal-content3').css("height", "150px !important");
+                                        //   $('#myModal3').css("display", "block");
+                                        $(calendar).weekCalendar('removeEvent', calEvent.id);
+                                    }
+                                },
+                                data: function (start, end, callback) {
+                                    var dataSource = "1";
+                                    if (dataSource === "1") {
+                                        callback(eventData1);
+                                    } else if (dataSource === '2') {
+                                        callback(eventData2);
+                                    } else {
+                                        callback({
+                                            options: {
+                                                defaultFreeBusy: {
+                                                    free: true
+                                                }
+                                            },
+                                            events: []
+                                        });
+                                    }
+                                },
+                                users: EmployeesArr,
+                                showAsSeparateUser: true,
+                                displayOddEven: true,
+                                displayFreeBusys: true,
+                                //  businessHours: { start: bstarthours, end: bendhours, limitDisplay: true },
+                                //  businessHours: { start: bstarthours, end: bendhours, limitDisplay: true },
+                                buttons: true,
+                                buttonText: {
+                                    today: 'today',
+                                    lastWeek: 'previous',
+                                    nextWeek: 'next'
+                                },
+
+                                //  daysToShow: 1,
+                                switchDisplay: { '1 day': 1, 'full week': 7, 'month': 30 },
+                                //  switchDisplay: {},
+                                headerSeparator: ' ',
+                                //useShortDayNames: true,
+                                defaultFreeBusy: { free: true },
+                                date: mydate,
+                                hourLine: true,
+
+
+                                // I18N
+                                //  firstDayOfWeek: $.datepicker.regional['fr'].firstDay,
+                                //   shortDays: $.datepicker.regional['fr'].dayNamesShort,
+                                //  longDays: $.datepicker.regional['fr'].dayNames,
+                                //  shortMonths: $.datepicker.regional['fr'].monthNamesShort,
+                                //  longMonths: $.datepicker.regional['fr'].monthNames,
+                                // dateFormat: 'd F y'
+                            });
+                            $calendar.weekCalendar('refresh');
+                        }
+                    });
+                }
+            });
+
+            //$.ajax({
+            //    url: feedUrl,
+            //    dataType: 'json',
+            //    success: function (data) {
+            //        console.log(data);
+            //        if (defaults.sortDescending) {
+            //            data.items = data.items.reverse();
+            //        }
+            //        data.items = data.items.slice(0, defaults.maxEvents);
+            //        var j = 0;
+            //        var eventData1;
+            //        var opt;
+            //        var events = [];
+            //        var freebusys = [];
+            //        $.each(data.items, function (e, item) {
+            //            console.log("e");
+            //            console.log(item);
+            //            var eventdate = item.start.dateTime || item.start.date || '';
+            //            var summary = item.summary || '';
+            //            var description = item.description;
+            //            var location = item.location;
+            //            s = '<div class="eventtitle">' + summary + '</div>';
+            //            titlearray.push(summary);
+            //            eventids.push(item.id);
+            //            s += '<div class="eventdate"> When: ' + formatDate(eventdate, defaults.dateFormat.trim()) + '</div>';
+            //            if (location) {
+            //                s += '<div class="location">Where: ' + location + '</div>';
+            //            }
+            //            if (description) {
+            //                s += '<div class="description">' + description + '</div>';
+            //            }
+            //            $($div).append('<li>' + s + '</li>');
+            //            var year = new Date(item.start.dateTime).getFullYear();
+            //            var month = new Date(item.start.dateTime).getMonth();
+            //            var day = new Date(item.start.dateTime).getDate();
+            //             events.push(
+            //                {
+            //                "start": new Date(year, month, day, new Date(item.start.dateTime).getHours(), new Date(item.start.dateTime).getMinutes()),    //your artist variable
+            //                "end": new Date(new Date(item.end.dateTime).getFullYear(), new Date(item.end.dateTime).getMonth(), new Date(item.end.dateTime).getDate(), new Date(item.end.dateTime).getHours(), new Date(item.end.dateTime).getMinutes()),   //your title variable
+            //                "title": titlearray[j],  //your title variable
+            //                "id": eventids[j], "userId": EmployeesIdsArr
+            //                });
+            //             freebusys.push(
+            //                      { 'start': new Date(year, month, day, new Date(item.start.dateTime).getHours(), new Date(item.start.dateTime).getMinutes()),
+            //                         'end': new Date(new Date(item.end.dateTime).getFullYear(), new Date(item.end.dateTime).getMonth(), new Date(item.end.dateTime).getDate(), new Date(item.end.dateTime).getHours(), new Date(item.end.dateTime).getMinutes()),
+            //                         'free': true,
+            //                         userId: EmployeesIdsArr
+            //                     });
+            //              eventData1 = {
+            //               events, freebusys,
+            //                options: {
+            //                    timeslotsPerHour: 4,
+            //                    timeslotHeight: 20,
+            //                    defaultFreeBusy: { free: true }
+            //                },
+            //            }
+            //            j++;
+            //          //  eventData1.push(opt);
+            //            console.log("opt");
+            //            console.log(eventData1);
+            //            $('.wc-hour-header ui-state-default').css("margin-top", "-234px !important");
+            //        });
+            //        var $calendar = $('#calendar').weekCalendar({
+            //            timeslotsPerHour: 4,
+            //            scrollToHourMillis: 0,
+            //            data: eventData1,
+            //            height: function ($calendar) {
+            //                return $(window).height() - $('h1').outerHeight(true);
+            //            },
+            //            eventRender: function (calEvent, $event) {
+            //                console.log("eventData1");
+            //                console.log(calEvent);
+            //                if (calEvent.end.getTime() < new Date().getTime()) {
+            //                    $event.css('backgroundColor', '#aaa');
+            //                    $event.find('.wc-time').css({
+            //                        backgroundColor: '#999',
+            //                        border: '1px solid #888'
+            //                    });
+            //                }
+            //            },
+            //            eventNew: function (calEvent, $event, FreeBusyManager, calendar) {
+            //                var isFree = true;
+            //                $.each(FreeBusyManager.getFreeBusys(calEvent.start, calEvent.end), function () {
+            //                    if (
+            //                      this.getStart().getTime() != calEvent.end.getTime()
+            //                      && this.getEnd().getTime() != calEvent.start.getTime()
+            //                      && !this.getOption('free')
+            //                    ) {
+            //                        isFree = false;
+            //                        return false;
+            //                    }
+            //                });
+            //                if (!isFree) {
+            //                    alert('looks like you tried to add an event on busy part !');
+            //                    $(calendar).weekCalendar('removeEvent', calEvent.id);
+            //                    return false;
+            //                }
+            //                alert('You\'ve added a new event. You would capture this event, add the logic for creating a new event with your own fields, data and whatever backend persistence you require.');
+            //                calEvent.id = calEvent.userId + '_' + calEvent.start.getTime();
+            //                $(calendar).weekCalendar('updateFreeBusy', {
+            //                    userId: calEvent.userId,
+            //                    start: calEvent.start,
+            //                    end: calEvent.end,
+            //                    free: false
+            //                });
+            //            },
+            //            data: function (start, end, callback) {
+            //                var dataSource = "1";
+            //                if (dataSource === '1') {
+            //                    callback(eventData1);
+            //                } else if (dataSource === '2') {
+            //                    callback(eventData2);
+            //                } else {
+            //                    callback({
+            //                        options: {
+            //                            defaultFreeBusy: {
+            //                                free: true
+            //                            }
+            //                        },
+            //                        events: []
+            //                    });
+            //                }
+            //            },
+            //            users: EmployeesArr,
+            //          //  showAsSeparateUser: true,
+            //            displayOddEven: true,
+            //            displayFreeBusys: true,
+            //          //  daysToShow: 1,
+            //            switchDisplay: { '1 day': 1, 'full week': 7 },
+            //            headerSeparator: ' ',
+            //            useShortDayNames: true,
+            //            // I18N
+            //          //  firstDayOfWeek: $.datepicker.regional['fr'].firstDay,
+            //         //   shortDays: $.datepicker.regional['fr'].dayNamesShort,
+            //          //  longDays: $.datepicker.regional['fr'].dayNames,
+            //          //  shortMonths: $.datepicker.regional['fr'].monthNamesShort,
+            //          //  longMonths: $.datepicker.regional['fr'].monthNames,
+            //           // dateFormat: 'd F y'
+            //        });
+            //      },
+            //    error: function (error) {
+            //        $($div).append('<p>' + defaults.errorMsg + ' | ' + error + '</p>');
+            //    }
+            //});
+
+            function formatDate(strDate, strFormat) {
+                var fd, arrDate, am, time;
+                var calendars = {
+                    months: {
+                        full: ['', 'January', 'February', 'March', 'April', 'May',
+                          'June', 'July', 'August', 'September', 'October',
+                          'November', 'December'
+                        ],
+                        short: ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul',
+                          'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+                        ]
+                    },
+                    days: {
+                        full: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+                          'Friday', 'Saturday', 'Sunday'
+                        ],
+                        short: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat',
+                          'Sun'
+                        ]
+                    }
+                };
+
+                if (strDate.length > 10) {
+                    arrDate = /(\d+)\-(\d+)\-(\d+)T(\d+)\:(\d+)/.exec(strDate);
+
+                    am = (arrDate[4] < 12);
+                    time = am ? (parseInt(arrDate[4]) + ':' + arrDate[5] + ' AM') : (
+                      arrDate[4] - 12 + ':' + arrDate[5] + ' PM');
+
+                    if (time.indexOf('0') === 0) {
+                        if (time.indexOf(':00') === 1) {
+                            if (time.indexOf('AM') === 5) {
+                                time = 'MIDNIGHT';
+                            } else {
+                                time = 'NOON';
+                            }
+                        } else {
+                            time = time.replace('0:', '12:');
+                        }
+                    }
+
+                } else {
+                    arrDate = /(\d+)\-(\d+)\-(\d+)/.exec(strDate);
+                    time = 'Time not present in feed.';
+                }
+
+                var year = parseInt(arrDate[1]);
+                var month = parseInt(arrDate[2]);
+                var dayNum = parseInt(arrDate[3]);
+
+                var d = new Date(year, month - 1, dayNum);
+
+                switch (strFormat) {
+                    case 'ShortTime':
+                        fd = time;
+                        break;
+                    case 'ShortDate':
+                        fd = month + '/' + dayNum + '/' + year;
+                        break;
+                    case 'LongDate':
+                        fd = calendars.days.full[d.getDay()] + ' ' + calendars.months.full[
+                          month] + ' ' + dayNum + ', ' + year;
+                        break;
+                    case 'LongDate+ShortTime':
+                        fd = calendars.days.full[d.getDay()] + ' ' + calendars.months.full[
+                          month] + ' ' + dayNum + ', ' + year + ' ' + time;
+                        break;
+                    case 'ShortDate+ShortTime':
+                        fd = month + '/' + dayNum + '/' + year + ' ' + time;
+                        break;
+                    case 'DayMonth':
+                        fd = calendars.days.short[d.getDay()] + ', ' + calendars.months.full[
+                          month] + ' ' + dayNum;
+                        break;
+                    case 'MonthDay':
+                        fd = calendars.months.full[month] + ' ' + dayNum;
+                        break;
+                    case 'YearMonth':
+                        fd = calendars.months.full[month] + ' ' + year;
+                        break;
+                    default:
+                        fd = calendars.days.full[d.getDay()] + ' ' + calendars.months.short[
+                          month] + ' ' + dayNum + ', ' + year + ' ' + time;
+                }
+                return fd;
+            }
+            //    };
+
+            var d = new Date();
+            d.setDate(d.getDate() - d.getDay());
+            var year = d.getFullYear();
+            var month = d.getMonth();
+            var day = d.getDate();
+
+            var eventData1s = {
+                options: {
+                    timeslotsPerHour: 2,
+                    timeslotHeight: 50,
+                    defaultFreeBusy: { free: true }
+                },
+                events: [
+                  { 'id': 1, 'start': new Date(year, month, day, 12), 'end': new Date(year, month, day, 13, 30), 'title': 'Lunch with Mike', userId: 0 },
+                  { 'id': 2, 'start': new Date(year, month, day, 14), 'end': new Date(year, month, day, 14, 45), 'title': 'Dev Meeting', userId: 1 },
+                  { 'id': 3, 'start': new Date(year, month, day + 1, 18), 'end': new Date(year, month, day + 1, 18, 45), 'title': 'Hair cut', userId: 1 },
+                  { 'id': 4, 'start': new Date(year, month, day + 2, 8), 'end': new Date(year, month, day + 2, 9, 30), 'title': 'Team breakfast', userId: 0 },
+                  { 'id': 5, 'start': new Date(year, month, day + 1, 14), 'end': new Date(year, month, day + 1, 15), 'title': 'Product showcase', userId: 1 }
+                ],
+                freebusys: [
+                  { 'start': new Date(year, month, day), 'end': new Date(year, month, day + 3), 'free': false, userId: [0, 1, 2, 3] },
+                  { 'start': new Date(year, month, day, 8), 'end': new Date(year, month, day, 12), 'free': true, userId: [0, 1, 2, 3] },
+                  { 'start': new Date(year, month, day + 1, 8), 'end': new Date(year, month, day + 1, 12), 'free': true, userId: [0, 1, 2, 3] },
+                  { 'start': new Date(year, month, day + 2, 8), 'end': new Date(year, month, day + 2, 12), 'free': true, userId: [0, 1, 2, 3] },
+                  { 'start': new Date(year, month, day + 1, 14), 'end': new Date(year, month, day + 1, 18), 'free': true, userId: [0, 1, 2, 3] },
+                  { 'start': new Date(year, month, day + 2, 8), 'end': new Date(year, month, day + 2, 12), 'free': true, userId: [0, 3] },
+                  { 'start': new Date(year, month, day + 2, 14), 'end': new Date(year, month, day + 2, 18), 'free': true, userId: 1 }
+                ]
+            };
+            console.log("eventData1s");
+            console.log(eventData1s);
+            d = new Date();
+            d.setDate(d.getDate() - (d.getDay() - 3));
+            year = d.getFullYear();
+            month = d.getMonth();
+            day = d.getDate();
+
+            var eventData2 = {
+                options: {
+                    timeslotsPerHour: 2,
+                    timeslotHeight: 50,
+                    defaultFreeBusy: { free: false }
+                },
+                events: [
+                  { 'id': 1, 'start': new Date(year, month, day, 12), 'end': new Date(year, month, day, 13, 00), 'title': 'Lunch with Sarah', userId: [1, 2] },
+                  { 'id': 2, 'start': new Date(year, month, day, 14), 'end': new Date(year, month, day, 14, 40), 'title': 'Team Meeting', userId: 0 },
+                  { 'id': 3, 'start': new Date(year, month, day + 1, 18), 'end': new Date(year, month, day + 1, 18, 40), 'title': 'Meet with Joe', userId: 1 },
+                  { 'id': 4, 'start': new Date(year, month, day - 1, 8), 'end': new Date(year, month, day - 1, 9, 20), 'title': 'Coffee with Alison', userId: 1 },
+                  { 'id': 5, 'start': new Date(year, month, day + 1, 14), 'end': new Date(year, month, day + 1, 15, 00), 'title': 'Product showcase', userId: 0 }
+                ],
+                freebusys: [
+                  { 'start': new Date(year, month, day - 1, 8), 'end': new Date(year, month, day - 1, 18), 'free': true, userId: [0, 1, 2, 3] },
+                  { 'start': new Date(year, month, day, 8), 'end': new Date(year, month, day + 0, 18), 'free': true, userId: [0, 1, 2, 3] },
+                  { 'start': new Date(year, month, day + 1, 8), 'end': new Date(year, month, day + 1, 18), 'free': true, userId: [0, 3] },
+                  { 'start': new Date(year, month, day + 2, 14), 'end': new Date(year, month, day + 2, 18), 'free': true, userId: 1 }
+                ]
+            };
+        }
+        function updateMessage() {
+            var dataSource = "1";
+
+            $('#message').fadeOut(function () {
+                if (dataSource === '1') {
+                    $('#message').text('Displaying event data set 1 with timeslots per hour of 4 and timeslot height of 20px. Moreover, the calendar is free by default.');
+                } else if (dataSource === '2') {
+                    $('#message').text('Displaying event data set 2 with timeslots per hour of 3 and timeslot height of 30px. Moreover, the calendar is busy by default.');
+                } else {
+                    $('#message').text('Displaying no events.');
+                }
+
+                $(this).fadeIn();
+            });
+        }
+
+        $(document).ready(function () {
+            //alert(eventData1);
+
+            $('#data_source').change(function () {
+                $calendar.weekCalendar('refresh');
+                updateMessage();
+            });
+
+            updateMessage();
+        });
+        // })(jQuery);
+    </script>
+
+
+    <script>
+        // Get the modal
+        var modal = document.getElementById('myModal');
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("myBtn");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks the button, open the modal
+        //btn.onclick = function() {
+        //    modal.style.display = "block";
+        //}
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+
+        function GetCustomers() {
+            $("#txtCustomerName").autocomplete({
+                source: function (request, response) {
+                    //   alert($("#txtCustomerName").val());
+                    $.ajax({
+                        url: URL + "api/Customers/GetCustomersBySearch",
+                        data: { 'prefix': $("#txtCustomerName").val() },
+                        dataType: "json",
+                        type: "GET",
+                        // contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item.LastName + " " + item.FirstName,
+                                    val: item.CustomerId
+                                }
+                            }))
+                        },
+                        error: function (response) {
+                            // alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            //  alert(response.responseText);
+                        }
+                    });
+                },
+                select: function (e, i) {
+                    $("#txtCustomerName").val(i.item.val);
+                    localStorage.setItem("BookingUserId", i.item.val);
+
+                },
+                minLength: 1
+            });
+
+
+        }
+
+        function GetSalonServices(id) {
+            $.ajax({
+                url: URL + "api/SalonServices/GetEmployeeServices",
+                data: { 'EmployeeId': EmployeesIdsArr[id] },
+                dataType: "json",
+                type: "GET",
+                success: function (data) {
+                    var tab = "";
+                    for (var i = 0; i < data.length; i++) {
+                        tab += "<option value='" + data[i].EmployeeServiceId + " - " + data[i].SalonServicesId + "'>" + data[i].Service + "</option>";
+                    }
+                    $('#ddlServices').text("");
+                    $('#ddlServices').append(tab);
+                    GetPrice();
+                },
+                error: function (response) {
+                    //  alert(response.responseText);
+                },
+                failure: function (response) {
+                    //   alert(response.responseText);
+                }
+            });
+        }
+
+
+
+        function GetPrice() {
+            var serviceid = $('#ddlServices').val();
+            var serids = [];
+            serids = serviceid.split('-');
+            $.ajax({
+                type: "GET",
+                url: URL + "api/SalonServices/GetEmployeeServicesPrice?ServiceId=" + serids[0],
+                cache: false,
+                success: function (data) {
+                    //  alert(data[0].Message);
+                    //  alert(data[0].Duration);
+                    localStorage.setItem("serviceprice", data[0].Price);
+                    getSalonTimes(data[0].SalonServicesId, data[0].Duration);
+                },
+            });
+        }
+
+        function SaveService() {
+            var bookingdate = localStorage.getItem("calEventstart");
+            var now = new Date(bookingdate);
+            var day = ("0" + now.getDate()).slice(-2);
+            var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+            var today = now.getFullYear() + "-" + (month) + "-" + (day);
+
+            var hours = ("0" + now.getHours()).slice(-2);
+            var minutes = ("0" + now.getMinutes()).slice(-2);
+
+            //var time = hours + ":" + minutes;
+            var time = $('#ddlBookingServiceTime').val();
+            // alert(localStorage.getItem("BookingUserId"));
+            //  localStorage.setItem("calEventend", calEvent.end);
+            if (time != '' && $('#ddlServices').val() != '' && $('#ddlServices').val() != "0" && localStorage.getItem("BookingUserId") != '0') {
+                var bookingtype = "Appointments";
+                var serviceid = $('#ddlServices').val();
+                var serids = [];
+                serids = serviceid.split('-');
+                $.ajax({
+                    url: URL + "api/SalonCheckout/InsertNew1?EmployeeServicesId=" + serids[0] + "&BookingDate=" + today + "&BookingTime=" + time + "&PaymentStatus=Pending&PaymentType=PAYATVENUE&IsAcitve=1&CreatedDate=" + today + "&SalonsId=" + localStorage.getItem("EmployeeSalonId") + "&SalonServicesId=" + serids[1] + "&BookingType=" + bookingtype,
+                    //   data: { 'EmployeeId': EmployeesIdsArr[id] },
+                    dataType: "json",
+                    type: "GET",
+                    success: function (data) {
+                        UpdatePrice(data[0].PaymentsId, serids[1]);
+                        $.ajax({
+                            type: 'GET',
+                            url: URL + "api/Payment/UpdateNew",
+                            data: {
+                                "UserId": localStorage.getItem("BookingUserId"), "PaymentType": "PAYATVENUE",
+                                "PaymentStatus": "Pending", "IsActive": "0", "PaymentsId": data[0].PaymentsId,
+                                "Isthisforyou": "1", "ReferenceName": "",
+                                "OriginalAmount": localStorage.getItem("serviceprice"), "DiscountAmount": "0", "PayableAmount": localStorage.getItem("serviceprice"),
+                                "CouponCode": "0", "VoucherTypeId": "0"
+                            },
+                            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                            xhrFields: {
+                                withCredentials: false
+                            },
+                            success: function (data) {
+                                alert("Added Successfully");
+
+                                $('#myModal').css("display", "none");
+                                // location.reload();
+                                CalenderData();
+                                $calendar = $('#calendar').weekCalendar();
+                                $calendar.weekCalendar('refresh');
+
+                            },
+                            error: function () {
+                                //   alert("error");
+                                // window.location.href = WEBURL+"Salon/PaymentFailed";
+                            }
+                        });
+                    },
+                    error: function (response) {
+                        //   alert(response.responseText);
+                    },
+                    failure: function (response) {
+                        //   alert(response.responseText);
+                    }
+                });
+            }
+            else {
+                if ($('#ddlServices').val() == "0" || $('#ddlServices').val() == "") {
+                    alert("Please Select Service");
+                }
+                else if (time == "") {
+                    alert("Timings are Not Available");
+                }
+                else if (localStorage.getItem("BookingUserId") == '0') {
+                    alert("Please Enter Customer Name");
+                }
+
+            }
+        }
+
+        function StarttimeEndTimeJobTitle(t1, t2) {
+            $.ajax({
+                type: "GET",
+                url: URL + "api/StartTime/GetData",
+                cache: false,
+                success: function (data) {
+                    var k = 0;
+                    for (var i = 0; i < data.length; i++) {
+                        if (t1 == data[i].StartTime) {
+                            k = data[i].StartTimeId;
+                        }
+                        var opt = new Option(data[i].StartTime, data[i].StartTimeId);
+                        $("#ddlStartTime").val("");
+                        $('#ddlStartTime').append(opt);
+                    }
+                    $("#ddlStartTime").val(k);
+                },
+            });
+            $.ajax({
+                type: "GET",
+                url: URL + "api/EndTime/GetData",
+                cache: false,
+                success: function (data) {
+                    var k = 0;
+                    for (var i = 0; i < data.length; i++) {
+                        if (t2 == data[i].EndTime) {
+                            k = data[i].EndTimeId;
+                        }
+                        var opt = new Option(data[i].EndTime, data[i].EndTimeId);
+                        $("#ddlEndTime").val("");
+                        $('#ddlEndTime').append(opt);
+                    }
+                    $("#ddlEndTime").val(k);
+                },
+            });
+
+
+        }
+
+        function BlockTime() {
+
+            //  localStorage.setItem("calEventend", calEvent.end);
+            if ($('#ddlStartTime').val() != '0' && $('#ddlEndTime').val() != '0') {
+                $.ajax({
+                    url: URL + "api/SalonServices/updateEmployeeUnavaialble?StartDate=" + $('#txtStartDate').val() + "&StartTime=" + $('#ddlStartTime').val() + "&EndDate=" + $('#txtEndDate').val() + "&EndTime=" + $('#ddlEndTime').val() + "&EmployeeId=" + EmployeesIdsArr[localStorage.getItem("CalEmployeeId")],
+                    //   data: { 'EmployeeId': EmployeesIdsArr[id] },
+                    dataType: "json",
+                    type: "GET",
+                    success: function (data) {
+
+                        $('#myModal').css("display", "none");
+                        location.reload();
+                    },
+                    error: function (response) {
+                        //  alert(response.responseText);
+                    },
+                    failure: function (response) {
+                        //  alert(response.responseText);
+                    }
+                });
+            }
+            else {
+                if ($('#ddlStartTime').val() != '0') {
+                    //  $('#txtErrorStatus').text('Please Select Start Time');
+                    /////   $('#myModal3').css("display", "block");
+                    alert("Please Select Start Time");
+                }
+                if ($('#ddlEndTime').val() != '0') {
+                    //   $('#txtErrorStatus').text('Please Select End Time');
+                    // $('#myModal3').css("display", "block");
+                    alert("Please Select End Time");
+                }
+            }
+        }
+
+
+        function getSalonTimes(id, dur) {
+            var bookingdate = localStorage.getItem("calEventstart");
+            var now = new Date(bookingdate);
+            var day = ("0" + now.getDate()).slice(-2);
+            var month = ("0" + (now.getMonth() + 1)).slice(-2);
+            var duration2 = dur.replace("min", "");
+            var today = now.getFullYear() + "-" + (month) + "-" + (day);
+            $.ajax({
+                type: 'GET',
+                url: URL + 'api/Search/ViewEmployeeAvailableTimings',
+                data: {
+                    "SalonServicesId": id,
+                    "SalonEmployeesId": EmployeesIdsArr[localStorage.getItem("CalEmployeeId")],
+                    "Date": today,
+                    "SalonsId": localStorage.getItem("EmployeeSalonId")
+                },
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                xhrFields: {
+                    withCredentials: false
+                },
+                success: function (data) {
+                    console.log("timings");
+                    console.log(data);
+                    if (data[0].Message == "Success") {
+                        var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                        //var bookingdate = $('#selectedDate').val();
+                        //var Price = $('#original_order' + $('#radioservice:checked').val()).text();
+
+                        //var bdate = new Date(bookingdate);
+                        //var count = bdate.getDay();
+                        var Price = "0";
+                        if (EmployeesIdsArr[localStorage.getItem("CalEmployeeId")] == '0') {
+                            alert("please select employee");
+                        } else {
+                            //   $('#selectable').text("");
+                            var StartTime = data[0].BStartTime;
+                            var EndTime = data[0].BEndTime;
+                            var BookedTime = data[0].BookingTime;
+                            var MyBlockedServicesIdArr = [];
+
+                            var countvalue = id;
+                            var duration = "";// $('#txtDuration' + countvalue).text();
+                            duration = duration2;
+
+                            var cleanuptime = data[0].CleanUpTime;
+                            cleanuptime = cleanuptime.slice(0, -3);
+                            //  alert(duration+" = "+cleanuptime);
+                            duration = parseFloat(duration) + parseFloat(cleanuptime);
+                            var serverdate = today;
+
+                            var dm = new Date();
+                            var servertime = dm.getHours() + ":" + dm.getMinutes();
+
+
+                            // salon available timings
+                            var starttimearray = [];
+                            var endtimearray = [];
+                            starttimearray = StartTime.split(':');
+                            endtimearray = EndTime.split(':');
+
+                            var repeatstarttime = parseInt(starttimearray[0]);
+                            var repeatendtime = parseInt(starttimearray[1]);
+
+                            var repeatstarttime2 = parseInt(starttimearray[0]);
+                            var repeatendtime2 = parseInt(starttimearray[1]);
+
+
+                            // total minutes
+                            var starttimeminutes = (repeatstarttime * 60) + repeatendtime;
+                            var endtimeminutes = (parseInt(endtimearray[0]) * 60) + parseInt(endtimearray[1]);
+                            var totalduration = (endtimeminutes - starttimeminutes) / parseInt(duration);
+
+
+                            var unavailabletime = data[0].UnStartTime;
+                            var unavailableendtime = data[0].UnEndTime;
+
+                            // employee unavailability timings
+                            var unavaialbalearray = [];
+                            unavaialbalearray = unavailabletime.split(':');
+                            var unavailablestarttime1 = parseInt(unavaialbalearray[0]);
+                            var unavailablestarttime2 = parseInt(unavaialbalearray[1]);
+
+                            var unavailableendtimearray = [];
+                            unavailableendtime = unavailableendtime.split(':');
+                            var unavailableendtime1 = parseInt(unavailableendtime[0]);
+                            var unavailableendtime2 = parseInt(unavailableendtime[1]);
+
+                            var unavailabletotalhourstimingsarray = [];
+                            var unavailabletotalminutestimingsarray = [];
+
+                            var unstarttimeminutes = (unavailablestarttime1 * 60) + unavailablestarttime2;
+                            var unendtimeminutes = (unavailableendtime1 * 60) + unavailableendtime2;
+
+                            var totalduration2 = (unendtimeminutes - unstarttimeminutes) / parseInt(duration);
+
+
+                            for (var i = 0; i < totalduration2; i++) {
+                                if (unavailablestarttime2 >= 60) {
+                                    unavailablestarttime2 = unavailablestarttime2 - 60;
+                                    unavailablestarttime1 = unavailablestarttime1 + 1;
+                                    unavailabletotalhourstimingsarray.push(unavailablestarttime1);
+                                    unavailabletotalminutestimingsarray.push(unavailablestarttime2);
+                                    unavailablestarttime2 = unavailablestarttime2 + parseInt(duration);
+                                } else {
+                                    unavailabletotalhourstimingsarray.push(unavailablestarttime1);
+                                    unavailabletotalminutestimingsarray.push(unavailablestarttime2);
+                                    unavailablestarttime2 = unavailablestarttime2 + parseInt(duration);
+                                }
+                            }
+
+                            var openinghoursstarttimearray = [];
+                            var openingminutesstarttimearray = [];
+                            var dummyarray = [];
+
+                            var startopeninghour1 = parseInt(starttimearray[0]);
+                            var startopeningminute1 = parseInt(starttimearray[1]);
+
+                            var endopeninghour2 = parseInt(endtimearray[0]);
+                            var endopeningminute2 = parseInt(endtimearray[1]);
+
+
+                            for (var i = 0; i < totalduration; i++) {
+                                if (startopeningminute1 >= 60) {
+                                    var diff = startopeningminute1 / 60;
+                                    startopeningminute1 = startopeningminute1 - (60 * parseInt(diff));
+                                    startopeninghour1 = startopeninghour1 + parseInt(diff);
+                                    openinghoursstarttimearray.push(startopeninghour1);
+                                    openingminutesstarttimearray.push(startopeningminute1);
+                                    dummyarray.push(i + "-" + startopeningminute1);
+                                    startopeningminute1 = startopeningminute1 + parseInt(duration);
+                                } else {
+                                    openinghoursstarttimearray.push(startopeninghour1);
+                                    openingminutesstarttimearray.push(startopeningminute1);
+                                    dummyarray.push(i + "-" + startopeningminute1);
+                                    startopeningminute1 = startopeningminute1 + parseInt(duration);
+                                }
+                            }
+                            //  alert(openingminutesstarttimearray);
+                            //if (parseInt(unavaialbalearray[0]) == repeatstarttime && parseInt(unavaialbalearray[1]) == repeatendtime) {
+                            //    repeatendtime = repeatendtime + parseInt(duration);
+                            //}
+                            //else
+                            for (var i = 0; i < totalduration; i++) {
+                                for (var j = 0; j < unavailabletotalhourstimingsarray.length; j++) {
+                                    //
+                                    if (parseInt(unavailabletotalhourstimingsarray[j]) == parseInt(openinghoursstarttimearray[i]) && parseInt(unavailabletotalminutestimingsarray[j]) == parseInt(openingminutesstarttimearray[i])) {
+                                        var index = openinghoursstarttimearray.indexOf(parseInt(openinghoursstarttimearray[i]));
+                                        openinghoursstarttimearray.splice(index, 1);
+
+                                        var index1 = dummyarray.indexOf(dummyarray[i]);
+                                        openingminutesstarttimearray.splice(index1, 1);
+                                        // alert(openinghoursstarttimearray);
+                                        //   repeatendtime = repeatendtime + parseInt(duration);
+                                        //  alert("if");
+                                        //   alert(parseInt(unavailabletotalhourstimingsarray[j]) + " == " + parseInt(openinghoursstarttimearray[i]));
+                                        //  alert(parseInt(unavailabletotalminutestimingsarray[j]) + " == " + parseInt(openingminutesstarttimearray[i]));
+                                    } else {
+
+                                        // $('#selectable').append('<li class="ui-widget-content" id="09:00">' + openinghoursstarttimearray[i] + ':' + openingminutesstarttimearray[i] + '<span class="price pull-right"> £30.00</span></li>');
+
+                                        //   alert("else");
+                                        //   alert(parseInt(openinghoursstarttimearray[i]) + " == " + parseInt(openingminutesstarttimearray[i]));
+                                        //if (parseInt(endtimearray[0]) == repeatstarttime && repeatendtime > (endtimearray[1] - parseInt(duration))) {
+                                        //    repeatendtime = repeatendtime + parseInt(duration);
+                                        //}
+                                        //else {
+                                        //    if (parseInt(repeatendtime) >= 60) {
+                                        //        repeatstarttime = repeatstarttime + 1;
+                                        //        repeatendtime = repeatendtime - 60;
+                                        //        $('#selectable').append('<li class="ui-widget-content" id="09:00">' + repeatstarttime + ':' + repeatendtime + '<span class="price pull-right"> £30.00</span></li>');
+                                        //        repeatendtime = repeatendtime + parseInt(duration);
+                                        //    }
+                                        //    else {
+                                        //        $('#selectable').append('<li class="ui-widget-content" id="09:00">' + repeatstarttime + ':' + repeatendtime + '<span class="price pull-right"> £30.00</span></li>');
+                                        //        repeatendtime = repeatendtime + parseInt(duration);
+                                        //    }
+                                        //}
+
+                                    }
+                                }
+
+                            }
+                            var LeadTime = data[0].LeadTime;
+                            if (LeadTime != "") {
+                                var lastFour = LeadTime.substr(LeadTime.length - 4)
+                                LeadTime = LeadTime.slice(0, -5);
+                            } else {
+                                LeadTime = 0;
+                            }
+                            if (lastFour == "Week") {
+                                LeadTime = parseInt(LeadTime) * 7;
+                            }
+
+                            if (lastFour == "Days") {
+                                LeadTime = parseInt(LeadTime);
+                            }
+                            //alert(LeadTime);
+                            //  $('#selectable').text("");
+                            var tabsm = '';
+                            //  alert(serverdate);
+
+                            var mservdate = new Date();
+                            // alert(mservdate.getDate());
+                            var nedatees = mservdate.getFullYear() + "-" + ("0" + (mservdate.getMonth() + 1)).slice(-2) + "-" + ("0" + mservdate.getDate()).slice(-2);
+                            
+                            for (var k = 0; k < openinghoursstarttimearray.length; k++) {
+                                if (serverdate == nedatees) {
+                                    var servertimesarray = [];
+                                    servertimesarray = servertime.split(':');
+                                    //  alert(openinghoursstarttimearray[k]);
+                                    if (servertimesarray[0] < openinghoursstarttimearray[k]) {
+                                        //  if(servertimesarray[1]<=openingminutesstarttimearray[k]){
+                                        var b = parseInt(openinghoursstarttimearray[k]) + +parseInt(LeadTime);
+                                        //  alert(endopeninghour2);
+                                        if (b < endopeninghour2) {
+                                            var oh = b;
+                                            if (oh < 10) {
+                                                oh = "0" + b;
+                                            }
+                                            var om = openingminutesstarttimearray[k];
+                                            if (om < 10) {
+                                                om = "0" + openingminutesstarttimearray[k];
+                                            }
+
+                                            tabsm += "<option>" + oh + ":" + om + "</option>";
+                                            var lps = "" + oh + ':' + om + "";
+                                            MyBlockedServicesIdArr.push(lps);
+                                            $('#selectable').append('<li  class="ui-widget-content" id="liselectedtime' + k + '" onclick="TimeSelected(' + k + ')"><span id="txtSelectedTime' + k + '">' + oh + ':' + om + '</span><span class="price pull-right"> ' + Price + '</span></li>');
+                                        }
+                                        //}
+                                    } else {
+                                        if (servertimesarray[0] == openinghoursstarttimearray[k]) {
+                                            var b = parseInt(openinghoursstarttimearray[k]) + +parseInt(LeadTime);
+                                            if (servertimesarray[1] <= openingminutesstarttimearray[k]) {
+                                                var oh = b;
+                                                if (oh < 10) {
+                                                    oh = "0" + b;
+                                                }
+                                                var om = openingminutesstarttimearray[k];
+                                                if (om < 10) {
+                                                    om = "0" + openingminutesstarttimearray[k];
+                                                }
+                                                tabsm += "<option>" + oh + ":" + om + "</option>";
+                                                var lps = "" + oh + ':' + om + "";
+                                                MyBlockedServicesIdArr.push(lps);
+                                                $('#selectable').append('<li  class="ui-widget-content" id="liselectedtime' + k + '" onclick="TimeSelected(' + k + ')"><span id="txtSelectedTime' + k + '">' + oh + ':' + om + '</span><span class="price pull-right"> ' + Price + '</span></li>');
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    var oh = openinghoursstarttimearray[k];
+                                    if (oh < 10) {
+                                        oh = "0" + openinghoursstarttimearray[k];
+                                    }
+                                    var om = openingminutesstarttimearray[k];
+                                    if (om < 10) {
+                                        om = "0" + openingminutesstarttimearray[k];
+                                    }
+                                    tabsm += "<option>" + oh + ":" + om + "</option>";
+                                    var lps = "" + oh + ':' + om + "";
+                                    MyBlockedServicesIdArr.push(lps);
+                                    $('#selectable').append('<li  class="ui-widget-content" id="liselectedtime' + k + '" onclick="TimeSelected(' + k + ')"><span id="txtSelectedTime' + k + '">' + oh + ':' + om + '</span><span class="price pull-right"> ' + Price + '</span></li>');
+
+                                }
+
+                                //  alert($('#txtSelectedTime'+k).text());
+                                for (var i = 0; i < data.length; i++) {
+                                    if (data[i].BookingTime == MyBlockedServicesIdArr[k]) {
+                                        // alert(data[i].BookingTime +" == "+ MyBlockedServicesIdArr[k]);
+                                        $('#liselectedtime' + k).hide();
+                                        //alert(MyBlockedServicesIdArr);
+                                        //var index = MyBlockedServicesIdArr.indexOf(data[i].BookingTime);
+                                        //MyBlockedServicesIdArr.splice(index, 1);
+                                        // alert(MyBlockedServicesIdArr);
+                                    }
+                                }
+                            }
+                            //$('#ddlBookingServiceTime').text("");
+                            // $('#ddlBookingServiceTime').append(tabsm);
+
+                            //var select = document.getElementById('ddlBookingServiceTime');
+
+                            //for (i = 0; i < select.length; i++) {
+                            //    for (var k = 0; k < openinghoursstarttimearray.length; k++) {
+                            //        if (select.options[i].value == MyBlockedServicesIdArr[k]) {
+                            //            select.remove(k);
+                            //        }
+                            //    }
+                            //}
+
+
+                            for (var k = 0; k < openinghoursstarttimearray.length; k++) {
+                                for (var i = 0; i < data.length; i++) {
+                                    if (data[i].BookingTime == MyBlockedServicesIdArr[k]) {
+                                        $('#liselectedtime' + k).hide();
+                                        var index = MyBlockedServicesIdArr.indexOf(MyBlockedServicesIdArr[k]);
+                                        MyBlockedServicesIdArr.splice(index, 1);
+                                        // $('#ddlBookingServiceTime').remove();
+                                        //  MyBlockedServicesIdArr.splice(k, 1);
+                                    }
+                                }
+                            }
+
+                            var mydropdown = "";
+                            for (var i = 0; i < MyBlockedServicesIdArr.length; i++) {
+                                mydropdown += "<option value=" + MyBlockedServicesIdArr[i] + ">" + MyBlockedServicesIdArr[i] + "</option>";
+                            }
+                            $('#ddlBookingServiceTime').text("");
+                            $('#ddlBookingServiceTime').append(mydropdown);
+                            //$('#ddlStartTime').text();
+                            //$('#ddlStartTime').append(mydropdown);
+                            //$('#ddlEndTime').text();
+                            //$('#ddlEndTime').append(mydropdown);
+                        }
+                    }
+                    else {
+                        if (data[0].Message == "NoData") {
+                            $('#selectable').text("");
+                            $('#selectable').append('<li  class="ui-widget-content"><span>Sorry we are closed this day, please choose another day.</span><span class="price pull-right"></span></li>');
+                            $('#ddlBookingServiceTime').text("");
+                        }
+                    }
+                }
+
+            });
+        }
+        function closeevent() {
+            $("#calendar").weekCalendar("refresh");
+            $('#calendar').weekCalendar('refetchEvents');
+            var modal3 = document.getElementById('myModal');
+            modal3.style.display = "none";
+        }
+
+
+        function UpdatePrice(payid, serid) {
+            $.ajax({
+                type: 'GET',
+                url: URL + "api/Payment/UpdateServicePrices",
+                data: {
+                    "Price": localStorage.getItem("serviceprice"), "Serviceid": serid, "PaymentsId": payid
+                },
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                xhrFields: {
+                    withCredentials: false
+                },
+                success: function (data) {
+
+                }
+            });
+        }
+
+
+
+
+
+
+    </script>
+</body>
+</html>

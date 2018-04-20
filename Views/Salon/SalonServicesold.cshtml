@@ -1,0 +1,589 @@
+﻿
+@{
+    ViewBag.Title = "SalonServices";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<body>
+    <section class="content-header">
+        <h1>
+            Salon Services
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Salon ServicesList</a></li>
+            <li class="active">Create SalonServices</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lblSalonServices"></label>
+                        </div>
+                        <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lbl_status"></label>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive">
+                        <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                            <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                            <tr>
+
+                          
+                                <td>
+                                    <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                                        <input type="hidden" name="cmd" value="_s-xclick">
+                                        <input type="hidden" name="hosted_button_id" value="AG92JSA248F2J">
+                                        <input type="image" src="https://www.sandbox.paypal.com/en_US/i/btn/btn_paynow_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                                        <img alt="" border="0" src="https://www.sandbox.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
+                                    </form>
+
+                                    Category Name:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select id="ddlCategory" onchange="BindTreatmentTitle()" class="form-control">
+                                        <option value="0">--Select--</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    Description:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <textarea  placeholder="Enter Description" id="txtDescription" name="txtDescription" class="form-control" required ></textarea>
+                                </td>
+                            </tr>
+                           
+                            <tr>
+                                <td>
+                                    Treatment Title:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select id="ddlTreatmentTitle" onchange="BindTreatmentType()" class="form-control">
+                                        <option value="0">--Select--</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    Treatment Type:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select id="ddlTreatmentType" class="form-control">
+                                        <option value="0">--Select--</option>
+                                    </select>
+                                </td>
+                            </tr>
+                           
+                            <tr>
+                                <td>
+                                    Pricing Type:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select id="ddlPricingType" class="form-control">
+                                        <option value="0">--Select--</option>
+                                        <option value="1">Simple</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    Duration :<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select id="ddlDuration" class="form-control">
+                                        <option value="0">--Select--</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            
+                  
+                            <tr>
+                                <td>Price<label style="color:red;margin-left: 1%;">*</label></td>
+                                <td>
+                                    <input type="text" class="form-control" id="txtPrice" />
+                                </td>
+                                <td>Sale</td>
+                                <td>
+                                    <input type="text" class="form-control" id="txtSale" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    CleanUp Time:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select id="ddlCleanUpTime" class="form-control">
+                                        <option value="0">--Select--</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="text-align:right">
+                                    <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                    <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                    <input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />
+                                    <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("SalonServicesList", "Salon")';" style="width:100px;" />
+                                    <input type="text" hidden="hidden" id="txtSalonServicesId" name="SalonServicesId" />
+                                    <input type="text" hidden="hidden" id="txtSalonId" name="SalonId" />
+                                </td>
+                            </tr>
+                        </table>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+<script type="text/javascript">
+
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+    var EditSalonServicesId = localStorage.getItem("EditSalonServicesId");
+
+    window.onload = function () {
+        if (UserId != "null" || UserId != null && RoleId == "1") {
+          //  City();
+            CleanUpTime();
+            Duration();
+           // TreatmentTitle();
+          //  TreatmentType();
+            if (EditSalonServicesId == "null") {
+                Category();
+              
+                $('#btnEdit').hide();
+                $('#btnSave').show();
+            }
+            else {
+                BindSalonService(EditSalonServicesId);
+                $('#btnEdit').show();
+                $('#btnSave').hide();
+                $('#btnReset').hide();
+            }
+
+        }
+        else {
+            window.location.href = '@Url.Action("Logout", "Salon")';
+        }
+    }
+
+    /////dropd down Category Name
+    function Category() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Category/GetCategoryByIsActive",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].Category, data[i].CategoryId);
+                    $("#ddlCategory").val("");
+                    $('#ddlCategory').append(opt);
+                }
+
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+    function CleanUpTime() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/CleanUpTime/GetData",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].CleanUpTime, data[i].CleanUpTimeId);
+                    $("#ddlCleanUpTime").val("");
+                    $('#ddlCleanUpTime').append(opt);
+                }
+
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+    // api treatment title
+    function BindTreatmentTitle()
+        {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/TreatmentTitle/GetbyCategoryIdByIsActvive",
+            data:{"CategoryId": $("#ddlCategory").val()},
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                $("#ddlTreatmentTitle").empty();
+                $('#ddlTreatmentTitle').append("<option value='0' label='--Select--'></option>");
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].TreatmentTitle, data[i].TreatmentTitleId);
+                    $("#ddlTreatmentTitle").val("");
+                    $('#ddlTreatmentTitle').append(opt);
+                }
+
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+
+        }
+    //TreatmentType type
+    function BindTreatmentType() {
+      
+            $.ajax({
+                type: 'GET',
+                url: URL + "api/TreatmentType/GetbyTreatmentTitleIdByIsActive",
+                data: { "TreatmentTitleId": $("#ddlTreatmentTitle").val() },
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                cache: false,
+                xhrFields: {
+                    withCredentials: false
+                },
+               
+                success: function (data) {
+                    $("#ddlTreatmentType").empty();
+                    $('#ddlTreatmentType').append("<option value='0' label='--Select--'></option>");
+                    for (var i = 0; i < data.length; i++) {
+                        var opt = new Option(data[i].TreatmentType, data[i].TreatmentTypeId);
+                        $("#ddlTreatmentType").val("");
+                        $('#ddlTreatmentType').append(opt);
+                    }
+
+                },
+                error: function (err) {
+                    console.log(err.StatusText);
+                }
+            });
+    }
+    // drop down duration
+    function Duration() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Duration/GetData",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].Duration, data[i].DurationId);
+                    $("#ddlDuration").val("");
+                    $('#ddlDuration').append(opt);
+                }
+
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+    function LoadCategory(Category) {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Category/GetCategoryByIsActive",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].Category, data[i].CategoryId);
+                    $("#ddlCategory").val("");
+                    $('#ddlCategory').append(opt);
+                }
+                $("#ddlCategory").val(Category);
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+  
+
+    function LaodTitle(Category, TreatmentTitle) {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/TreatmentTitle/GetbyCategoryId",
+            data: { "CategoryId": Category },
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                $("#ddlTreatmentTitle").empty();
+                $('#ddlTreatmentTitle').append("<option value='0' label='--Select--'></option>");
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].TreatmentTitle, data[i].TreatmentTitleId);
+                    $("#ddlTreatmentTitle").val("");
+                    $('#ddlTreatmentTitle').append(opt);
+                }
+               
+                $("#ddlTreatmentTitle").val(TreatmentTitle);
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+
+    }
+
+
+    function LoadTreatmentType(TreatmentTitle, TreatmentType) {
+
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/TreatmentType/GetbyTreatmentTitleId",
+            data: { "TreatmentTitleId": TreatmentTitle },
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+
+            success: function (data) {
+                $("#ddlTreatmentType").empty();
+                $('#ddlTreatmentType').append("<option value='0' label='--Select--'></option>");
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].TreatmentType, data[i].TreatmentTypeId);
+                    $("#ddlTreatmentType").val("");
+                    $('#ddlTreatmentType').append(opt);
+                }
+                $("#ddlTreatmentType").val(TreatmentType);
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+    function BindSalonService(SalonServicesId) {
+        $("#lbl_status").text("");
+        Clear();
+
+        $.ajax({
+            url: URL + "api/SalonServices/GetDatabyId",
+            data: { "SalonServicesId": SalonServicesId },
+            type: "GET",
+            cache: false,
+            success: function (r) {
+
+                $('#btnEdit').show();
+                $('#btnSave').hide();
+                console.log(r);
+                $("#txtSalonServicesId").val(r[0].SalonServicesId);
+                $("#txtSalonId").val(r[0].SalonsId);
+                LoadCategory(r[0].CategoryId);
+               // $("#ddlCategory").val(r[0].CategoryId);
+                $("#txtDescription").val(r[0].Description);
+                LaodTitle(r[0].CategoryId, r[0].TreatmentTitleId);
+               // $("#ddlTreatmentTitle").val(r[0].CategoryId, r[0].TreatmentTitleId);
+                LoadTreatmentType(r[0].TreatmentTitleId, r[0].TreatmentTypeId);
+               // $("#ddlTreatmentType").val(r[0].TreatmentType);
+
+                $("#ddlPricingType").val(r[0].PricingTypeId);
+               
+                $("#txtPrice").val(r[0].Price);
+                $("#txtSale").val(r[0].Sale);
+                $("#ddlDuration").val(r[0].DurationId);
+               
+                $("#ddlCleanUpTime").val(r[0].CleanUpTime);
+
+            },
+            error: function (err) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblSalonServices').text(err.statusText);
+            }
+        })
+    }
+
+    function Save() {
+        $("#lbl_status").text("");
+        $("#lblSalonServices").text("");
+        if ($("#ddlCategory").val() != 0 && $("#txtDescription").val() != '' && $("#ddlTreatmentTitle").val() != 0 && $("#ddlTreatmentType").val() != 0 && $("#ddlPricingType").val() != 0 && $("#ddlDuration").val() != 0 && $("#txtPrice").val() != '' && $("#ddlCleanUpTime").val() != 0) {
+       
+            var CreatedBy = UserId;
+            //Insert(int SalonsId, int CategoryId,  int TreatmentTypeId,int TreatmentTitleId, int PricingTypeId, int DurationId, string Price, string Sale, int CleanUpTime, int IsAcitve, int CreatedBy)
+            
+            $.ajax({
+                type: 'GET',
+                url: URL + "api/Salons/GetByUserId",
+                data: { "UserId": UserId },
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                xhrFields: {
+                    withCredentials: false
+                },
+                success: function (json) {
+
+                    var SalonsId = json[0].SalonsId;
+                    $.ajax({
+                        url: URL + "api/SalonServices/Insert",
+                        //is active
+                        data: { "SalonsId": SalonsId, "CategoryId": $("#ddlCategory").val(), "TreatmentTypeId": $("#ddlTreatmentType").val(), "TreatmentTitleId": $("#ddlTreatmentTitle").val(), "PricingTypeId": $("#ddlPricingType").val(), "DurationId": $("#ddlDuration").val(), "Price": $("#txtPrice").val(), "Sale": $("#txtSale").val(), "CleanUpTime": $("#ddlCleanUpTime").val(), "Description": $("#txtDescription").val(), "IsAcitve": 1, "CreatedBy": CreatedBy },
+                        type: "GET",
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblSalonServices").text("Salon Services  Already Existed.");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblSalonServices').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                Clear();
+                                StatusMessage(2);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblSalonServices').text(err.statusText);
+                        }
+                    });
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblSalonServices').text(err.statusText);
+                }
+            });
+
+        } else {
+            if ($("#ddlCategory").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select Category");
+                $("#ddlCategory").focus();
+            }
+            else if ($("#txtDescription").val() == '')
+            {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Enter Description");
+                $("#txtDescription").focus();
+            }
+            else if ($("#ddlTreatmentTitle").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select TreatmentTitle");
+                $("#ddlTreatmentTitle").focus();
+            }
+            else if ($("#ddlTreatmentType").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select TreatmentType");
+                $("#ddlTreatmentType").focus();
+            }
+            else if ($("#ddlPricingType").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select PricingType");
+                $("#ddlPricingType").focus();
+            }
+            else if ($("#ddlDuration").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select Duration"); 
+                $("#ddlDuration").focus();
+            }
+            else if ($("#txtPrice").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Enter Price");
+                $("#txtPrice").focus(); 
+            }
+            else if ($("#ddlCleanUpTime").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Select CleanUpTime");
+                $("#ddlCleanUpTime").focus();
+            }
+        }
+    }
+    function Clear() {
+
+        $("#ddlCategory").val('0');
+        $("#txtDescription").val(' ');
+        $("#ddlTreatmentTitle").val('0');
+        $("#ddlTreatmentType").val('0');
+        $("#ddlPricingType").val('0');
+        $("#ddlDuration").val('0')
+        $("#txtPrice").val(' ');
+        $("#ddlCleanUpTime").val('0');
+        $("#txtSale").val(' ');
+        $("#lbl_status").text("");
+        $("#lblSalonServices").text(" ");
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+        $("#dvSuccess").css({ display: "none" });
+        $("#dvErrorStatus").css({ display: "none" });
+    }
+
+    function Update() {
+        $("#lbl_status").text("");
+        if ($("#ddlCategory").val() != 0) {
+     
+            var UpdatedBy = UserId;
+            //  Update(int SalonsId, int CategoryId, int TreatmentTypeId,int TreatmentTitleId, int PricingTypeId, int DurationId, string Price, string Sale, int CleanUpTime,string Description, int UpdatedBy, int SalonServicesId)
+            $.ajax({
+                url: URL + "api/SalonServices/Update",
+               
+                data: { "SalonsId": $("#txtSalonId").val(), "CategoryId": $("#ddlCategory").val(), "TreatmentTypeId": $("#ddlTreatmentType").val(), "TreatmentTitleId": $("#ddlTreatmentTitle").val(), "PricingTypeId": $("#ddlPricingType").val(), "DurationId": $("#ddlDuration").val(), "Price": $("#txtPrice").val(), "Sale": $("#txtSale").val(), "CleanUpTime": $("#ddlCleanUpTime").val(), "Description": $("#txtDescription").val(), "UpdatedBy": UpdatedBy, "SalonServicesId": $("#txtSalonServicesId").val() },
+                type: "GET",
+                cache: false,
+                    dataType: 'json',
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                  
+                    success: function (r) {
+                        if (r[0].Message == "UniqueConstraint") {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $("#lblCity").text("Salon Services Already Existed.");
+                        }
+                        else if (r[0].Message == "Error") {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblCity').text(r[0].ErrorMessage);
+                        }
+                        else {
+                            Clear();
+                            StatusMessage(1);
+                        }
+                    },
+                    error: function (err) {
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblCity').text(err.statusText);
+                    }
+                });
+           
+        }
+        else {
+            if ($("#ddlCategory").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonServices").text("Please Enter Category");
+
+                $("#ddlCategory").focus();
+            }
+
+        }
+    }
+
+    function StatusMessage(value) {
+        localStorage.setItem("SalonServicesMessage", value);
+        window.location.href = '@Url.Action("SalonServicesList", "Salon")';
+    }
+</script>
+
+
+
+
+

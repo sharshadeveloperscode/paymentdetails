@@ -1,0 +1,234 @@
+﻿
+@{
+    ViewBag.Title = "CleanUpTime";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<body>
+    <section class="content-header">
+        <h1>
+            Cleanup Time
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Masters</a></li>
+            <li class="active">Create Cleanup Time</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lblCleanUpTime"></label>
+                        </div>
+                        <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lbl_status"></label>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive">
+                        <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                            <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                            <tr>
+
+                                <td>
+                                    Cleanup Time:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="number" min="0"  maxlength="40" placeholder="Enter CleanUpTime" id="txtCleanUpTime" name="txtCleanUpTime" title="Enter Alphabets only" class="form-control" required />
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td colspan="4" style="text-align:right">
+                                    <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                    <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                    @*<input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />*@
+                                    <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("CleanUpTimeList", "Salon")';" style="width:100px;" />
+                                    <input type="text" hidden="hidden" id="txtCleanUpTimeId" name="CleanUpTimeId" />
+                                </td>
+                            </tr>
+                        </table>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</body>
+<script type="text/javascript">
+
+          var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+        var UserId = localStorage.getItem("UserId");
+        var RoleId = localStorage.getItem("RoleId");
+        var EditCleanUpTimeId = localStorage.getItem("EditCleanUpTimeId");
+
+        window.onload = function () {
+            if (UserId != "null" || UserId != null && RoleId == "1") {
+
+                if (EditCleanUpTimeId == "null") {
+                        $('#btnEdit').hide();
+                        $('#btnSave').show();
+                    }
+                    else {
+                    BindCleanUpTime(EditCleanUpTimeId);
+                        $('#btnEdit').show();
+                        $('#btnSave').hide();
+                        $('#btnReset').hide();
+                    }
+
+            }
+            else {
+                window.location.href = '@Url.Action("Logout", "Salon")';
+            }
+        }
+
+
+        //}
+
+    function BindCleanUpTime(CleanUpTimeId) {
+            $("#lbl_status").text("");
+            Clear();
+
+            $.ajax({
+                url: URL + "api/CleanUpTime/GetbyId",
+                data: { "CleanUpTimeId": CleanUpTimeId },
+                type: "GET",
+                cache: false,
+                success: function (r) {
+                    $('#btnEdit').show();
+                    $('#btnSave').hide();
+                    console.log(r);
+                    $("#txtCleanUpTimeId").val(CleanUpTimeId);
+
+                  //  $("#txtCleanUpTime").val(r[0].CleanUpTime);
+                    
+                    var num = r[0].CleanUpTime.match(/[\d\.]+/g);
+                    var number = num.toString();
+                    //  alert(number);
+                    //  Dur = r[0].Duration.split()
+                    $("#txtCleanUpTime").val(number);
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblCleanUpTime').text(err.statusText);
+                }
+            })
+        }
+
+    function Save() {
+        $("#lbl_status").text("");
+        if ($("#txtCleanUpTime").val() != '') {
+            if ($("#txtCleanUpTime").val() != 00 || $("#txtCleanUpTime").val() != 0) {
+                var CleanUpTime = $("#txtCleanUpTime").val();
+                var CreatedBy = UserId;
+                if (CleanUpTime.match("^[0-9]+$")) {
+                    var CleanUpTime1 = CleanUpTime + "min";
+                    $.ajax({
+                        url: URL + "api/CleanUpTime/Insert",
+                        data: { "CleanUpTime": CleanUpTime1, "IsActive": 1, "CreatedBy": CreatedBy },
+                        type: "GET",
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblCleanUpTime").text("Cleanup Time  Already Existed.");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblCleanUpTime').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                Clear();
+                                StatusMessage(2);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblCleanUpTime').text(err.statusText);
+                        }
+                    });
+                } else {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblStartTime").text("Please Enter Valid Cleanup Time ");
+                }
+            }
+            else {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCleanUpTime").text("Please Valid Enter Cleanup Time ");
+                $("#txtCleanUpTime").focus();
+            }
+         
+        }
+            else {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCleanUpTime").text("Please Enter Cleanup Time ");
+                $("#txtCleanUpTime").focus();
+            }
+        }
+        function Clear() {
+            $("#txtCleanUpTimeId").val("");
+            $("#txtCleanUpTime").val("");
+            $("#lbl_status").text("");
+            $("#lblCleanUpTime").text(" ");
+            $('#btnEdit').hide();
+            $('#btnSave').show();
+            $("#dvSuccess").css({ display: "none" });
+            $("#dvErrorStatus").css({ display: "none" });
+        }
+
+        function Update() {
+            $("#lbl_status").text("");
+            if ($("#txtCleanUpTime").val() != '') {
+                var CleanUpTime = $("#txtCleanUpTime").val();
+                var UpdatedBy = UserId;
+                if (CleanUpTime.match("^[0-9]+$")) {
+                    var CleanUpTime1 = CleanUpTime + "min";
+                    $.ajax({
+                        url: URL + "api/CleanUpTime/Update",
+                        data: { "CleanUpTime": CleanUpTime1, "UpdatedBy": UpdatedBy, "CleanUpTimeId": $("#txtCleanUpTimeId").val() },
+                        cache:false,
+                        type: "GET",
+                        dataType: 'json',
+                        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblCleanUpTime").text("Cleanup Time  Already Existed.");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblCleanUpTime').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                Clear();
+                                StatusMessage(1);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblCleanUpTime').text(err.statusText);
+                        }
+                    });
+                } else {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblStartTime").text("Please Enter Valid Cleanup Time ");
+                }
+            }
+            else {
+                $("#lblCleanUpTime").text("Please Enter Cleanup Time");
+                $("#dvErrorStatus").css({ display: "block" });
+            }
+        }
+
+        function StatusMessage(value) {
+            localStorage.setItem("CleanUpTimeMessage", value);
+            window.location.href = '@Url.Action("CleanUpTimeList", "Salon")';
+        }
+</script>

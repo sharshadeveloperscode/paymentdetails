@@ -1,0 +1,395 @@
+﻿
+@{
+    ViewBag.Title = "OldCustomers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="content">
+
+    <div id="modal2" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <!--  SIGN IN PAGE -->
+
+                <div class="modal-header">
+                    <div class="alert alert-danger" style="display: none;" id="error_msg_login"></div>
+                    <div class="alert alert-info" style="display: none;" id="success_msg_login"></div>
+                    <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>-->
+                    <h4 class="modal-title">User booking</h4>
+                </div>
+                <form method="POST">
+                    <div class="modal-body">
+                        <div class="form-group" id="NameandMail">
+
+                        </div>
+                        <div class="form-group" id="txtservicename">
+
+
+                        </div>
+
+
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-3">
+                            <div class="form-group" id="txtDate">
+                                <label for="service name">Date</label>
+
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group" id="txtTime">
+                                <label for="service name">Time</label>
+
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group" id="txtDuration">
+                                <label for="service name">Duration</label>
+
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group" id="txtStaffName">
+                                <label for="service name">Staff Name</label>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div id="txtBookedon">
+                            <label for="service name"> <i class="fa fa-pencil" aria-hidden="true"></i> Booked on</label>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3" id="paidstatus"></div>
+                        <div class="col-md-9" id="PaymentStatus">
+
+                        </div>
+                    </div>
+                    @*<div class="container" style="margin-top:10px;">
+                            <div class="col-md-4">
+                                <button type="button" id="btnClose" class="btn btn-default" data-dismiss="modal">Add New Service</button>
+                            </div>
+                        </div>*@
+                    <div class="col-md-12">
+                        <div class="row" style="margin-top:10px; margin-left:170px;">
+
+                            <div class="col-md-3" id="btnComplete">
+
+                            </div>
+
+                            <div class="col-md-3" id="btnNoshow">
+
+                            </div>
+                            <div class="col-md-3" id="btnCancel">
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </form>
+
+                <!--END SIGN IN PAGE  -->
+                <div class="modal-footer">
+                    <label id="lblSaveFile Updated Successfully"></label>
+                    <button type="button" id="btnClose" class="btn btn-default" style="margin-top:10px;" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lblBillings"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                <h2> Regular Customers</h2>
+                @*<table>
+                        <tr>
+                            <td>
+                                <select id="ddlBookings">
+                                    <option value="0">All Bookings</option>
+                                </select>
+                                <select id="ddlAlltype">
+                                    <option value="0">All Type</option>
+                                </select>
+                                <input type="text" id="txtdate" />
+                                    <input type="radio" name="Excel" value="Excel" checked> Excel
+                                    <input type="radio" name="Excel" value="Pdf"> Pdf
+                                <input type="button" value="Export" style="color:blue" />
+                            </td>
+                        </tr>
+                    </table>*@
+                <div class="box-body table-responsive">
+                    <table id="tblBillings" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                                <th>Bookings Id</th>
+                                <th>OrderDate</th>
+                                <th>Customer Name</th>
+                                <th>Service</th>
+                                <th>Price</th>
+                                <th>PaymentStatus</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblBillingsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+    window.onload = function () {
+        GetAll();
+
+    }
+    function GetAll() {
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+
+                $.ajax({
+                    type: 'GET',
+                    url: URL + "api/Reports/OldCustomers",
+                    data: { "SalonsId": SalonsId },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    cache: false,
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+
+                        if (json[0].Message == "Error") {
+                            $('#tblBillings').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblBillings').text("Error");
+
+                        }
+                        else if (json[0].Message == "NoData") {
+                            $('#tblBillings').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblBillings').text("No Data");
+                        }
+
+                        else if (json[0].Message == "Success") {
+                            $('#tblBillings').show();
+                            if ($.fn.dataTable.isDataTable('#tblBillings')) {
+                                $('#tblBillings').DataTable().destroy();
+                            }
+                            $('#tblBillingsBody').empty();
+                            for (var i = 0; i < json.length; i++) {
+
+                                // $("#NameandMail").val(json[i].Email);
+                                // alert(json[i].Email);
+                                //  $('#txtservicename').val(json[i].TreatmentTitle);
+                                tr = $('<tr/>');
+                                var date1 = new Date(json[i].BookingDate);
+                                var date2 = date1.getDate() + "-" + parseInt(date1.getMonth() + 1) + "-" + date1.getFullYear();
+                                tr.append("<td>" + json[i].BookingsId + "</td>");
+                                tr.append("<td>" + date2 + "  " + json[i].BookingTime + " </td>");
+                                tr.append("<td>" + json[i].FirstName + " " + json[i].LastName + "</td>");
+                                tr.append("<td>" + json[i].TreatmentTitle + "</td>");
+                                tr.append("<td>" + json[i].Price + "</td>");
+                                // tr.append("<td>" + json[i].PaymentStatus + "</td>");
+                                //," + json[i].PaymentType + "
+                                //alert(json[i].PaymentType);
+                                tr.append('<td><a href="#"  class="btn btn-success">' + json[i].PaymentStatus + '</a></td>');
+                                if (json[i].IsActive == 1) {
+                                    tr.append("<td><a href='#'  class='btn btn-success''>Confirmed </a></td>");
+                                }
+                                if (json[i].IsActive == 2) {
+                                    tr.append("<td><a href='#'  class='btn btn-danger''>Cancelled </a></td>");
+                                }
+                                if (json[i].IsActive == 4) {
+                                    tr.append("<td><a href='#'  class='btn btn-primary''>Completed </a></td>");
+                                }
+                                $('#tblBillings').append(tr);
+                            }
+                            $('#tblBillings').DataTable({
+                                select: {
+                                    style: 'multi'
+                                },
+                                dom: 'Bfrtip',
+                                buttons: [
+                                    'copyFlash',
+                                    'csvFlash',
+                                    'excelFlash',
+                                    'pdfFlash'
+                                ],
+                                select: true
+                            });
+                        }
+                    },
+                    error: function (err) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#tblSalonComment').text(err.StatusText);
+                    }
+                });
+            }
+        });
+
+
+
+    }
+
+    function GetAll1(SalonCheckoutId, PaymentType, PaymentsId) {
+        //alert(SalonCheckoutId);
+        //alert(PaymentType);
+
+        $.ajax({
+            type: 'GET',
+            url: URL + 'api/Billings/ListofBookings1?SalonCheckoutId=' + SalonCheckoutId,
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+
+                $('#NameandMail').empty();
+                $('#txtservicename').empty();
+                $('#txtDate').empty();
+                $('#txtTime').empty();
+                $('#txtDuration').empty();
+                $('#txtStaffName').empty();
+                $('#txtBookedon').empty();
+                $('#PaymentStatus').empty();
+                $('#paidstatus').empty();
+                $('#btnCancel').empty();
+                $('#btnNoshow').empty();
+                $('#btnComplete').empty();
+
+                $('#NameandMail').append('<label for="service name" >' + json[0].FirstName + ' | ' + json[0].Email + '</label>');
+                $('#txtservicename').append(' <label for="service name">Service Name</label><input type="text" class="form-control input-md"   value="' + json[0].TreatmentTitle + ' " readonly >');
+                $('#txtDate').append(' <label for="service name">Date</label><input type="text" name="txtDuration"  class="form-control input-md" value="' + json[0].BookingDate + ' " readonly>');
+                $('#txtTime').append(' <label for="service name">Time</label><input type="text" name="txtDuration"  class="form-control input-md" value="' + json[0].BookingTime + ' " readonly>');
+                $('#txtDuration').append(' <label for="service name">Duration</label><input type="text" name="txtDuration"  class="form-control input-md" value="' + json[0].Duration + ' " readonly>');
+                $('#txtStaffName').append(' <label for="service name">Staff Name</label><input type="text" name="txtDuration"  class="form-control input-md" value="' + json[0].EmployeeName + ' " readonly>');
+                $('#txtBookedon').append(' <label for="service name">Booked On ' + json[0].mydate + '</label>');
+
+                if (json[0].PaymentStatus == "Pending") {
+                    $('#paidstatus').append("<label style='padding-left:80px'>Unpaid</label>");
+                    $('#PaymentStatus').append('<input type="text" name="txtDuration"  class="form-control input-md" value="&pound; ' + json[0].Price + ' " readonly>');
+                }
+                else {
+                    $('#paidstatus').append("<label style='padding-left:80px'>Paid</label>");
+                    $('#PaymentStatus').append('<input type="text" name="txtDuration"  class="form-control input-md" value="&pound; ' + json[0].Price + ' " readonly>');
+                }
+                $('#btnCancel').append('<button type="button"  class="btn btn-primary" onclick=CancelOrder(' + SalonCheckoutId + ') data-dismiss="modal">Cancel Order</button>')
+
+                $('#btnNoshow').append('<button type="button"  class="btn btn-primary" onclick=NoShowOrder(' + SalonCheckoutId + ')  data-dismiss="modal">No Show</button>')
+
+                $('#btnComplete').append('<button type="button"  class="btn btn-primary"  onclick=CompleteOrder(' + SalonCheckoutId + ',\'' + PaymentType + '\',\'' + PaymentsId + '\') data-dismiss="modal">Complete</button>')
+
+
+            }
+        });
+    }
+
+    function CancelOrder(SalonCheckoutId) {
+
+        alert(UserId);
+        $.ajax({
+            type: 'GET',
+            url: 'http://hogarbarber.developerscode.in/' + 'api/SalonCheckout/UpdateStatus',
+            data: {
+                "Status": 2, "UpdatedBy": UserId,
+                "SalonCheckoutId": SalonCheckoutId
+            },
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+
+            success: function (data) {
+                alert(data[0].Message);
+                if (data[0].Message == "Success") {
+                    GetAll();
+                }
+            }
+        });
+    }
+
+    function NoShowOrder(SalonCheckoutId) {
+
+
+        $.ajax({
+            type: 'GET',
+            url: 'http://hogarbarber.developerscode.in/' + 'api/SalonCheckout/UpdateStatus',
+            data: {
+                "Status": 3, "UpdatedBy": UserId,
+                "SalonCheckoutId": SalonCheckoutId
+            },
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+
+            success: function (data) {
+                alert(data);
+                if (data[0].Message == "Success") {
+                    GetAll();
+                }
+            }
+        });
+    }
+
+    function CompleteOrder(SalonCheckoutId, PaymentType, PaymentsId) {
+
+
+        if (PaymentType == "PAYATVENUE") {
+            var Status = 4;
+            var PaymentStatus = "Paid";
+        }
+        else {
+            var Status = 4;
+            var PaymentStatus = "Paid";
+        }
+        $.ajax({
+            type: 'GET',
+            url: 'http://hogarbarber.developerscode.in/' + 'api/Payment/Complete',
+            //url: 'localhost:51133' + 'api/Payment/Complete',
+            data: {
+                "PaymentStatus": PaymentStatus, "IsActive": Status, "UpdatedBy": UserId, "PaymentsId": PaymentsId,
+                "SalonCheckoutId": SalonCheckoutId
+            },
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+
+            success: function (data) {
+
+                if (data[0].Message == "Success") {
+
+                    GetAll();
+                }
+            }
+        });
+    }
+
+</script>
+
+

@@ -1,0 +1,388 @@
+﻿
+@{
+    ViewBag.Title = "Category";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<body>
+    <section class="content-header">
+        <h1>
+            Add Category
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Category</a></li>
+            <li class="active">Add Category</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="row">
+
+            <div class="col-xs-12">
+                <div class="box">
+
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lblCategory"></label>
+                        </div>
+                        <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lbl_status"></label>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive">
+                        <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                            <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+
+                            <tr>
+                                <td>
+                                    Category:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" maxlength="40" placeholder="Enter Category Category" id="txtCategory" name="txtCategory" title="Enter Alphabets only" class="form-control" required  style="width:60%;" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Category Image:<label style="color:red;margin-left: 1%;"></label>
+                                </td>
+                                <td colspan="2">
+                                    <input type="file" id="FileUpload" name="FileUpload" onchange="readURL(this);" title="Select File" required class="form-control"  style="width:60%;"/>Select File
+                                    <label style="color:red;margin-left: 1%;"> *</label>
+                                    <label id="lblFile"></label>
+                                </td>
+                                <td colspan="2">
+                                    <div id="divProfileImage" style="display:none">
+
+                                    </div>
+                                    <img id="ImgEmployeeProfile" style="display:none; width: 212px; height: 165px;" />
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td colspan="4" style="text-align:right">
+                                    <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                    <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                    @*<input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />*@
+                                    <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("CategoryList", "Salon")';" style="width:100px;" />
+                                    <input type="text" hidden="hidden" id="txtCategoryId" name="txtCategoryId" />
+                                </td>
+                            </tr>
+                        </table>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</body>
+<script type="text/javascript">
+
+    var WebURL = [location.protocol, '//', location.host].join('') + '/';
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+
+    var EditCategoryId = localStorage.getItem("EditCategoryId");
+    localStorage.setItem("EployeeProfileImage", 'null');
+    localStorage.setItem("EployeeProfileImage", 'null');
+    window.onload = function () {
+        if (UserId != "null" || UserId != null && RoleId == "1") {
+
+            if (EditCategoryId == "null" || EditCategoryId == null) {
+                $('#btnEdit').hide();
+                $('#btnSave').show();
+            }
+            else {
+                Bind(EditCategoryId);
+                $('#btnEdit').show();
+                $('#btnSave').hide();
+                $('#btnReset').hide();
+            }
+            $('#preloader').hide();
+        }
+        else {
+            window.location.href = '@Url.Action("Logout", "CMS")';
+        }
+    }
+
+
+    function readURL(input) {
+        $("#divProfileImage").css({ display: "none" });
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#ImgEmployeeProfile').show();
+                $('#ImgEmployeeProfile').attr('src', e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+
+    function Bind(EditCategoryId) {
+        $("#lbl_status").text("");
+        Clear();
+
+        $.ajax({
+            url: URL + "api/Category/GetCategoryById?CategoryId=" + EditCategoryId,
+            type: "GET",
+            cache: false,
+            success: function (r) {
+                $('#btnEdit').show();
+                $('#btnSave').hide();
+                console.log(r);
+                $("#txtCategoryId").val(EditCategoryId);
+                $("#txtCategory").val(r[0].Category);
+                localStorage.setItem("EployeeProfileImage", r[0].ImagePath);
+                localStorage.setItem("Image", r[0].Image);
+                $("#divProfileImage").css({ display: "block" });
+                $('#divProfileImage').append("<image  src='" + r[0].ImagePath + "' height='150px' width='150px'/>");
+
+            },
+            error: function (err) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblCategory').text(err.statusText);
+            }
+        })
+    }
+
+    function Save() {
+        $("#lbl_status").text("");
+
+        if ($("#txtCategory").val() != '' && $("#FileUpload").val() != '' ) {
+
+            var CreatedBy = UserId;
+
+            var data = new FormData();
+            var files = $("#FileUpload").get(0).files;
+            if (files.length > 0) {
+                data.append("MyImages", files[0]);
+            }
+            var Category = $("#txtCategory").val()
+              if (Category.match(/^[a-zA-Z ]*$/) ) {
+                $.ajax({
+                    url: WebURL + "Upload/UploadCategoryImages",
+                    type: "POST",
+                    processData: false,
+                    contentType: false,
+                    data: data,
+                    success: function (response) {
+                        console.log("response");
+
+                        console.log(response);
+                        var FilePath = WebURL + "Files/" + response;
+                    
+
+                        $.ajax({
+                            url: URL + "api/Category/InsertCategory?Category=" + $('#txtCategory').val() + "&ImageName=" + response + "&ImagePath=" + FilePath + "&CreatedBy=" + CreatedBy,
+                            type: "GET",
+                            cache: false,
+                            success: function (r) {
+                                if (r[0].Message == "UniqueConstraint") {
+                                    $("#dvErrorStatus").css({ display: "block" });
+                                    $("#lblCategory").text("Category already Existed.");
+                                }
+                                else if (r[0].Message == "Error") {
+                                    $("#dvErrorStatus").css({ display: "block" });
+                                    $('#lblCategory').text(r[0].ErrorMessage);
+                                }
+                                else {
+                                    Clear();
+                                    StatusMessage(2);
+                                }
+                            },
+                            error: function (err) {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblCategory').text(err.statusText);
+                            }
+                        });
+                    },
+                    error: function (err) {
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblCategory').text(err.statusText);
+                    }
+                });
+              }
+            else
+              {
+                  $("#dvErrorStatus").css({ display: "block" });
+                  $("#lblCategory").text("Please Enter Valid Category");
+                  $("#lblCategory").focus();
+              }
+    }
+        else {
+
+            if ($("#txtCategory").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCategory").text("Please Enter Category");
+
+            }
+            else if ($("#FileUpload").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCategory").text("Please Upload Category Image");
+
+            }
+
+        }
+    }
+
+
+    function Clear() {
+        localStorage.setItem("EployeeProfileImage", 'null');
+
+        localStorage.setItem("EployeeProfileImage", 'null');
+        $("#ImgEmployeeProfile").css({ "display": "none" });
+        
+        $("#divProfileImage").empty();
+        $("#divProfileImage").css({ display: "none" });
+        $("#txtImage").val("");
+        $("#txtImagePath").val("");
+        $("#FileUpload").val("");
+        $("#txtCategory").val("");
+
+        $("#lbl_status").text("");
+        $("#lblCategory").text(" ");
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+        $("#dvSuccess").css({ display: "none" });
+        $("#dvErrorStatus").css({ display: "none" });
+    }
+
+
+
+    function Update() {
+
+        var UpdatedBy = localStorage.getItem("UserId");
+        $("#lbl_status").text("");
+        $("#lbl_status").text("");
+
+        if ($("#txtCategory").val() != '' ) {
+            var UpdatedBy = UserId;
+            var Category = $("#txtCategory").val();
+
+              if (Category.match(/^[a-zA-Z ]*$/) ) {
+
+            if ($("#FileUpload").val() != '') {
+                var data = new FormData();
+                var files = $("#FileUpload").get(0).files;
+                if (files.length > 0) {
+                    data.append("MyImages", files[0]);
+                }
+               
+                $.ajax({
+                    url: WebURL + "Upload/UploadCategoryImages",
+                    type: "POST",
+                    processData: false,
+                    contentType: false,
+                    data: data,
+                    success: function (response) {
+                        console.log("response");
+
+                        console.log(response);
+                        var FilePath = WebURL + "Files/" + response;
+
+                        $.ajax({
+                            url: URL + "api/Category/UpdateCategory?Category=" + $('#txtCategory').val() + "&ImageName=" + response + "&ImagePath=" + FilePath + "&UpdatedBy=" + UpdatedBy + "&CategoryId=" + $("#txtCategoryId").val() + "",
+                            type: "GET",
+                            dataType: 'json',
+                            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                            cache: false,
+                            success: function (r) {
+                                if (r[0].Message == "UniqueConstraint") {
+                                    $("#dvErrorStatus").css({ display: "block" });
+                                    $("#lblCategory").text("Category already Existed.");
+                                }
+                                else if (r[0].Message == "Error") {
+                                    $("#dvErrorStatus").css({ display: "block" });
+                                    $('#lblCategory').text(r[0].ErrorMessage);
+                                }
+                                else {
+                                    Clear();
+                                    StatusMessage(1);
+                                }
+                            },
+                            error: function (err) {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblCategory').text(err.statusText);
+                            }
+                        });
+
+
+                    },
+                    error: function (err) {
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblCategory').text(err.statusText);
+                    }
+                });
+
+            }
+            else {
+                var ImagePath = localStorage.getItem("EployeeProfileImage");
+                var Image = localStorage.getItem("Image");
+                $.ajax({
+                    url: URL + "api/Category/UpdateCategory?Category=" + $('#txtCategory').val() + "&ImageName=" + Image + "&ImagePath=" + ImagePath + "&UpdatedBy=" + UpdatedBy + "&CategoryId=" + $("#txtCategoryId").val() + "",
+                    type: "GET",
+                    dataType: 'json',
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    cache: false,
+                    success: function (r) {
+                        if (r[0].Message == "UniqueConstraint") {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $("#lblCategory").text(" Already Existed.");
+                        }
+                        else if (r[0].Message == "Error") {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblCategory').text(r[0].ErrorMessage);
+                        }
+                        else {
+                            Clear();
+                            StatusMessage(1);
+                        }
+                    },
+                    error: function (err) {
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblCategory').text(err.statusText);
+                    }
+                });
+            }
+
+
+            //} else {
+            //    $("#dvErrorStatus").css({ display: "block" });
+            //    $("#lblCategory").text("Please Enter Valid Menu Type");
+            //}
+        }
+              else {
+                  $("#dvErrorStatus").css({ display: "block" });
+                  $("#lblCategory").text("Please Enter Valid Category");
+                  $("#lblCategory").focus();
+              }
+
+
+    }
+        else {
+
+            if ($("#txtCategory").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblCategory").text("Please Enter Category");
+
+            }
+
+        }
+    }
+
+    function StatusMessage(value) {
+        localStorage.setItem("CategoryMessage", value);
+        window.location.href = '@Url.Action("CategoryList", "Salon")';
+    }
+
+
+</script>
+

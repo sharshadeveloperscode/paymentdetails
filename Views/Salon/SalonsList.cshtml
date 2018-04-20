@@ -1,0 +1,344 @@
+﻿
+@{
+    ViewBag.Title = "Venues List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    /* The Modal (background) */
+    .modalpopularity {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modalpopularity-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 40%;
+        height: 35%;
+    }
+
+    /* The Close Button */
+    .closepopularity {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .closepopularity:hover,
+        .closepopularity:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+</style>
+
+<section class="content-header">
+    <h1>
+        Venues
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href=""><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Venues</a></li>
+        <li class="active">Venues List</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+
+                        <label id="lblSalon"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                <div class="box-body table-responsive">
+                    <input type="button" class="btn btn-primary" value="Add Venues" onclick="window.location.href='@Url.Action("Salons", "Salon")';" style="width:100px;" />
+                    <button id="myBtn" class="btn btn-primary" style="width:100px;">Popularity</button>
+                    <input type="button" value="Back" style="float:right; width:100px;" class="btn btn-danger" onclick="window.location.href='@Url.Action("Dashboard", "Salon")';" />
+                </div>
+
+
+
+                <div class="box-body table-responsive">
+                    <table id="tblSalon" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                                <th>Venue Name</th>
+                                <th>Postal Code</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblSalonBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+
+<!-- The Modal -->
+<div id="ModalPopularity" class="modalpopularity">
+
+    <!-- Modal content -->
+    <div class="modalpopularity-content">
+        <span class="closepopularity">&times;</span>
+        <p>Based on this selection,popular salons are appear in Mobile App.</p>
+        <p>
+            <table class="table">
+                <tr>
+                    <td><input type="radio" value="1" name="popular" class="cke_button__radio_icon" checked /> Reviews</td>
+                    <td><input type="radio" value="2" name="popular" class="cke_button__radio_icon" /> Popularity</td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="number" style="width: 50%;" id="txtLimit" class="form-control" min="1" placeholder="Enter limit like 10,20,30..." />
+                    </td>
+                    <td>
+                        <input type="button" value="SUBMIT" class="btn btn-primary" onclick="UpdatePopularity()" style="float:right;" />
+                        <input type="hidden" id="txtPopularity" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"><label style="color:red;" id="lblLimit"></label></td>
+                </tr>
+            </table>
+
+        </p>
+    </div>
+
+</div>
+<script type="text/javascript">
+    // Get the modal
+    var modalpopularity = document.getElementById('ModalPopularity');
+
+    // Get the button that opens the modal
+    var btnpopularity = document.getElementById("myBtn");
+
+    // Get the <span> element that closes the modal
+    var spanpopularity = document.getElementsByClassName("closepopularity")[0];
+
+    // When the user clicks the button, open the modal
+    btnpopularity.onclick = function () {
+        modalpopularity.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    spanpopularity.onclick = function () {
+        modalpopularity.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target == modalpopularity) {
+            modalpopularity.style.display = "none";
+        }
+    }
+</script>
+
+<script type="text/javascript">
+
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+
+    window.onload = function () {
+        localStorage.setItem("EditSalonsId", "null");
+        //if (UserId != "null" && RoleId == 1 && UserId != null) {
+        var Message = localStorage.getItem("SalonsMessage");
+        if (Message == "1") {
+            // $("#dvErrorStatus").css({ display: "none" });
+            //  $("#dvSuccess").css({ display: "block" });
+            //  $("#lbl_status").text("Salon Updated Successfully");
+
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("Venue Updated Successfully");
+            GetAll();
+        }
+        else if (Message == "2") {
+            //   $("#dvErrorStatus").css({ display: "none" });
+            // $("#dvSuccess").css({ display: "block" });
+            // $("#lbl_status").text("Salon Created Successfully");
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("Venue Created Successfully");
+            GetAll();
+        }
+        else {
+            $("#dvErrorStatus").css({ display: "none" });
+            $("#dvSuccess").css({ display: "none" });
+            GetAll();
+        }
+
+    }
+    $(function () {
+        $('#txtLimit').keypress(function (e) {
+            var txt = String.fromCharCode(e.which);
+            if (!txt.match(/[A-Za-z0-9+#.]/))//+#-.
+            {
+                return false;
+            }
+        });
+    });
+    function GetAll() {
+        localStorage.setItem("SalonsMessage", "null");
+        $('#tblSalonBody').text('');
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+        $.ajax({
+            type: 'GET',
+            url: URLLink + "api/Salons/GetSalons",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+                if (json[0].Message == "Error") {
+                    $('#tblSalon').hide();
+                    $('#lbl_status').text("No Salon Found");
+                    $('#lbl_status').css("color", "red");
+                }
+                else if (json[0].Message == "Success") {
+                    $('#tblSalon').show();
+                    if ($.fn.dataTable.isDataTable('#tblSalon')) {
+                        $('#tblSalon').DataTable().destroy();
+                    }
+                    $('#tblSalonBody').empty();
+
+                    for (var i = 0; i < json.length; i++) {
+                        $('#txtPopularity').val(json[0].PopularityId);
+                        $("input[name=popular][value=" + json[0].Popularity + "]").attr('checked', 'checked');
+                        $('#txtLimit').val(json[0].Limit);
+                        tr = $('<tr/>');
+                        tr.append("<td>" + json[i].BusinessName + "</td>");
+                        tr.append("<td>" + json[i].PostalCode + "</td>");
+                        tr.append("<td>" + json[i].Email + "</td>");
+
+                        if (json[i].IsActive == 1) {
+
+                            tr.append("<td><a href='#' id='delete" + i + "'  title='Deactivate' onclick='UpdateStatus(" + json[i].SalonsId + " ,0)'><i class='fa fa-check nav_action_icon'></i> </a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].SalonsId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+                        }
+                        else if (json[i].IsActive == 0) {
+
+                            tr.append("<td><a href='#' id='delete" + i + "'  title='Activate' onclick='UpdateStatus(" + json[i].SalonsId + ",1)'><i class='fa fa-ban nav_action_icon'></i> </a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].SalonsId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+                        }
+                        $('#tblSalon').append(tr);
+                    }
+                    $('#tblSalon').DataTable({
+                        dom: 'Bfrtip',
+                        buttons: [
+                              'excel', 'pdf'
+                        ],
+                    });
+                }
+            },
+            error: function (err) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblSalon').text(err.StatusText);
+            }
+        });
+    }
+
+    function Edit(SalonsId) {
+        localStorage.setItem("EditSalonsId", SalonsId);
+        window.location.href = '@Url.Action("Salons", "Salon")';
+    }
+
+    function UpdateStatus(SalonsId, Status) {
+
+        $("#lbl_status").text("");
+        var UserId = localStorage.getItem("UserId");
+        var StatusText = '';
+        var UpdateStatusText = '';
+        if (Status == 1) {
+            StatusText = "active";
+            UpdateStatusText = "activated";
+        }
+        else if (Status == 0) {
+            StatusText = "deactive";
+            UpdateStatusText = "deactivated";
+        }
+        if (confirm("Are you sure to  " + StatusText + " this venue?") == true) {
+            $.ajax({
+                url: URLLink + "api/Salons/UpdateStatus",
+                data: { "Status": Status, "UpdatedBy": UserId, "SalonsId": SalonsId },
+                // UpdateStatus(int Status, int UpdatedBy, int DepartmentId)
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblSalon").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblSalon').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblSalon').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+                        GetAll();
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("Venue " + UpdateStatusText + " successfully");
+                    }
+                },
+                error: function (err) {
+                    // alert(err.StatusText);
+                }
+            });
+        }
+        else {
+
+        }
+    }
+
+
+    function UpdatePopularity() {
+        var popularity = $("input[name='popular']:checked").val();
+        //  alert(popularity);
+        if ($('#txtLimit').val() > 0) {
+            $('#lblLimit').text("");
+            $.ajax({
+                url: URLLink + "api/Salons/UpdatePopularity",
+                data: {
+                    "Popularity": popularity, "UpdatedBy": UserId, "PopularityId": $('#txtPopularity').val(), "Limit": $('#txtLimit').val()
+                },
+                type: "GET",
+                success: function (r) {
+                    location.reload();
+                }
+            });
+        } else {
+            $('#lblLimit').text("Limit Value should be greater than 0");
+        }
+    }
+
+
+</script>

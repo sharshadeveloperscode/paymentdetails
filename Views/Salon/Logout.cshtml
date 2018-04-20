@@ -1,0 +1,29 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Logout</title>
+    <!-- jQuery 2.2.3 -->
+    <script src="~/plugins/jQuery/jquery-2.2.3.min.js"></script>
+    <script src="~/dist/js/jscolor.js"></script>
+</head>
+<body>
+    <script>
+        $().ready(function () {
+            localStorage.setItem("UserId", "null");
+            localStorage.setItem("Name", "null");
+            localStorage.setItem("RoleId", "null");
+            localStorage.setItem("Password", "null");
+  
+            window.location.href = '@Url.Action("Login", "Salon")';
+        })
+    </script>
+</body>
+</html>
+

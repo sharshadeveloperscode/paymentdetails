@@ -1,0 +1,467 @@
+﻿
+@{
+    ViewBag.Title = "SalonServicesList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="preloader" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #fefefe; z-index: 99; height: 110vh;">
+    <div id="status" style="width:100%;height:100%; text-align: center; position: absolute; left: 0; top: 30%; background-repeat: no-repeat; background-size: cover cover; background-position: center; margin: 0px 0 0 36px;">
+        <div class="preloader-logo"></div>
+        <p class="center-text smaller-text" id="p1" style="margin: 0 24px 10px !important;">
+            <h2> Loading .. </h2><br />
+            <img src="~/img/preload.gif" />
+        </p>
+    </div>
+</div>
+<section class="content-header">
+    <h1>
+        Venue Services
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href=""><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Venue Services</a></li>
+        <li class="active">Venue Services List</li>
+    </ol>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+
+                        <label id="lblSalonServices"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                <div class="box-body table-responsive">
+                    <input type="button" class="btn btn-primary" value="Add Venue Services " onclick="window.location.href='@Url.Action("SalonServices", "Salon")';" style="width:130px;" />
+                    <input type="button" class="btn btn-primary" value="Add Discount" onclick="window.location.href='@Url.Action("Discount", "Salon")';" style="width:130px;display:none;" />
+                    <input type="button" value="Back" class="btn btn-danger" onclick="window.location.href='@Url.Action("BusinessDashboard", "Salon")';" style="width:130px;float:right;" />
+                </div>
+                <div class="box-body table-responsive">
+                    <table id="tblSalonServices" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+
+                                <th>Category</th>
+                                <th>Treatment Title</th>
+                                <th>Service Name</th>
+                                <th>Price</th>
+                                <th>Sale</th>
+                                <th>Duration</th>
+                                <th>Cleanup Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table1"></tbody>
+                    </table>
+                </div>
+
+                <h3 id="fServices" style="margin-left:10px;">Featured Services</h3>
+                <div class="box-body table-responsive">
+                    <table id="tblFeaturedServices" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Treatment Title</th>
+                                <th>Service Name</th>
+                                <th>Price</th>
+                                <th>Sale</th>
+                                <th>Duration</th>
+                                <th>Cleanup Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table2"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script type="text/javascript">
+    var WebURL = [location.protocol, '//', location.host].join('') + '/';
+
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+
+    window.onload = function () {
+
+        localStorage.setItem("EditSalonServicesId", "null");
+
+        //if (UserId != "null" && RoleId == "1") {
+        var Message = localStorage.getItem("SalonServicesMessage");
+        if (Message == "1") {
+            //  $("#dvErrorStatus").css({ display: "none" });
+            //  $("#dvSuccess").css({ display: "block" });
+            //  $("#lbl_status").text("SalonServices Updated Successfully");
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("Service Updated Successfully");
+            GetAll();
+            GetAll1();
+        }
+        else if (Message == "2") {
+            //  $("#dvErrorStatus").css({ display: "none" });
+            //   $("#dvSuccess").css({ display: "block" });
+            //  $("#lbl_status").text("SalonServices Created Successfully");
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("Service Created Successfully");
+            GetAll();
+            GetAll1();
+        }
+        else {
+            $("#dvErrorStatus").css({ display: "none" });
+            $("#dvSuccess").css({ display: "none" });
+            GetAll();
+            GetAll1();
+
+        }
+        @*}
+        else {
+            window.location.href = '@Url.Action("LockScreen", "CMS")';
+        }*@
+    }
+
+
+    function GetAll() {
+
+        localStorage.setItem("SalonServicesMessage", "null");
+        $('#table1').text('');
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                $.ajax({
+                    type: 'GET',
+                    url: URLLink + "api/SalonServices/GetDatabySalonsId",
+                    data: { "SalonsId": SalonsId },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+                        if (json[0].Message == "Error") {
+                            //  $('#tblSalonServices').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblSalonServices').text("Error");
+
+                        }
+                        else if (json[0].Message == "NoData") {
+                            //   $('#tblSalonServices').hide();
+                            //   $("#dvSuccess").css({ display: "none" });
+                            //  $("#dvErrorStatus").css({ display: "block" });
+                            //   $('#lblSalonServices').text("No Data");
+                        }
+                        else if (json[0].Message == "Success") {
+                            $('#tblSalonServices').show();
+                            if ($.fn.dataTable.isDataTable('#tblSalonServices')) {
+                                $('#tblSalonServices').DataTable().destroy();
+                            }
+                            $('#table1').empty();
+                            for (var i = 0; i < json.length; i++) {
+                                tr = $('<tr/>');
+                                tr.append("<td>" + json[i].Category + "</td>");
+                                tr.append("<td>" + json[i].TreatmentTitle + "</td>");
+                                tr.append("<td>" + json[i].TreatmentTypeId + "</td>");
+                                tr.append("<td>&#163 " + json[i].Price + "</td>");
+                                var id1 = 0
+                                if (json[i].Sale == '') {
+                                    tr.append("<td>-</td>");
+                                }
+                                else {
+                                    tr.append("<td>&#163 " + json[i].Sale + "</td>");
+                                }
+                                tr.append("<td>" + json[i].Duration + "</td>");
+                                tr.append("<td>" + json[i].CleanUpTime1 + "</td>");
+                                if (json[i].IsActive == 1) {
+
+                                    tr.append("<td><a href='#' id='delete" + i + "'   title='Deactivate' onclick='UpdateStatus(" + json[i].SalonServicesId + ",0)'><i class='fa fa-check nav_action_icon'></i> </a> | <a href='#' id='edit" + i + "' onclick='EditService(" + json[i].SalonServicesId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+
+                                }
+                                else if (json[i].IsActive == 0) {
+                                    tr.append("<td><a href='#' id='delete" + i + "'   title='Activate' onclick='UpdateStatus(" + json[i].SalonServicesId + " ,1)'><i class='fa fa-ban nav_action_icon'></i> </a> | <a href='#' id='edit" + i + "' onclick='EditService(" + json[i].SalonServicesId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+                                }
+
+                                //  tr.append('<td><a href="#" data-toggle="modal" data-target="#modal2" onclick="discount()" class="btn btn-success">Discount</a></td>')
+
+                                $('#tblSalonServices').append(tr);
+                            }
+
+                        }
+                        $('#preloader').hide();
+                        $('#tblSalonServices').DataTable({
+                            select: {
+                                style: 'multi'
+                            },
+                            dom: 'Bfrtip',
+                            buttons: [
+                                //'copyFlash',
+                                //'csvFlash',
+                                //'excelFlash',
+                                //'pdfFlash'
+                                 'excel', 'pdf'
+                            ],
+                            select: true
+                        });
+                    },
+                    error: function (err) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblSalonServices').text("Problem With Server");
+                    }
+                });
+            },
+            error: function (err) {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblSalonServices').text("Problem With Server");
+            }
+        });
+
+    }
+    ///// Get Featured Services
+    function GetAll1() {
+
+
+        localStorage.setItem("SalonServicesMessage", "null");
+        $('#table1').text('');
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+
+
+                $.ajax({
+                    type: 'GET',
+                    url: URLLink + "api/SalonServices/FeratureServicesbySalonsId",
+                    data: { "SalonsId": SalonsId },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+                        if (json[0].Message == "Error") {
+                            // $('#tblFeaturedServices').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblSalonServices').text("Error");
+
+                        }
+                        else if (json[0].Message == "NoData") {
+                            $("#fServices").hide();
+                            //  $('#tblFeaturedServices').hide();
+                            // $("#dvSuccess").css({ display: "none" });
+                            //  $("#dvErrorStatus").css({ display: "block" });
+                            //  $('#lblSalonServices').text("No Data");
+                        }
+                        else if (json[0].Message == "Success") {
+                            $('#tblFeaturedServices').show();
+                            if ($.fn.dataTable.isDataTable('#tblFeaturedServices')) {
+                                $('#tblFeaturedServices').DataTable().destroy();
+                            }
+                            $('#table2').empty();
+                            for (var i = 0; i < json.length; i++) {
+                                tr = $('<tr/>');
+                                tr.append("<td>" + json[i].Category + "</td>");
+                                tr.append("<td>" + json[i].TreatmentTitle + "</td>");
+                                tr.append("<td>" + json[i].TreatmentTypeId + "</td>");
+                                tr.append("<td>&#163 " + json[i].Price + "</td>");
+
+                                var id1 = 0
+                                if (json[i].Sale == '') {
+                                    tr.append("<td>-</td>");
+                                }
+                                else {
+                                    tr.append("<td>&#163 " + json[i].Sale + "</td>");
+                                }
+
+
+                                tr.append("<td>" + json[i].Duration + "</td>");
+                                tr.append("<td>" + json[i].CleanUpTime1 + "</td>");
+                                if (json[i].featuredServices == 1) {
+
+                                    tr.append("<td><a href='#' id='delete" + i + "'   title='delete' onclick='UpdateFeaturedServices(" + json[i].SalonServicesId + ",0)'><i class='fa fa-trash-o nav_action_icon'></i> </a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].SalonServicesId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+
+                                }
+                                else if (json[i].featuredServices == 0) {
+
+                                    tr.append("<td><a href='#' id='delete" + i + "'   title='delete' onclick='UpdateFeaturedServices(" + json[i].SalonServicesId + " ,1)'><i class='fa fa-trash-o nav_action_icon'></i> </a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].SalonServicesId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+                                }
+                                // tr.append("<td><a href='#' id='delete" + i + "' class='fa fa-trash-o' onclick='Delete(" + json[i].RoleId + ")'></a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].RoleId + ")' class='fa fa-pencil'></a></td>");
+                                $('#tblFeaturedServices').append(tr);
+                            }
+
+                        }
+                        $('#tblFeaturedServices').DataTable({
+                            select: {
+                                style: 'multi'
+                            },
+                            dom: 'Bfrtip',
+                            buttons: [
+                                 'excel', 'pdf',
+                            ],
+                            select: true
+                        });
+                        $('#preloader').hide();
+                    },
+                    error: function (err) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblSalonServices').text("Problem With Server");
+                    }
+                });
+            },
+            error: function (err) {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblSalonServices').text("Problem With Server");
+            }
+        });
+
+    }
+
+    function discount() {
+
+    }
+    function Edit(PersonId) {
+        localStorage.setItem("EditSalonServicesId", PersonId);
+        localStorage.setItem("Feature", 2);
+        window.location.href = '@Url.Action("SalonServices", "Salon")';
+    }
+
+    function EditService(PersonId) {
+        localStorage.setItem("EditSalonServicesId", PersonId);
+        localStorage.setItem("Feature", 1);
+        window.location.href = '@Url.Action("SalonServices", "Salon")';
+    }
+
+
+    function UpdateFeaturedServices(SalonServicesId, Status) {
+        $("#lbl_status").text("");
+        var UserId = localStorage.getItem("UserId");
+        var StatusText = '';
+        var UpdateStatusText = '';
+        if (Status == 1) {
+            StatusText = "active";
+            UpdateStatusText = "activated";
+        }
+        else if (Status == 0) {
+            StatusText = "deactivate";
+            UpdateStatusText = "deactivated";
+        }
+
+        if (confirm("Are you sure you want to delete this service?") == true) {
+            $.ajax({
+                url: URLLink + "api/SalonServices/UpdateFetureService",
+                data: { "featuredServices": Status, "UpdatedBy": UserId, "SalonServicesId": SalonServicesId },
+                // UpdateStatus(int Status, int UpdatedBy, int DepartmentId)
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+                    GetAll1();
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblSalonServices").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblSalonServices').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblSalonServices').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("service is removed from featured services Successfully");
+                        GetAll()
+                    }
+                },
+                error: function (err) {
+                    //  alert(err.StatusText);
+                }
+            });
+        }
+        else {
+
+        }
+    }
+
+    function UpdateStatus(SalonServicesId, Status) {
+        $("#lbl_status").text("");
+        var UserId = localStorage.getItem("UserId");
+        var StatusText = '';
+        var UpdateStatusText = '';
+        if (Status == 1) {
+            StatusText = "active";
+            UpdateStatusText = "activated";
+        }
+        else if (Status == 0) {
+            StatusText = "deactive";
+            UpdateStatusText = "deactivated";
+        }
+
+        if (confirm("Are you sure you want to  " + StatusText + " this service?") == true) {
+            $.ajax({
+                url: URLLink + "api/SalonServices/UpdateStatus",
+                data: { "IsActive": Status, "UpdatedBy": UserId, "SalonServicesId": SalonServicesId },
+                // UpdateStatus(int Status, int UpdatedBy, int DepartmentId)
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblSalonServices").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblSalonServices').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblSalonServices').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+                        GetAll();
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("service " + UpdateStatusText + " Successfully");
+                    }
+                },
+                error: function (err) {
+                    //  alert(err.StatusText);
+                }
+            });
+        }
+        else {
+
+        }
+    }
+</script>
+
+

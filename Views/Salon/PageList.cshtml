@@ -1,0 +1,379 @@
+﻿
+@{
+    ViewBag.Title = "PageList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="preloader" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #fefefe; z-index: 99; height: 110vh;">
+    <div id="status" style="width:100%;height:100%; text-align: center; position: absolute; left: 0; top: 30%; background-repeat: no-repeat; background-size: cover cover; background-position: center; margin: 0px 0 0 36px;">
+        <div class="preloader-logo"></div>
+        <p class="center-text smaller-text" id="p1" style="margin: 0 24px 10px !important;">
+            <h2> Processing .. </h2><br />
+            <img src="~/img/preload.gif" />
+        </p>
+    </div>
+</div>
+<section class="content-header">
+    <h1>
+        Page List
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Master</a></li>
+        <li class="active">Add Page</li>
+    </ol>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+
+                        <label id="lblError"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                        <tr>
+                            <td style="max-width:70px;">
+                                Menu Name:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <input type="text" maxlength="40" id="txtMenuName" placeholder="Enter Menu Name" class="form-control" required />
+                            </td>
+                            <td style="max-width:70px;">
+                                Page Name:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <input type="text" maxlength="40" id="txtPageName" placeholder="Enter Page Name" class="form-control" required />
+                            </td>
+                            <td style="max-width:70px;">
+                                Display Name:<label style="color:red;margin-left: 1%;">*</label>
+                            </td>
+                            <td>
+                                <input type="text" maxlength="40" id="txtDisplayName" placeholder="Enter Display Name" class="form-control" required />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="checkbox-inline" id="chkDisplay" /> Side Menu Display</td>
+                            <td colspan="5" style="text-align:right">
+                                <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                <input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />
+                                <input type="text" hidden="hidden" id="txtPageID" name="txtPageID" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="box-body table-responsive">
+                    <table id="tblPages" class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>MENU NAME</th>
+                                <th>PAGE NAME</th>
+                                <th>DISPLAY NAME</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblPagesBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+    var WebURL = [location.protocol, '//', location.host].join('') + '/';
+
+    window.onload = function () {
+        if (UserId != "null" || UserId != null && RoleId == "1" || RoleId == 1) {
+                GetAll();
+        }
+        else {
+            window.location.href = '@Url.Action("Logout", "AppyPetsWeb")';
+        }
+    }
+
+    function GetAll() {
+        $('#btnEdit').hide();
+        //$('#btnSave').show();
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Users/GetPageList",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+                $(window).scrollTop(0);
+                $('#preloader').hide();
+                if (json[0].PageName == "Error") {
+                    $('#tblBanks').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblError').text(json[0].ErrorMessage);
+                }
+                else {
+                    $('#tblPages').show();
+                    
+                        if ($.fn.dataTable.isDataTable('#tblPages')) {
+                            $('#tblPages').DataTable().destroy();
+                        }
+                        $('#tblPagesBody').text("");
+                        for (var i = 0; i < json.length; i++) {
+                            tr = $('<tr/>');
+                            tr.append("<td>" + json[i].MenuName + "</td>");
+                            tr.append("<td>" + json[i].PageName + "</td>");
+                            tr.append("<td>" + json[i].DisplayName + "</td>");
+                            tr.append("<td> <a href='javascript:void(0)' id='edit" + i + "' onclick='Edit(" + json[i].PageID + ")' class='fa fa-pencil'> </a></td>"); //<a href='#' id='delete" + i + "' class='fa fa-trash-o' onclick='Delete(" + json[i].BankId + ")'> </a> |
+                            $('#tblPages').append(tr);
+                        }
+                    $('#tblPages').DataTable({
+                        dom: 'Bfrtip',
+                        buttons: [
+                            'copyFlash',
+                            'csvFlash',
+                            'excelFlash',
+                            'pdfFlash'
+                        ]
+                    });
+                }
+
+            },
+            error: function (err) {
+               // alert(err.StatusText);
+            }
+        });
+    }
+
+    function Delete(Id) {
+        $("#lbl_status").text("");
+        if (confirm("Are you Sure to delete this ProductCategory?") == true) {
+            $.ajax({
+                url: URL + "api/ProductCategory/Delete?CategoryId=" + Id,
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+                    GetAll();
+                    $("#dvErrorStatus").css({ display: "none" });
+                    $("#dvSuccess").css({ display: "block" });
+                    $("#lbl_status").text("Category Deleted Successfully");
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblError").text("Cant't Delete This Record It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblError").text(r[0].ErrorMessage);
+                    }
+                },
+                error: function (err) {
+                  //  alert(err.StatusText);
+                }
+            });
+        } else {
+
+        }
+    }
+
+    function Clear() {
+        $("#txtPageName").val("");
+        $("#txtMenuName").val("");
+        $('#txtDisplayName').val("");
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+        $("#dvErrorStatus").css({ display: "none" });
+        $("#dvSuccess").css({ display: "none" });
+    }
+
+
+    function Edit(Id) {
+        $('#btnEdit').show();
+        $('#btnSave').hide();
+        $.ajax({
+            url: URL + 'api/Users/GetPageById?PageID=' + Id,
+            type: "GET",
+            cache: false,
+            success: function (data) {
+                console.log(data);
+                $("#txtPageName").val(data[0].PageName);
+                $("#txtMenuName").val(data[0].MenuName); 
+                $('#txtPageID').val(data[0].PageID);
+                $('#txtDisplayName').val(data[0].DisplayName);
+                if (data[0].FrontEndDisplay == "1") {
+                    $('#chkDisplay').attr("checked", true);
+                } else {
+                    $('#chkDisplay').attr("checked", false);
+                }
+            }
+        });
+    }
+
+    function goTo() {
+        localStorage.setItem("BKId", null);
+        location.href = '@Url.Action("Bank", "AppyPetsWeb")';
+    }
+
+    function Save() {
+        var MenuName = $('#txtMenuName').val();
+        var PageName = $('#txtPageName').val();
+        var DisplayName = $('#txtDisplayName').val();
+        $(window).scrollTop(0);
+        $('#preloader').show();
+        if (PageName != "" && MenuName != "" && DisplayName !="") {
+            if (MenuName.match(/^[a-zA-Z ]*$/) && PageName.match(/^[a-zA-Z ]*$/)) {
+                var displayfrontend = 0;
+                if ($('#chkDisplay').is(":checked"))
+                {
+                    displayfrontend = 1;
+                }
+                $.ajax({
+                    url: URL + 'api/Users/InsertPages?MenuName=' + MenuName + '&PageName=' + PageName + '&DisplayName=' + DisplayName + '&FrontEndDisplay=' + displayfrontend,
+                    type: "GET",
+                    cache: false,
+                    success: function (r) {
+                        $(window).scrollTop(0);
+                        $('#preloader').hide();
+                        if (r == "UniqueConstraint") {
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $("#lblError").text("Page Name already Existed");
+                        }
+                        else if (r == "Fail") {
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $("#lblError").text("Failed to Insert");
+                        }
+                        else {
+                            Clear();
+                            $("#dvSuccess").css({ display: "block" });
+                            $("#dvErrorStatus").css({ display: "none" });
+                            $("#lbl_status").text("Saved Successfully");
+                            GetAll();
+                        }
+                    }
+                });
+            } else {
+                if (!PageName.match(/^[a-zA-Z ]*$/)) {
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblError").text("Please Enter Valid Page Name");
+                }
+                if (!MenuName.match(/^[a-zA-Z ]*$/)) {
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblError").text("Please Enter Valid Menu Name");
+                }
+                if (!DisplayName.match(/^[a-zA-Z ]*$/)) {
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblError").text("Please Enter Valid Display Name");
+                }
+            }
+        } else {
+            if (PageName == "") {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblError").text("Please Enter Valid Page Name");
+            }
+            if (MenuName == "") {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblError").text("Please Enter Valid Menu Name");
+            }
+            if (DisplayName == "") {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblError").text("Please Enter Valid Display Name");
+            }
+        }
+    }
+
+    function Update() {
+        var MenuName = $('#txtMenuName').val();
+        var PageName = $('#txtPageName').val();
+        var DisplayName = $('#txtDisplayName').val();
+        var PageID = $('#txtPageID').val();
+        if (PageName != "" && MenuName != "" && DisplayName != "") {
+            if (MenuName.match(/^[a-zA-Z ]*$/) && PageName.match(/^[a-zA-Z ]*$/)) {
+                var displayfrontend = 0;
+                if ($('#chkDisplay').is(":checked")) {
+                    displayfrontend = 1;
+                }
+                $.ajax({
+                    url: URL + 'api/Users/UpdatePages?MenuName=' + MenuName + '&PageName=' + PageName + '&PageID=' + PageID + '&DisplayName=' + DisplayName + '&FrontEndDisplay=' + displayfrontend,
+                    type: "GET",
+                    cache: false,
+                    success: function (r) {
+                        if (r == "UniqueConstraint") {
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $("#lblError").text("Page Name already Existed");
+                        }
+                        else if (r == "Fail") {
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $("#lblError").text("Failed to Update");
+                        }
+                        else {
+                            Clear();
+                            $("#dvSuccess").css({ display: "block" });
+                            $("#dvErrorStatus").css({ display: "none" });
+                            $("#lbl_status").text("Updated Successfully");
+                            GetAll();
+                        }
+                    }
+                });
+            } else {
+                if (!PageName.match(/^[a-zA-Z ]*$/)) {
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblError").text("Please Enter Valid Page Name");
+                }
+                if (!MenuName.match(/^[a-zA-Z ]*$/)) {
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblError").text("Please Enter Valid Menu Name");
+                }
+                if (!DisplayName.match(/^[a-zA-Z ]*$/)) {
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblError").text("Please Enter Valid Display Name");
+                }
+            }
+        } else {
+            if (PageName == "") {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblError").text("Please Enter Valid Page Name");
+            }
+            if (MenuName == "") {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblError").text("Please Enter Valid Menu Name");
+            }
+
+            if (DisplayName == "") {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblError").text("Please Enter Valid Display Name ");
+            }
+        }
+    }
+</script>

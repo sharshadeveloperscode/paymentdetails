@@ -1,0 +1,141 @@
+﻿
+@{
+    ViewBag.Title = "SalonsScheduler"; 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="col-md-12" style="margin-bottom: 17px; margin-top: 17px;">
+    <label id="lblStatus"></label>
+    @*<div class=" col-md-0">
+    </div>
+    <div class=" col-md-3">
+        <span><b>Date</b></span>
+        <input class="form-control" placeholder="Select Date" id="txtDate" type="text" />
+    </div>
+    <div class=" col-md-0">
+    </div>
+    <div class=" col-md-3">
+        <span><b>Employee</b></span>
+        <select  class="form-control">
+            <option value="0">Select Employee</option>
+        </select>
+    </div>
+    <div class=" col-md-6">
+      
+    </div>*@
+    <div class=" col-md-12">
+        <div class="col-md-3">
+          <h3> Scheduler</h3>
+            </div>
+        <div class="col-md-9">
+        <input type="button" style="margin-top:15px;" class="btn btn-success pull-right" onclick="window.location.href = '@Url.Action("AddScheduler", "Salon")';" value="Add Scheduler" />
+    </div>
+        </div>
+   
+</div>
+<div class="col-md-12">
+    <table id="tblPayments" style="width: 100%" class="table table-bordered table-hover dataTable">
+
+        <thead>
+            <tr style='background-color:skyblue;width:100% '>
+
+                <th>Booking Id</th>
+                <th>Customer Name</th>
+                <th>Service</th>
+                <th>Price</th>
+                <th>Order Date</th>
+                <th>Payment Type</th>
+                <th>Payment Status</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<script type="text/javascript">
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+    var UserId = localStorage.getItem("UserId");
+    window.onload = function () {
+        $("#txtDate").datepicker();
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                $.ajax({
+                    type: 'GET',
+                    url: URL + "api/Salonscheduler/GetPaymentsbySalonsId?SalonsId=" + SalonsId,
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    cache: false,
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+
+                        if (json[0].Message == "Error") {
+                            $('#tblPayments').hide();
+
+                            $('#lblStatus').text("Error");
+
+                        }
+                        else if (json[0].Message == "NoData") {
+                            $('#tblPayments').hide();
+
+                            $('#lblStatus').text("No Data");
+                        }
+
+                        else if (json[0].Message == "Success") {
+                            $('#tblPayments').show();
+                            if ($.fn.dataTable.isDataTable('#tblPayments')) {
+                                $('#tblPayments').DataTable().destroy();
+                            }
+                            $('#tblPaymentsBody').empty();
+                            for (var i = 0; i < json.length; i++) {
+
+                                tr = $('<tr  />');
+                                var date1 = new Date(json[i].BookingDate);
+                                var date2 = date1.getFullYear() + "-" +parseInt (date1.getMonth()+1) + "-" + date1.getDate();
+                                //style="background-color:goldenrod;width:100% "
+                                tr.append("<td >" + json[i].BookingsId + "</td>");
+                                tr.append("<td >" + json[i].FirstName + "" + json[i].LastName + "  </td>");
+                                tr.append("<td >" + json[i].TreatmentType + "</td>");
+                                tr.append("<td >" + json[i].Price + "</td>");
+                                tr.append("<td>" + date2 + "  " + json[i].BookingTime + " </td>");
+                                tr.append("<td >" + json[i].TreatmentType + "</td>");
+                                tr.append("<td >" + json[i].PaymentStatus + "</td>");
+                                $('#tblPayments').append(tr);
+                            }
+                            $('#tblPayments').DataTable({
+                                select: {
+                                    style: 'multi'
+                                },
+                                dom: 'Bfrtip',
+                                buttons: [
+                                    'copyFlash',
+                                    'csvFlash',
+                                    'excelFlash',
+                                    'pdfFlash'
+                                ],
+                                select: true
+                            });
+                        }
+                    },
+                    error: function (err) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblStatus').text(err.StatusText);
+                    }
+                });
+            },
+                error: function (err) {
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblStatus').text(err.StatusText);
+                }
+            });
+    }
+
+
+
+   
+</script>

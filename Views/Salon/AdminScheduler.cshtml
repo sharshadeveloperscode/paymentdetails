@@ -1,0 +1,109 @@
+﻿
+@{
+    ViewBag.Title = "AdminScheduler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12" style="margin-bottom: 17px; margin-top: 17px;">
+    <label id="lblStatus"></label>
+    <div class="col-md-0">
+    </div>
+    <div class="col-md-3">
+        <span><b>Date</b></span>
+        <input class="form-control" type="date" />
+    </div>
+    <div class="col-md-0">
+    </div>-
+
+    <div class="col-md-3">
+        <span><b>Employee</b></span>
+        <select class="form-control"></select>
+    </div>
+    <div class="col-md-6">
+    </div>
+    <div class="col-md-3">
+      @*  <span><b>Employee</b></span>*@
+        <input type="button" class="btn btn-success" onclick="window.location.href = '@Url.Action("AddScheduler", "Salon")';" value="Add Scheduler" />
+    </div>
+    <div class="col-md-6">
+        
+    </div>
+</div>
+<div class="col-md-12">
+    <table id="tblPayments" style="width: 100%" class="table table-bordered table-hover dataTable">
+
+        <thead>
+            <tr style='background-color:skyblue;width:100% '>
+
+                <th>Salons Name</th>
+                <th>Treatement Title</th>
+                <th>Bookings Id</th>
+                <th>Price</th>
+                <th>Payment Type</th>
+                <th>Payment Status</th>
+
+            </tr>
+        </thead>
+
+
+    </table>
+</div>
+
+<script type="text/javascript">
+    window.onload = function () {
+        $.ajax({
+            type: 'GET',
+            url: "http://localhost:51133/api/Payment/GetAllPayments",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+
+                if (json[0].Message == "Error") {
+                    $('#tblPayments').hide();
+
+                    $('#lblStatus').text("Error");
+
+                }
+                else if (json[0].Message == "NoData") {
+                    $('#tblPayments').hide();
+
+                    $('#lblStatus').text("No Data");
+                }
+
+                else if (json[0].Message == "Success") {
+                    $('#tblPayments').show();
+                    if ($.fn.dataTable.isDataTable('#tblPayments')) {
+                        $('#tblPayments').DataTable().destroy();
+                    }
+                    $('#tblPaymentsBody').empty();
+                    for (var i = 0; i < json.length; i++) {
+
+                        tr = $('<tr  />');
+
+                        //style="background-color:goldenrod;width:100% "
+                        tr.append("<td >" + json[i].BusinessName + "</td>");
+                        tr.append("<td >" + json[i].TreatmentTitle + "</td>");
+                        tr.append("<td >" + json[i].BookingsId + "</td>");
+                        tr.append("<td >" + json[i].Price + "</td>");
+                        tr.append("<td >" + json[i].PaymentType + "</td>");
+                        tr.append("<td >" + json[i].PaymentStatus + "</td>");
+
+
+                        $('#tblPayments').append(tr);
+                    }
+
+                }
+            },
+            error: function (err) {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblStatus').text(err.StatusText);
+            }
+        });
+    }
+   
+</script>
+

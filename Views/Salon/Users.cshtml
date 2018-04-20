@@ -1,0 +1,397 @@
+﻿
+@{
+    ViewBag.Title = "Users";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<body>
+    <section class="content-header">
+        <h1>
+            Users
+
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">User Management</a></li>
+            <li class="active">Create User</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lblUser"></label>
+                        </div>
+                        <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lbl_status"></label>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive">
+                        <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                            <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                            <tr>
+                                <td>
+                                    Name:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" placeholder="Enter Name" id="txtName" name="txtName" title="Enter Alphabets only" pattern="^[a-zA-Z]*$" class="form-control" required />
+                                </td>
+                                <td>
+                                    Email:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" placeholder="Enter Email" id="txtEmail" name="txtEmail" class="form-control" />
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td>
+                                    Role:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select id="ddlRole" class="form-control">
+                                        <option value="0" label="--Select--"></option>
+                                    </select>
+                                </td>
+                                <td>
+                                    Password:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="password" placeholder="Enter Password" id="txtPassword" class="form-control" name="txtPassword" />
+                                </td>
+                                @*<td>
+                                        UserName:<label style="color:red;margin-left: 1%;">*</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" placeholder="Enter User Name" id="txtUserName" name="txtUserName" title="Enter Alphabets only" pattern="^[a-zA-Z]*$" class="form-control" required />
+                                    </td>*@
+                            </tr>
+                            <tr>
+
+                                <td>
+                                    Mobile Number:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td colspan="3">
+                                    <input type="number" min="0" style="width:331px !important;" placeholder="Enter Mobile Number" id="txtMobileNumber" name="txtMobileNumber" class="form-control" required />
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td colspan="4" style="text-align:right">
+                                    <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                    <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                    @*<input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />*@
+                                    <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("UsersList", "Salon")';" style="width:100px;" />
+                                    <input type="text" hidden="hidden" id="txtUserId" name="txtUserId" />
+                                </td>
+                            </tr>
+                        </table>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+
+    <script type="text/javascript">
+
+        var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+        var UserId = localStorage.getItem("UserId");
+        var RoleId = localStorage.getItem("RoleId");
+
+        window.onload = function () {
+            GetRoles();
+        }
+
+        $('#txtName').bind('keyup blur', function () {
+            var node = $(this);
+            node.val(node.val().replace(/[^a-z]/g, ''));
+        });
+        function GetRoles() {
+            $.ajax({
+                type: 'GET',
+                url: URL + "api/Role/Get_Roles",
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                xhrFields: {
+                    withCredentials: false
+                },
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].Status == "1") {
+                            var opt = new Option(data[i].RoleName, data[i].RoleId);
+                            $("#ddlRole").val("");
+                            $('#ddlRole').append(opt);
+                        }
+                    }
+                    var UserId = localStorage.getItem("EditUserId");
+                    if (UserId == null || UserId == "null") {
+                        $('#btnEdit').hide();
+                        $('#btnSave').show();
+                    }
+                    else {
+                        BindUser(UserId);
+                        $('#btnEdit').show();
+                        $('#btnReset').hide();
+                        $('#btnSave').hide();
+                    }
+                },
+                error: function (err) {
+                    console.log(err.StatusText);
+                }
+            });
+        }
+
+        function RolesLoad(RoleId) {
+            $.ajax({
+                type: 'GET',
+                url: URL + "api/Role/Get_Roles",
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                xhrFields: {
+                    withCredentials: false
+                },
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].Status == "1") {
+                            var opt = new Option(data[i].RoleName, data[i].RoleId);
+                            $("#ddlRole").val("");
+                            $('#ddlRole').append(opt);
+                        }
+                    }
+                    $("#ddlRole").val(RoleId);
+                },
+                error: function (err) {
+                    console.log(err.StatusText);
+                }
+            })
+        }
+
+
+        function BindUser(UserId) {
+            //  RolesLoad();
+            $("#lbl_status").text("");
+            Clear();
+            $('#btnEdit').show();
+            $('#btnSave').hide();
+            $.ajax({
+                url: URL + "api/Users/Get_User_ById?UserId=" + UserId,
+                type: "GET",
+                cache: false,
+                async: false,
+                success: function (r) {
+                    console.log(r);
+                    $("#txtUserId").val(UserId);
+                    RolesLoad(r[0].RoleId);
+                    //  $("#ddlRole").val(r[0].RoleId);
+                    $("#txtName").val(r[0].UserName);
+                    $("#txtUserName").val(r[0].UserName);
+                    $("#txtPassword").val(r[0].Password);
+                    $("#txtMobileNumber").val(r[0].MobileNumber);
+                    $("#txtEmail").val(r[0].Email);
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblUser').text(err.statusText);
+                }
+            })
+        }
+
+        function Save() {
+            $("#lbl_status").text("");
+            if ($("#txtName").val() != "" && $("#ddlRole option:selected").val() != 0 && $('#txtPassword').val() != '' && $('#txtMobileNumber').val() != '' && $('#txtEmail').val()) {
+                var Name = $("#txtName").val();
+                var CreatedBy = UserId;
+                var filter = new RegExp(/^[+a-zA-Z0-9._-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+                var email = $("#txtEmail").val();
+                if (!filter.test(email)) {
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblUser").text("Please Enter Valid Email");
+
+                } else {
+                    var phoneNumberPattern = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/;
+                    var Mobile = $("#txtMobileNumber").val();
+                    if (!phoneNumberPattern.test(Mobile)) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblUser").text("Please Enter Valid Mobile Number");
+                    }
+                    else {
+                        $.ajax({
+                            url: URL + "api/Users/Insert_User?Name=" + Name + "&UserName=" + $("#txtEmail").val() + "&Password=" + $('#txtPassword').val() + "&MobileNumber=" + $('#txtMobileNumber').val() + "&Email=" + $('#txtEmail').val() + "&CreatedBy=" + CreatedBy + "&RoleId=" + $("#ddlRole option:selected").val() + "",
+                            type: "GET",
+                            cache: false,
+                            success: function (r) {
+                                if (r[0].Message == "UniqueConstraint") {
+                                    $("#dvErrorStatus").css({ display: "block" });
+                                    $("#lblUser").text("User Name Already Existed.");
+                                }
+                                else if (r[0].Message == "Error") {
+                                    $("#dvErrorStatus").css({ display: "block" });
+                                    //$('#lblUser').text(r[0].ErrorMessage);
+                                    $('#lblUser').text("Email already Existed");
+                                }
+                                else {
+                                    Clear();
+                                    StatusMessage(2);
+                                }
+                            },
+                            error: function (err) {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblUser').text(err.statusText);
+                            }
+                        });
+                    }
+
+                }
+
+            } else {
+                if ($("#txtName").val() == '') {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblUser").text("Please Enter User Name");
+                    $("#txtName").focus();
+                }
+                else if ($("#ddlRole option:selected").val() == 0) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblUser").text("Please Select Role Name");
+                    $("#ddlRole").focus();
+                }
+                    //else if ($("#txtUserName").val() == '') {
+                    //    $("#dvErrorStatus").css({ display: "block" });
+                    //    $("#lblUser").text("Please Enter User Name");
+                    //    $("#txtUserName").focus();
+                    //}
+                else if ($("#txtPassword").val() == '') {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblUser").text("Please Enter Password");
+                    $("#txtPassword").focus();
+                }
+                else if ($("#txtMobileNumber").val() == '') {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblUser").text("Please Enter Mobile Number");
+                    $("#txtMobileNumber").focus();
+                }
+                else if ($("#txtEmail").val() == '') {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblUser").text("Please Enter Email");
+                    $("#txtEmail").focus();
+                }
+            }
+        }
+
+
+        function Clear() {
+            $("#txtUserId").val("");
+            $("#txtEmail").val("");
+            $("#txtMobileNumber").val("");
+            $("#txtPassword").val("");
+            $("#txtUserName").val("");
+            $("#txtName").val("");
+            $("#ddlRole").val("0");
+            $("#lbl_status").text("");
+            $("#lblUser").text(" ");
+            $('#btnEdit').hide();
+            $('#btnSave').show();
+            $("#dvSuccess").css({ display: "none" });
+            $("#dvErrorStatus").css({ display: "none" });
+        }
+
+
+        function Update() {
+            $("#lbl_status").text("");
+            if ($("#txtName").val() != "" && $("#ddlRole option:selected").val() != 0 && $('#txtPassword').val() != '' && $('#txtMobileNumber').val() != '' && $('#txtEmail').val()) {
+                var Name = $("#txtName").val();
+                var UpdatedBy = "1";
+
+                var filter = new RegExp(/^[+a-zA-Z0-9._-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+                var email = $("#txtEmail").val();
+                if (!filter.test(email)) {
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblUser").text("Please Enter Valid Email");
+
+                } else {
+                    var phoneNumberPattern = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/;
+                    var Mobile = $("#txtMobileNumber").val();
+                    if (!phoneNumberPattern.test(Mobile)) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblUser").text("Please Enter Valid Mobile Number");
+                    }
+                    else {
+
+                        $.ajax({
+                            url: URL + "api/Users/Update_User?Name=" + Name + "&UserName=" + $("#txtEmail").val() + "&Password=" + $('#txtPassword').val() + "&MobileNumber=" + $('#txtMobileNumber').val() + "&Email=" + $('#txtEmail').val() + "&UpdatedBy=" + UpdatedBy + "&RoleId=" + $("#ddlRole option:selected").val() + "&UserId=" + $("#txtUserId").val() + "",
+                            type: "GET",
+                            dataType: 'json',
+                            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                            cache: false,
+                            success: function (r) {
+                                if (r[0].Message == "UniqueConstraint") {
+                                    $("#dvErrorStatus").css({ display: "block" });
+                                    $("#lblUser").text("User Name Already Existed.");
+                                }
+                                else if (r[0].Message == "Error") {
+                                    $("#dvErrorStatus").css({ display: "block" });
+                                    $('#lblUser').text(r[0].ErrorMessage);
+                                }
+                                else {
+                                    Clear();
+                                    StatusMessage(1);
+                                }
+                            },
+                            error: function (err) {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblUser').text(err.statusText);
+                            }
+                        });
+                    }
+                }
+
+            }
+            else {
+                if ($("#txtName").val() == '') {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblUser").text("Please Enter User Name");
+                    $("#txtName").focus();
+                }
+                else if ($("#ddlRole option:selected").val() == 0) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblUser").text("Please Select Role Name");
+
+                }
+                    //else if ($("#txtUserName").val() == '') {
+                    //    $("#dvErrorStatus").css({ display: "block" });
+                    //    $("#lblUser").text("Please Enter User Name");
+                    //    $("#txtUserName").focus();
+                    //}
+                else if ($("#txtPassword").val() == '') {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblUser").text("Please Enter Password");
+                    $("#txtPassword").focus();
+                }
+                else if ($("#txtMobileNumber").val() == '') {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblUser").text("Please Enter Mobile Number");
+                    $("#txtMobileNumber").focus();
+                }
+                else if ($("#txtEmail").val() != '') {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblUser").text("Please Enter Email");
+                    $("#txtEmail").focus();
+                }
+            }
+        }
+
+        function StatusMessage(value) {
+            localStorage.setItem("UserMessage", value);
+            window.location.href = '@Url.Action("UsersList", "Salon")';
+        }
+    </script>
+</body>

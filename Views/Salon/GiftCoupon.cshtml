@@ -1,0 +1,153 @@
+﻿
+@{
+    ViewBag.Title = "GiftCoupon";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <h1>
+        Gift Coupons
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+        <li><a href="#">Gift Coupons</a></li>
+
+
+    </ol>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+
+                        <label id="lblCustomer"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+
+                    <input type="button" value="Back" style="float:right; width:100px;" class="btn btn-danger" onclick="window.location.href='@Url.Action("Dashboard", "Salon")';" />
+                </div>
+
+             
+                 
+              
+                <div class="box-body table-responsive">
+                    <table id="tblCustomer" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                                @*<th>VoucherType Id</th>*@
+                                <th>GiftCard Code</th>
+                                <th>Gifted By</th>
+                                <th>Gifted To</th>
+                               
+                                <th>Status</th>
+                                <th>Validity Date</th>
+                                @*<th>Validity</th>*@
+                            </tr>
+                        </thead>
+                        <tbody id="tblCustomerBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script type="text/javascript">
+    
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+
+    window.onload = function () {
+      
+        GetAll();
+    }
+
+    function GetAll() {
+        var n = 0;
+        $.ajax({
+            type: 'GET',
+            url: URLLink + "api/VoucherType/GetGiftCoupons",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+                if (json[0].Message == "Error") {
+                    $('#tblCustomer').hide();
+                    $('#lbl_status').text("No Customer Found");
+                    $('#lbl_status').css("color", "red");
+                }
+                else if (json[0].Message == "Success") {
+                    
+                    $('#tblCustomer').show();
+                    if ($.fn.dataTable.isDataTable('#tblCustomer')) {
+                        $('#tblCustomer').DataTable().destroy();
+                    }
+                    $('#tblCustomerBody').empty();
+
+                    for (var i = 0; i < json.length; i++) {
+                        tr = $('<tr/>');
+
+                        //tr.append("<td>" + json[i].VoucherTypeId + "</td>");
+                        tr.append("<td>" + json[i].GiftCoupon + "</td>");
+                        tr.append("<td>" + json[i].FirstName + " " + json[i].LastName + "</td>");
+                        tr.append("<td>" + json[i].Email + "</td>");
+                       
+                        var d = new Date();
+                        d1 = d.getDate();
+                        d2 = d.getMonth() + 1;
+                        d3 = d.getFullYear();
+                        var date = d1 + '/' + d2 + '/' + d3;
+
+                       // alert(date);
+                       // alert(json[i].ToDate);
+                      
+                        if (json[i].Status == 1) {
+
+                            tr.append("<td>Not Used</td>");
+                        }
+                        else if (json[i].Status == 2) {
+                            tr.append("<td>Used</td>");
+                        }
+                        tr.append("<td>" + json[i].ToDate + "</td>");
+                        //if (json[i].ToDate > date)
+                        //{
+                        //    tr.append("<td>Not Expired</td>");
+                        //}
+                        //else if (json[i].ToDate < date)
+                        //{
+                        //    tr.append("<td>Expired</td>");
+                        //}
+
+                       
+                        $('#tblCustomer').append(tr);
+                    }
+                    $('#tblCustomer').DataTable({
+                        bsort: false,
+                        dom: 'Bfrtip',
+                        buttons: [
+                             'excel', 'pdf'
+                        ],
+                        select: true
+                    });
+                }
+            },
+            error: function (err) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblCustomer').text(err.StatusText);
+            }
+        });
+    }
+
+
+</script>
+

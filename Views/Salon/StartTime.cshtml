@@ -1,0 +1,227 @@
+﻿
+@{
+    ViewBag.Title = "StartTime";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<body>
+    <section class="content-header">
+        <h1>
+            StartTime
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Masters</a></li>
+            <li class="active">Create StartTime</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lblStartTime"></label>
+                        </div>
+                        <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lbl_status"></label>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive">
+                        <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                            <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                            <tr>
+
+                                <td>
+                                    StartTime:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" maxlength="40" placeholder="Enter StartTime" id="txtStartTime" name="txtStartTime" title="Enter Alphabets only" class="form-control" required />
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td colspan="4" style="text-align:right">
+                                    <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                    <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                    <input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />
+                                    <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("StartTimeList", "Salon")';" style="width:100px;" />
+                                    <input type="text" hidden="hidden" id="txtStartTimeId" name="StartTimeId" />
+                                </td>
+                            </tr>
+                        </table>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</body>
+<script type="text/javascript">
+
+          var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+        var UserId = localStorage.getItem("UserId");
+        var RoleId = localStorage.getItem("RoleId");
+        var EditStartTimeId = localStorage.getItem("EditStartTimeId");
+
+        window.onload = function () {
+            if (UserId != "null" || UserId != null && RoleId == "1") {
+
+                    if (EditStartTimeId == "null") {
+                        $('#btnEdit').hide();
+                        $('#btnSave').show();
+                    }
+                    else {
+                        BindStartTime(EditStartTimeId);
+                        $('#btnEdit').show();
+                        $('#btnSave').hide();
+                        $('#btnReset').hide();
+                    }
+
+            }
+            else {
+                window.location.href = '@Url.Action("Logout", "Salon")';
+            }
+        }
+
+
+        //}
+
+    function BindStartTime(StartTimeId) {
+            $("#lbl_status").text("");
+            Clear();
+
+            $.ajax({
+                url: URL + "api/StartTime/GetDataById",
+                data: { "StartTimeId": StartTimeId },
+                type: "GET",
+                cache: false,
+                success: function (r) {
+                    $('#btnEdit').show();
+                    $('#btnSave').hide();
+                    console.log(r);
+                    $("#txtStartTimeId").val(StartTimeId);
+                    var num = r[0].StartTime.match(/[\d\.]+/g);
+                    var number = num.toString();
+                    $("#txtStartTime").val(r[0].StartTime);
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblStartTime').text(err.statusText);
+                }
+            })
+        }
+
+        function Save() {
+            $("#lbl_status").text("");
+            if ($("#txtStartTime").val() != '') {
+                var StartTime = $("#txtStartTime").val();
+                var CreatedBy = UserId;
+                if (StartTime.match("^[0-9]+$")) {
+                    // var Duration1 = Duration ;
+                // api/StartTime/Insert?StartTime={StartTime}&IsAcitve={IsAcitve}&CreatedBy={CreatedBy}
+                    $.ajax({
+                        url: URL + "api/StartTime/Insert",
+                        data: { "StartTime": StartTime, "IsAcitve": 1, "CreatedBy": CreatedBy },
+                        type: "GET",
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblStartTime").text("StartTime  Already Existed.");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblStartTime').text(r[0].ErrorMessage);
+                            }
+                            else
+                            {
+                                Clear();
+                                StatusMessage(2);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblStartTime').text(err.statusText);
+                        }
+                    });
+                } else {
+                  $("#dvErrorStatus").css({ display: "block" });
+                   $("#lblStartTime").text("Please Enter Valid StartTime ");
+                }
+            } else {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblStartTime").text("Please Enter StartTime ");
+                $("#txtStartTime").focus();
+            }
+        }
+        function Clear() {
+            $("#txtStartTimeId").val("");
+            $("#txtStartTime").val("");
+            $("#lbl_status").text("");
+            $("#lblStartTime").text(" ");
+            $('#btnEdit').hide();
+            $('#btnSave').show();
+            $("#dvSuccess").css({ display: "none" });
+            $("#dvErrorStatus").css({ display: "none" });
+        }
+
+        function Update() {
+            $("#lbl_status").text("");
+            if ($("#txtStartTime").val() != '') {
+                var StartTime = $("#txtStartTime").val();
+                var UpdatedBy = UserId;
+               // if (StartTime.match(/^[a-zA-Z ]*$/)) {
+                // Update(string CityName,int UpdatedBy,int Cityid)
+                if (StartTime.match("^[0-9]+$")) {
+                 //   var Duration1 = Duration + "min";
+                    $.ajax({
+                        url: URL + "api/StartTime/Update",
+                        data: { "StartTime": $("#txtStartTime").val(), "UpdatedBy": UpdatedBy, "StartTimeId": $("#txtStartTimeId").val() },
+                        cache:false,
+                        type: "GET",
+                        dataType: 'json',
+                        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblStartTime").text("StartTime  Already Existed.");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblStartTime').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                Clear();
+                                StatusMessage(1);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblStartTime').text(err.statusText);
+                        }
+                    });
+                } else {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblStartTime").text("Please Enter Valid StartTime ");
+                }
+            }
+            else {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblStartTime").text("Please Enter StartTime.");
+               
+            }
+        }
+
+        function StatusMessage(value) {
+            localStorage.setItem("StartTimeMessage", value);
+            window.location.href = '@Url.Action("StartTimeList", "Salon")';
+        }
+</script>
+

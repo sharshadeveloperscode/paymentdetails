@@ -1,0 +1,271 @@
+﻿
+@{
+    ViewBag.Title = "CityList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="content-header">
+    <h1>
+        City
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href=""><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Location</a></li>
+        <li class="active">City</li>
+    </ol>
+   @* <script src="~/Scripts/jquery-3.1.1.min.js"></script>*@
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body table-responsive">
+
+                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+
+                        <label id="lblCity"></label>
+                    </div>
+                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+                <div class="box-body table-responsive">
+                    <input type="button" class="btn btn-primary" value="Add City" onclick="window.location.href = '@Url.Action("City", "Salon")';" style="width:100px;" />
+                    <input type="submit" class="btn btn-danger" id="btnBack" value="Back" style="width:100px;float:right;" onclick="window.location.href = '@Url.Action("Dashboard", "Salon")';" />
+                   
+                </div>
+                <div class="box-body table-responsive">
+                    <table id="tblCity" style="width: 100%" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                                
+                                <th>City Name</th>
+                               @* <th>IsActive</th>*@
+                               
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblCityBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+<script type="text/javascript">
+   
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+
+    window.onload = function () {
+       // GetAll();
+        localStorage.setItem("EditCityId", "null");
+
+        //if (UserId != "null" && RoleId == "1") {
+        var Message = localStorage.getItem("CityMessage");
+        if (Message == "1") {
+           // $("#dvErrorStatus").css({ display: "none" });
+          //  $("#dvSuccess").css({ display: "block" });
+            //  $("#lbl_status").text("City Updated Successfully");
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("City Updated Successfully");
+            GetAll();
+        }
+        else if (Message == "2") {
+           // $("#dvErrorStatus").css({ display: "none" });
+           // $("#dvSuccess").css({ display: "block" });
+            // $("#lbl_status").text("City Created Successfully");
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("City Created Successfully");
+            GetAll();
+        }
+        else {
+            $("#dvErrorStatus").css({ display: "none" });
+            $("#dvSuccess").css({ display: "none" });
+            GetAll();
+        }
+        @*}
+        else {
+            window.location.href = '@Url.Action("LockScreen", "Salon")';
+        }*@
+    }
+
+
+    function GetAll() {
+
+        localStorage.setItem("CityMessage", "null");
+        $('#tblCityBody').text('');
+        $('#btnEdit').hide();
+        $('#btnSave').show();
+        $.ajax({
+            type: 'GET',
+            url: URLLink + "api/City/Getdata",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache:false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+               
+                if (json[0].Message == "Error") {
+                    $('#tblCity').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblCity').text("Error");
+
+                }
+                else if (json[0].Message == "NoData") {
+                    $('#tblCity').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                   // $('#lblCity').text("No Data");
+                }
+                
+                else if (json[0].Message == "Success") {
+                    $('#tblCity').show();
+                    if ($.fn.dataTable.isDataTable('#tblCity')) {
+                        $('#tblCity').DataTable().destroy();
+                    }
+                    $('#tblCityBody').empty();
+                    for (var i = 0; i < json.length; i++) {
+                       
+                        tr = $('<tr/>');
+                       
+                        tr.append("<td>" + json[i].CityName + "</td>");
+                      
+                        if (json[i].IsActive == 1) {
+                          //  tr.append("<td>" + "Active" + "</td>");
+                            tr.append("<td><a href='#' id='delete" + i + "' title='Deactivate' onclick='UpdateStatus(" + json[i].CityId + " ,0)'><i class='fa fa-check nav_action_icon'></i> </a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].CityId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+                        }
+                        else if (json[i].IsActive == 0) {
+                          
+                            tr.append("<td><a href='#' id='delete" + i + "'  title='Activate' onclick='UpdateStatus(" + json[i].CityId + ",1)'><i class='fa fa-ban nav_action_icon'></i> </a> | <a href='#' id='edit" + i + "' onclick='Edit(" + json[i].CityId + ")' ><i class='fa fa-pencil'></i> </a></td>");
+                        }
+                      
+                        $('#tblCity').append(tr);
+                    }
+                    $('#tblCity').DataTable({
+                       
+                        bsort: false,
+                        dom: 'Bfrtip',
+                        buttons: [
+                             'excel', 'pdf'
+                        ],
+                        select: true
+                    });
+                }
+            },
+            error: function (err) {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblCity').text(err.StatusText);
+            }
+        });
+    }
+    //local
+    function Edit(CityId) {
+        localStorage.setItem("EditCityId", CityId);
+        window.location.href = '@Url.Action("City", "Salon")';
+    }
+
+
+    function UpdateStatus(CityId, IsActive) {
+        $("#lbl_status").text("");
+        var UserId = localStorage.getItem("UserId");
+        var StatusText = '';
+        var UpdateStatusText = '';
+        if (IsActive == 1) {
+            StatusText = "active";
+            UpdateStatusText = "activated";
+        }
+        else if (IsActive == 0) {
+            StatusText = "deactive";
+            UpdateStatusText = "deactivated";
+        }
+        if (confirm("Are you sure to  " + StatusText + " this City?") == true) {
+            $.ajax({
+                url: URLLink + "api/City/UpdateStatus",
+                data: { "Status": IsActive, "UpdatedBy": UserId, "CityId": CityId },
+                // UpdateStatus(int Status, int UpdatedBy, int DepartmentId)
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblCity").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblCity').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblCity').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+                        GetAll();
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("City " + UpdateStatusText + " Successfully");
+                    }
+                },
+                error: function (err) {
+                    alert(err.StatusText);
+                }
+            });
+        }
+        else {
+
+        }
+    }
+
+///////////////////////////
+
+    function Delete(CityId) {
+        $("#lbl_status").text("");
+        if (confirm("Are you Sure to delete this City?") == true) {
+            alert(CityId);
+            $.ajax({
+                url: URLLink + "api/City/Delete",
+                data:{"id":CityId},
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+                    $("#lblCity").text(" ");
+                    $("#txtCityId").val("");
+                    $("#txtCity").val("");
+                    $("#tblCity").text("");
+                    GetAll();
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblCity").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblCity').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblCity').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("City Deleted Successfully");
+                    }
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblCity').text(err.StatusText);
+                }
+            });
+        } else {
+
+        }
+    }
+</script>

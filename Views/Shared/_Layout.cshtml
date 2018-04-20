@@ -1,0 +1,1082 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="~/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/dist/css/AdminLTE.min.css">
+    <!-- collapse style -->
+    @*
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">*@
+
+
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+         folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="~/dist/css/skins/_all-skins.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="~/plugins/iCheck/flat/blue.css">
+    <!-- Morris chart -->
+    <link rel="stylesheet" href="~/plugins/morris/morris.css">
+    <!-- jvectormap -->
+    <link rel="stylesheet" href="~/plugins/jvectormap/jquery-jvectormap-1.2.2.css">
+    <!-- Date Picker -->
+    <link href="~/plugins/datepicker/datepicker3.css" rel="stylesheet" />
+
+
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="~/plugins/daterangepicker/daterangepicker.css">
+    <!-- bootstrap wysihtml5 - text editor -->
+    <link rel="stylesheet" href="~/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <script src="~/plugins/jQuery/jquery-2.2.3.min.js"></script>
+    <link href="~/plugins/select2/select2.min.css" rel="stylesheet" />
+
+    <link href="~/plugins/dataTables.bootstrap.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.4.1/css/buttons.dataTables.min.css">
+    <script src="https://cdn.jsdelivr.net/jquery.loadingoverlay/latest/loadingoverlay.min.js"></script>
+    <style>
+        .modal3 {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content3 {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            width: 80%;
+            height: 160px;
+            box-shadow: 0 10px 10px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
+            top: 90px;
+        }
+
+
+
+
+        .close3 {
+            color: white;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: -18px;
+            margin-right: 10px;
+        }
+
+            .close3:hover,
+            .close3:focus {
+                color: #fff;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+        .modal-header3 {
+            padding: 20px 16px;
+            background-color: #3c8dbc;
+            color: white;
+        }
+
+        .modal-body3 {
+            padding: 2px 16px;
+        }
+
+        .modal-footer3 {
+            padding: 19px 20px 20px;
+            margin-top: 15px;
+            text-align: right;
+        }
+    </style>
+
+    @*//validations*@
+    <style>
+        .modal6 {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content6 {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            width: 80%;
+            height: 160px;
+        }
+
+
+
+
+        .close6 {
+            color: white;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: -18px;
+            margin-right: 10px;
+        }
+
+            .close6:hover,
+            .close6:focus {
+                color: #fff;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+        .modal-header6 {
+            padding: 20px 16px;
+            background-color: #3c8dbc;
+            color: white;
+        }
+
+        .modal-body6 {
+            padding: 2px 16px;
+        }
+
+        .modal-footer6 {
+            padding: 19px 20px 20px;
+            margin-top: 15px;
+            text-align: right;
+        }
+
+        .alert-success {
+            background-color: #358CBA !important;
+            border-color: #358CBA !important;
+        }
+
+        .table > thead {
+            background-color: #3c8dbc;
+            color: #fff;
+        }
+    </style>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+    @*<div id="preloader" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #fefefe; z-index: 99; height: 110vh;">
+            <div id="status" style="width:100%;height:100%; text-align: center; position: absolute; left: 0; top: 33%; background-repeat: no-repeat; background-size: cover cover; background-position: center; margin: 0px 0 0 0px;">
+                <div class="preloader-logo"></div>
+                <p class="center-text smaller-text" id="p1" style="margin: 0 24px 10px !important;">
+                    <h2>Please Wait,</h2><br />
+                    <img src="~/img/preload.gif" />
+                </p>
+            </div>
+        </div>*@
+
+
+    @* Success*@
+    <div id="myModal3" class="modal3">
+        <!-- Modal content -->
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <div class="modal-content3">
+                <div class="modal-header3">
+                    <span class="close3" onclick="ModalClose()">&times;</span>
+                </div>
+                <div class="modal-body3">
+                    <br />
+                    <p id="lblupdated" style="color:black; text-align:center;"></p>
+
+                </div>
+                <div class="modal-footer3">
+                    <input type="button" style="margin-top: -17px; width:100px;" class="btn btn-primary" onclick="ModalClose()" value="OK" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+    @*// Validations *@
+    <div id="myModal6" class="modal6">
+        <!-- Modal content -->
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <div class="modal-content6">
+                <div class="modal-header6">
+                    <span class="close6">&times;</span>
+                </div>
+                <div class="modal-body6">
+                    <br />
+                    <p id="lblupdated1" style="color:red"></p>
+                </div>
+                <div class="modal-footer6">
+                    <input type="button" style="margin-top: -51px;" class="btn btn-default" onclick="ModalClose1()" value="OK" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <script>
+        function ModalClose() {
+            $("#myModal3").css('display', "none");
+        }
+
+
+        // Get the modal
+        var modal3 = document.getElementById('myModal3');
+        // Get the button that opens the modal
+        var btn3 = document.getElementById("myBtn3");
+        // Get the <span> element that closes the modal
+        var span3 = document.getElementsByClassName("close3")[0];
+        // When the user clicks the button, open the modal
+        btn3.onclick = function () {
+            modal3.style.display = "block";
+        }
+        // When the user clicks on <span> (x), close the modal
+        span3.onclick = function () {
+            modal3.style.display = "none";
+        }
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal3.style.display = "none";
+            }
+        }
+        //validations
+        function ModalClose1() {
+            $("#myModal6").css('display', "none");
+        }
+
+        // Get the modal
+        var modal6 = document.getElementById('myModal6');
+
+        // Get the button that opens the modal
+        var btn3 = document.getElementById("myBtn3");
+
+        // Get the <span> element that closes the modal
+        var span3 = document.getElementsByClassName("close6")[0];
+
+        // When the user clicks the button, open the modal
+        btn3.onclick = function () {
+            modal6.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span3.onclick = function () {
+            modal6.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal6.style.display = "none";
+            }
+        }
+
+
+    </script>
+    <div class="wrapper">
+        <header class="main-header">
+            <!-- Logo -->
+            <a href="#" class="logo">
+                <!-- logo for regular state and mobile devices -->
+                <span class="logo-lg"><b>Salon</b></span>
+            </a>
+            <!-- Header Navbar: style can be found in header.less -->
+            <nav class="navbar navbar-static-top">
+                <!-- Sidebar toggle button-->
+                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                </a>
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+
+                        <!-- User Account: style can be found in dropdown.less -->
+                        <li class="dropdown user user-menu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                @*<img src="~/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">*@
+                                <span class="hidden-xs"><label class="text-capitalize" id="lblRName"> <i class="fa fa-chevron-down"></i></label></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- Menu Footer-->
+                                <li class="user-footer">
+                                    <div class="pull-left">
+                                        <a href="@Url.Action("ChangePassword", "Salon" )" class="btn btn-success btn-flat">Change Password</a>
+                                    </div>
+                                    <div class="pull-right">
+                                        <a href="#" onclick="logoutalert()" class="btn btn-danger btn-flat">Log out</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <!-- Sidebar user panel -->
+                <div class="user-panel">
+                    <div class="info" style="position:relative;left:0px;">
+                        <p>
+                            <i class="fa fa-user"></i> <label class="text-capitalize" id="lblName">
+                            </label>
+                        </p>
+                        <p><i class="fa fa-calendar"></i> <label id="currentDate"></label></p>
+                        <p><i class="fa fa-clock-o"></i> <label id="currentTime"></label></p>
+                        @*<a href="#"><i class="fa fa-circle text-success"></i> Online</a>*@
+                    </div>
+                </div>
+                <!-- sidebar menu: : style can be found in sidebar.less -->
+                @*<ul class="sidebar-menu" id="divsidemenubar"></ul>*@
+                <ul class="sidebar-menu" hidden id="Salonmenu">
+                    @*// Dashboard*@
+                    <li class='treeview'>
+                        <a href='@Url.Action("BusinessDashboard", "Salon")'>
+                            <i class='fa fa-home'></i>
+                            <span>Dashboard</span>
+
+                        </a>
+                        @*<ul class='treeview-menu'>
+
+                                <li style='display:block !important;'><a href='@Url.Action("BusinessDashboard", "Salon")'><i class='fa fa-circle-o'></i>Venue Dashboard</a></li>
+                            </ul>*@
+
+                    </li>
+
+                    @*//Scheduler*@
+                    <li class='treeview' style="display:none">
+                        <a href='@Url.Action("SalonSchedular", "Salon")'>
+                            <i class='fa fa-calendar-o'></i>
+                            <span>Scheduler</span>
+
+                        </a>
+                        @*<ul class='treeview-menu'>
+
+                                <li style='display:block !important;'>
+                                    <a href='@Url.Action("SalonSchedular", "Salon")'>
+                                        <i class='fa fa-circle-o'></i>Scheduler
+                                    </a>
+                                </li>
+                            </ul>*@
+
+                    </li>
+                    @*//Services*@
+                    <li class='treeview'>
+                        <a href='@Url.Action("SalonServicesList", "Salon")'>
+                            <i class='fa fa-circle-o'></i>
+                            <span>Services</span>
+
+                        </a>
+                        @*<ul class='treeview-menu'>
+
+                                <li style='display:block !important;'>
+                                    <a href='@Url.Action("SalonServicesList", "Salon")'>
+                                        <i class='fa fa-circle-o'></i>Venue Services
+                                    </a>
+                                </li>
+                            </ul>*@
+
+                    </li>
+                    @*// Cliente*@
+                    <li class='treeview'>
+                        <a href='@Url.Action("Clients", "Salon")'>
+                            <i class='fa fa-users'></i>
+                            <span>Clients</span>
+
+                        </a>
+                        @*<ul class='treeview-menu'>
+
+                                <li style='display:block !important;'>
+                                    <a href='@Url.Action("Clients", "Salon")'>
+                                        <i class='fa fa-circle-o'></i>Clients
+                                    </a>
+                                </li>
+                            </ul>*@
+                    </li>
+                    @*//Billing*@
+                    <li class='treeview'>
+                        <a href='@Url.Action("Billings", "Salon")'>
+                            <i class='fa fa-cc'></i>
+                            <span>Billing</span>
+
+                        </a>
+                        @*<ul class='treeview-menu'>
+
+                                <li style='display:block !important;'>
+                                    <a href='@Url.Action("Billings", "Salon")'>
+                                        <i class='fa fa-circle-o'></i>Billing
+                                    </a>
+                                </li>
+                            </ul>*@
+                    </li>
+                    @*//Reports*@
+                    <li class='treeview'>
+                        <a href='#'>
+                            <i class='fa fa-bar-chart-o'></i>
+                            <span>Reports</span>
+
+                        </a>
+                        <ul class='treeview-menu'>
+
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("SalesReports", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Venue Sales Reports
+                                </a>
+                            </li>
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("BookingCancellations", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Venue Booking Cancellations
+                                </a>
+                            </li>
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("ActualBookings", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Venue Actual Bookings
+                                </a>
+                            </li>
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("TodayBookings", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Venue Today Bookings
+                                </a>
+                            </li>
+                        </ul>
+
+                    </li>
+
+                    @*//Policies*@
+
+                    <li class='treeview' style="display:none">
+                        <a href='@Url.Action("Policy", "Salon")'>
+                            <i class='fa fa-check-square-o'></i>
+                            <span>Policy</span>
+
+                        </a>
+                        @*<ul class='treeview-menu'>
+
+                                <li style='display:block !important;'>
+                                    <a href='@Url.Action("Policy", "Salon")'>
+                                        <i class='fa fa-circle-o'></i>Policy
+                                    </a>
+                                </li>
+                            </ul>*@
+                    </li>
+                    @*//Settings*@
+                    <li class='treeview'>
+                        <a href='#'>
+                            <i class='fa fa-cog'></i>
+                            <span>Settings</span>
+
+                        </a>
+                        <ul class='treeview-menu'>
+
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("SalonEmployeesList", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Staff
+                                </a>
+                            </li>
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("SalonDetails", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Venue Details
+                                </a>
+                            </li>
+                            <li style='display:none !important;'>
+                                <a href='@Url.Action("OpeningHours", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Venue Opening Hours
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    @*\\Invoice*@
+
+                    <li class='treeview'>
+                        <a href='@Url.Action("SalonInvoice", "Salon")'>
+                            <i class='fa fa-file-pdf-o'></i>
+                            <span>Invoice</span>
+
+                        </a>
+                        @*<ul class='treeview-menu'>
+
+                                <li style='display:block !important;'>
+                                    <a href='@Url.Action("SalonInvoice", "Salon")'>
+                                        <i class='fa fa-circle-o'></i>Invoice
+                                    </a>
+                                </li>
+                            </ul>*@
+                    </li>
+
+                </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                @*//Admin*@
+                <ul class="sidebar-menu" hidden id="Adminmenu">
+                    @*// Dashboard*@
+                    <li class='treeview'>
+                        <a href='@Url.Action("Dashboard", "Salon")'>
+                            <i class='fa fa-home'></i>
+                            <span>Dashboard</span>
+
+                        </a>
+                        @*<ul class='treeview-menu'>
+
+                                <li style='display:block !important;'><a href='@Url.Action("Dashboard", "Salon")'><i class='fa fa-circle-o'></i>Admin Dashboard</a></li>
+                            </ul>*@
+
+                    </li>
+
+                    @*//Salons*@
+                    <li class='treeview'>
+                        <a href='@Url.Action("SalonsList", "Salon")'>
+                            <i class='fa fa-paw'></i>
+                            <span>Venues</span>
+
+                        </a>
+                        @*<ul class='treeview-menu'>
+
+                                <li style='display:block !important;'>
+                                    <a href='@Url.Action("SalonsList", "Salon")'>
+                                        <i class='fa fa-circle-o'></i>Salons
+                                    </a>
+                                </li>
+                            </ul>*@
+
+                    </li>
+                    @*//Cusomers*@
+                    <li class='treeview'>
+                        <a href='@Url.Action("CustomersList", "Salon")'>
+                            <i class='fa fa-user'></i>
+                            <span>Customers</span>
+
+                        </a>
+                        @*<ul class='treeview-menu'>
+
+                                <li style='display:block !important;'>
+                                    <a href='@Url.Action("CustomersList", "Salon")'>
+                                        <i class='fa fa-circle-o'></i>Customers
+                                    </a>
+                                </li>
+                            </ul>*@
+
+                    </li>
+                    @*// Vouchers*@
+                    <li class='treeview' style="display:none">
+                        <a href='#'>
+                            <i class='fa fa-gift'></i>
+                            <span>Vouchers</span>
+
+                        </a>
+                        <ul class='treeview-menu'>
+
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("VoucherTypeList", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Vouchers
+                                </a>
+                            </li>
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("GiftCoupon", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Gift Coupons
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    @*//Admin Billing*@
+                    <li class='treeview'>
+                        <a href='@Url.Action("AdminBilling", "Salon")'>
+                            <i class='fa fa-cc'></i>
+                            <span>Billing</span>
+
+                        </a>
+                        @*<ul class='treeview-menu'>
+
+                                <li style='display:block !important;'>
+                                    <a href='@Url.Action("AdminBilling", "Salon")'>
+                                        <i class='fa fa-circle-o'></i>AdminBilling
+                                    </a>
+                                </li>
+                            </ul>*@
+
+                    </li>
+
+
+                    @*//Treatments*@
+                    <li class='treeview'>
+                        <a href='#'>
+                            <i class='fa fa-medkit'></i>
+                            <span>Treatments</span>
+
+                        </a>
+                        <ul class='treeview-menu'>
+
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("CategoryList", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Category
+                                </a>
+                            </li>
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("TreatmentTitleList", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Treatments
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    @*//Reviews*@
+                    <li class='treeview'>
+                        <a href='#'>
+                            <i class='fa fa-bell'></i>
+                            <span>Reviews</span>
+                        </a>
+                        <ul class='treeview-menu'>
+
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("SalonReviews", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Reviews
+                                </a>
+                            </li>
+                            @*<li style='display:block !important;'>
+                                    <a href='@Url.Action("Comment", "Salon")'>
+                                        <i class='fa fa-circle-o'></i>User Comments
+                                    </a>
+                                </li>*@
+                        </ul>
+
+                    </li>
+
+
+                    @*//Reports*@
+
+                    <li class='treeview'>
+                        <a href='#'>
+                            <i class='fa fa-bar-chart-o'></i>
+                            <span>Reports</span>
+
+                        </a>
+                        <ul class='treeview-menu'>
+
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("AdminTodayBookings", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Today Appointments
+                                </a>
+                            </li>
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("AdminBookingCancellations", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Booking Cancellations
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    @*\\Invoice*@
+
+                    <li class='treeview'>
+                        <a href='@Url.Action("AdminInvoice", "Salon")'>
+                            <i class='fa fa-file-pdf-o'></i>
+                            <span>Invoice</span>
+
+                        </a>
+                        @*<ul class='treeview-menu'>
+
+                                <li style='display:block !important;'>
+                                    <a href='@Url.Action("AdminInvoice", "Salon")'>
+                                        <i class='fa fa-circle-o'></i>Invoice
+                                    </a>
+                                </li>
+                            </ul>*@
+                    </li>
+                    @*//Location*@
+                    <li class='treeview'>
+                        <a href='#'>
+                            <i class='fa fa-map-marker'></i>
+                            <span>Location</span>
+
+                        </a>
+                        <ul class='treeview-menu'>
+
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("CityList", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>City
+                                </a>
+                            </li>
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("AreaList", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Area
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
+                    @*//Masters*@
+                    <li class='treeview'>
+                        <a href='#'>
+                            <i class='fa fa-cog'></i>
+                            <span>Masters</span>
+
+                        </a>
+                        <ul class='treeview-menu'>
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("CleanUpTimeList", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Cleanup Time
+                                </a>
+                            </li>
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("DurationList", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Duration
+                                </a>
+                            </li>
+                            <li style='display:block !important;'>
+                                <a href='@Url.Action("ClassesList", "Salon")'>
+                                    <i class='fa fa-circle-o'></i>Classes
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+
+            </section>
+            <!-- /.sidebar -->
+        </aside>
+        <!-- Right side column. Contains the navbar and content of the page -->
+        <aside class="right-side">
+            @RenderBody()
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                <h1></h1>
+            </section>
+            <!-- Main content -->
+            <section class="content"></section>
+            <!-- /.content -->
+        </aside><!-- /.right-side -->
+    </div>
+
+    <!-- jQuery 2.2.3 -->
+    <!-- jQuery UI 1.11.4 -->
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+        $.widget.bridge('uibutton', $.ui.button);
+    </script>
+    <!-- Bootstrap 3.3.6 -->
+    <script src="~/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../../plugins/chartjs/Chart.min.js"></script>
+    <!-- Morris.js charts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script src="~/plugins/morris/morris.min.js"></script>
+    <!-- Sparkline -->
+    <script src="~/plugins/sparkline/jquery.sparkline.min.js"></script>
+    <!-- jvectormap -->
+    <script src="~/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+    <script src="~/plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+    <!-- jQuery Knob Chart -->
+    <script src="~/plugins/knob/jquery.knob.js"></script>
+    <!-- daterangepicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+    <script src="~/plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- datepicker -->
+
+    <script src="~/plugins/datepicker/bootstrap-datepicker.js"></script>
+    <!-- Bootstrap WYSIHTML5 -->
+    <script src="~/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+    <!-- Slimscroll -->
+    <script src="~/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+    <!-- FastClick -->
+    <script src="~/plugins/fastclick/fastclick.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/dist/js/app.min.js"></script>
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    <script src="~/dist/js/pages/dashboard.js"></script>
+    <!-- AdminLTE for demo purposes -->
+
+
+    <script src="~/dist/js/pages/dashboard.js"></script>
+    <script src="~/plugins/select2/select2.min.js"></script>
+    @*
+        <script src="~/plugins/select2/select2.js"></script>*@
+
+    @*
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>*@
+
+
+    <link href="~/bootstrap/css/AdminLTE-select2.min.css" rel="stylesheet" />
+
+
+    @*For Grids*@
+    @*<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css">
+        <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+        <script type="text/javascript" language="javascript" src="http://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
+        <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/select/1.2.0/js/dataTables.select.min.js"></script>*@
+
+    <script src="~/plugins/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/dataTables.bootstrap.min.js"></script>
+
+    <script src="https://cdn.datatables.net/buttons/1.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.4.1/js/buttons.flash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.4.1/js/buttons.html5.min.js"></script>
+</body>
+</html>
+
+<script>
+     var URLLink = 'http://hogarbarber.developerscode.in/';
+      // var URLLink = 'http://localhost:50445/';
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+    var WebURL = [location.protocol, '//', location.host].join('') + '/';
+    $(".select2").select2();
+    //   $.LoadingOverlay("show");
+
+
+
+    var dc = new Date();
+    var ddc = dc.getDate();
+    var ddm = dc.getMonth() + 1;
+    if (ddm < 10) {
+        ddm = "0" + ddm;
+    }
+    var ddy = dc.getFullYear();
+    if (ddc < 10) {
+        ddc = "0" + ddc;
+    }
+    var cm = dc.getMinutes();
+    var ch = dc.getHours();
+    var ab = "AM";
+    if (ch > 12) {
+        ab = "PM";
+        ch = ch - 12;
+    }
+    if (ch < 10) {
+        ch = "0" + ch;
+    }
+
+    var ct = ("0" + ch).slice(-2) + ":" + ("0" + cm).slice(-2) + " " + ("0" + ab).slice(-2);
+
+    document.getElementById('currentDate').innerHTML = ddc + " - " + ddm + " -" + ddy;
+    document.getElementById('currentTime').innerHTML = ct;
+
+
+    if (UserId == "null" || UserId == null) {
+        window.location.href = '@Url.Action("Logout", "Salon")';
+    }
+    else {
+
+        var Name = localStorage.getItem("NewName");
+        $("#lblName").html(Name);
+        $("#lblRName").html(Name);
+
+
+        // GetAllPagesandMenus();
+        //  GetPermissions();
+    }
+    var rollname = localStorage.getItem("RoleName");
+    menu();
+    function menu() {
+        if (rollname.toLowerCase() == 'admin') {
+
+            $("#Salonmenu").hide();
+            $("#Adminmenu").show();
+        }
+        else if (rollname.toLowerCase() == 'salons') {
+
+            $("#Adminmenu").hide();
+            $("#Salonmenu").show();
+        }
+        else {
+            $("#Adminmenu").hide();
+            $("#Salonmenu").hide();
+        }
+    }
+
+
+
+    function formatMasterDate(date1) {
+        var d = date1;
+
+        var d2 = []
+        d2 = d.split(' ');
+
+        var d1 = [];
+        d1 = d2[0].split('/');
+
+        //if (d1[0] < 10) { d1[0] = "0" + d1[0]; }
+        //if (d1[1] < 10) { d1[1] = "0" + d1[1]; }
+        return d1[1] + '-' + d1[0] + '-' + d1[2];
+    }
+
+    function GetPermissions() {
+        var href = document.location.href;
+        var lastPathSegment = href.substr(href.lastIndexOf('/') + 1);
+        var PageName = lastPathSegment.replace("#", "");
+        if (PageName == "UnAuthorization") {
+
+        } else {
+            $.ajax({
+                type: 'GET',
+                url: URLLink + "api/Users/Get_User_Permissions_By_Id?UserID=" + UserId + "&PageName=" + PageName,
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                xhrFields: {
+                    withCredentials: false
+                },
+                success: function (data) {
+                    if (data.length > 0) {
+
+                        if (data[0].View == "0") {
+                            window.location.href = '@Url.Action("UnAuthorization", "Salon")';
+                        } else {
+                            if (data[0].Insert == "0") {
+                                $('#btnReview').hide();
+                                $('#btnDecide').hide();
+                                $('#btnCreateMail ').hide();
+                                $('#btnClarify').hide();
+                                $('#btnSend').hide();
+                                $('#btnSave').hide();
+                                $('#btnAdd').hide();
+                                $('#btnReset').hide();
+                            }
+                            if (data[0].Edit == "0") {
+                                $('#btnEdit').hide();
+                                $('#btnApprove').hide();
+                                $('#btnUpdate').hide();
+                                $('#btnReject').hide();
+                            }
+                            if (data[0].Delete == "0") {
+                                $('#btnDelete').hide();
+                            }
+                            var length = localStorage.getItem("PermissionsLength");
+                            for (var i = 0; i < length; i++) {
+                                if (data[0].Edit == "0") {
+                                    $('#edit' + i).hide();
+                                    //$('#technical' + i).hide();
+                                    //$('#commercial' + i).hide();
+                                    //$('#final' + i).hide();
+                                    //$('#approve' + i).hide();
+                                    //$('#tcapprove' + i).hide();
+                                }
+                                if (data[0].Insert == "0") {
+
+                                    //$('#technical' + i).hide();
+                                    //$('#commercial' + i).hide();
+                                    //$('#final' + i).hide();
+                                }
+                                if (data[0].View == "0") {
+                                    $('#view' + i).hide();
+                                }
+                                if (data[0].Delete == "0") {
+
+                                    $('#delete' + i).hide();
+                                }
+                            }
+                        }
+
+                    } else {
+                        window.location.href = '@Url.Action("UnAuthorization", "Salon")';
+                    }
+                },
+                error: function (err) {
+                    console.log(err.StatusText);
+                }
+            });
+        }
+    }
+
+    function GetAllPagesandMenus() {
+        $.ajax({
+            type: 'GET',
+            url: URLLink + "api/Users/GetAllVieWPages?UserID=" + UserId,
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                var MenuNameArray = [];
+                for (var i = 0; i < data.length; i++) {
+                    if ($.inArray(data[i].MenuName, MenuNameArray) > -1) { } else {
+                        MenuNameArray.push(data[i].MenuName);
+                    }
+                }
+
+                var menutab = "";
+                var pagestab = "";
+
+                for (var j = 0; j < MenuNameArray.length; j++) {
+
+                    menutab += "<li class='treeview'>";
+                    menutab += "<a href='#'>" +
+                             "<i class='fa fa-bar-chart-o'>" + "</i>" +
+                             "<span>" + MenuNameArray[j] + "</span>" +
+                             "<i class='fa fa-angle-left pull-right'>" + "</i>" +
+                             "</a>";
+                    for (var i = 0; i < data.length; i++) {
+                        if (MenuNameArray[j] == data[i].MenuName) {
+                            menutab += "<ul class='treeview-menu'>" +
+                                "<li style='display:block !important;'>" + "<a href='" + WebURL + "Salon/" + data[i].PageName + "'>" + "<i class='fa fa-circle-o'>" + "</i> " + data[i].DisplayName + "</a>" + "</li>" +
+                            "</ul>";
+                        }
+                    }
+                    menutab += "</li>";
+
+                }
+                $('#divsidemenubar').append(menutab);
+            }
+        });
+    }
+
+    function logoutalert() {
+
+        // alert("Are you sure to Log out");
+        if (window.confirm('Are you sure to Log out?')) {
+            Logout();
+        }
+
+
+    }
+    function Logout() {
+
+
+        localStorage.setItem("UserId", "null");
+        localStorage.setItem("Name", "null");
+        localStorage.setItem("RoleId", "null");
+        localStorage.setItem("Password", "null");
+
+        window.location.href = '@Url.Action("Login", "Salon")';
+
+    }
+
+</script>

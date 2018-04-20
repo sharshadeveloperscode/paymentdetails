@@ -1,0 +1,1305 @@
+﻿
+@{
+    ViewBag.Title = "Discount";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <h1>
+        Discounts
+
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Discounts</a></li>
+    </ol>
+</section>
+
+
+
+
+@*<div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h4 class="modal-title"> </h4><label style="color:green" id="lblSuccess"></label>
+        <label style="color:red" id="lblSuccess1"></label>
+    </div>*@
+
+
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-body ">
+
+
+
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>Category Name</label>
+                            </div>
+                            <div class="col-md-6">
+                                <select id="ddlCategories" onchange="Categories()" style="width:50%" class="form-control">
+                                    <option value="0">-Select Category-</option>
+                                </select>
+                            </div>
+                        </div>
+                        <p>&nbsp;</p>
+                        <div class="popup-dvdr"></div>
+                        <div class="row">
+                            <div class="col-md-4"><label>Off-peak time discounts</label></div>
+                            <div class="col-md-8">
+                                @*<label>
+                                          <input id="offpeakdiscount" name="offpeakdiscount" value="1" checked="checked" type="checkbox">
+                                        Enable time based discount for appointments
+                                    </label>*@
+                            </div>
+                        </div>
+                        <div class="popup-dvdr2"></div>
+                        <div class="row off-peak" style="">
+                            <div id="no-more-tables">
+                                <table class="col-sm-12 table-bordered table-striped table-condensed cf">
+                                    <thead class="cf">
+                                        @*<tr>
+                                                <th> </th>
+                                                <th>Monday</th>
+                                                <th>Tuesday</th>
+                                                <th>Wednesday</th>
+                                                <th>Thursday</th>
+                                                <th>Friday</th>
+                                                <th>Saturday</th>
+                                                <th>Sunday</th>
+                                            </tr>*@
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td data-title="" style="">
+                                                <b style="padding-left:40px;">Morning</b><br>
+                                                <label style="margin-right:4px;">From</label>
+                                                <select id="ddlMorning" style="width:70px; height:34px; margin-top:4px;  background-color:#fff;">
+                                                    <option value="00:00">00:00</option>
+                                                    <option value="00:30">00:30</option>
+                                                    <option value="01:00">01:00</option>
+                                                    <option value="01:30">01:30</option>
+                                                    <option value="02:00">02:00</option>
+                                                    <option value="02:30">02:30</option>
+                                                    <option value="03:00">03:00</option>
+                                                    <option value="03:30">03:30</option>
+                                                    <option value="04:00">04:00</option>
+                                                    <option value="04:30">04:30</option>
+                                                    <option value="05:00">05:00</option>
+                                                    <option value="05:30">05:30</option>
+                                                    <option value="06:00">06:00</option>
+                                                    <option value="06:30">06:30</option>
+                                                    <option value="07:00">07:00</option>
+                                                    <option value="07:30">07:30</option>
+                                                    <option value="08:00">08:00</option>
+                                                    <option value="08:30">08:30</option>
+                                                    <option value="09:00">09:00</option>
+                                                    <option value="09:30">09:30</option>
+                                                    <option value="10:00">10:00</option>
+                                                    <option value="10:30">10:30</option>
+                                                    <option value="11:00">11:00</option>
+                                                    <option value="11:30">11:30</option>
+                                                    <option value="11:59">11:59</option>
+                                                </select>
+                                                <label style="margin-left:10px;margin-right:8px;">To</label>
+                                                <select id="ddlMorning1" style="width:70px; height:34px; margin-top:4px;  background-color:#fff;">
+                                                    <option value="00:00">00:00</option>
+                                                    <option value="00:30">00:30</option>
+                                                    <option value="01:00">01:00</option>
+                                                    <option value="01:30">01:30</option>
+                                                    <option value="02:00">02:00</option>
+                                                    <option value="02:30">02:30</option>
+                                                    <option value="03:00">03:00</option>
+                                                    <option value="03:30">03:30</option>
+                                                    <option value="04:00">04:00</option>
+                                                    <option value="04:30">04:30</option>
+                                                    <option value="05:00">05:00</option>
+                                                    <option value="05:30">05:30</option>
+                                                    <option value="06:00">06:00</option>
+                                                    <option value="06:30">06:30</option>
+                                                    <option value="07:00">07:00</option>
+                                                    <option value="07:30">07:30</option>
+                                                    <option value="08:00">08:00</option>
+                                                    <option value="08:30">08:30</option>
+                                                    <option value="09:00">09:00</option>
+                                                    <option value="09:30">09:30</option>
+                                                    <option value="10:00">10:00</option>
+                                                    <option value="10:30">10:30</option>
+                                                    <option value="11:00">11:00</option>
+                                                    <option value="11:30">11:30</option>
+                                                    <option selected value="11:59">11:59</option>
+                                                </select>
+                                            </td>
+                                            <td data-title="Monday">
+                                                <label id="lblMonday0">Monday</label>
+                                                <select id="ddlMonDay" class="form-control" name="morningallday[]">
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Tuesday">
+                                                <label id="lblTuesday1">Tuesday</label>
+                                                <select id="ddlTuesDay" class="form-control" name="morningallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Wednesday">
+                                                <label id="lblWednesday">Wednesday</label>
+                                                <select id="ddlWednesDay" class="form-control" name="morningallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Thursday">
+                                                <label id="lblThursday">Thursday</label>
+                                                <select id="ddlThursDay" class="form-control" name="morningallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Friday">
+                                                <label id="lblFriday">Friday</label>
+                                                <select id="ddlFriDay" class="form-control" name="morningallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Saturday">
+                                                <label id="lblSaturday">Saturday</label>
+                                                <select id="ddlSaturDay" class="form-control" name="morningallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Sunday">
+                                                <label id="lblSunday">Sunday</label>
+                                                <select id="ddlSunDay" class="form-control" name="morningallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td data-title="" style="">
+                                                <b style="padding-left:40px;">Afternoon</b><br>
+                                                <label style="margin-right:4px;">From</label>
+                                                <select id="ddlAfterNoon" style="width:70px; height:34px; margin-top:4px;  background-color:#fff;">
+                                                    <option value="12:00">12:00</option>
+                                                    <option value="12:30">12:30</option>
+                                                    <option value="13:00">13:00</option>
+                                                    <option value="13:30">13:30</option>
+                                                    <option value="14:00">14:00</option>
+                                                    <option value="14:30">14:30</option>
+                                                    <option value="15:00">15:00</option>
+                                                    <option value="15:30">15:30</option>
+                                                    <option value="16:00">16:00</option>
+                                                    <option value="16:30">16:30</option>
+                                                    <option value="16:59">16:59</option>
+                                                </select>
+                                                <label style="margin-left:10px;margin-right:8px;">To</label>
+                                                <select id="ddlAfterNoon1" style="width:70px; height:34px; margin-top:4px;  background-color:#fff;">
+                                                    <option value="12:00">12:00</option>
+                                                    <option value="12:30">12:30</option>
+                                                    <option value="13:00">13:00</option>
+                                                    <option value="13:30">13:30</option>
+                                                    <option value="14:00">14:00</option>
+                                                    <option value="14:30">14:30</option>
+                                                    <option value="15:00">15:00</option>
+                                                    <option value="15:30">15:30</option>
+                                                    <option value="16:00">16:00</option>
+                                                    <option value="16:30">16:30</option>
+                                                    <option selected value="16:59">16:59</option>
+                                                </select>
+                                            </td>
+                                            <td data-title="Monday" style="padding-top: 29px;">
+                                                <select id="ddlMonDay1" class="form-control" name="afternoonallday[]">
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Tuesday" style="padding-top: 29px;">
+                                                <select id="ddlTuesDay1" class="form-control" name="afternoonallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Wednesday" style="padding-top: 29px;">
+                                                <select id="ddlWednesDay1" class="form-control" name="afternoonallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Thursday" style="padding-top: 29px;">
+                                                <select id="ddlThursDay1" class="form-control" name="afternoonallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Friday" style="padding-top: 29px;">
+                                                <select id="ddlFriDay1" class="form-control" name="afternoonallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Saturday" style="padding-top: 29px;">
+                                                <select id="ddlSaturDay1" class="form-control" name="afternoonallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Sunday" style="padding-top: 29px;">
+                                                <select id="ddlSunDay1" class="form-control" name="afternoonallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td data-title="" style="">
+                                                <b style="padding-left:40px;">Evening</b><br>
+                                                <label style="margin-right:4px;">From</label>
+                                                <select id="ddlEvening" style="width:70px; height:34px; margin-top:4px; background-color:#fff;">
+                                                    <option value="17:00">17:00</option>
+                                                    <option value="17:30">17:30</option>
+                                                    <option value="18:00">18:00</option>
+                                                    <option value="18:30">18:30</option>
+                                                    <option value="19:00">19:00</option>
+                                                    <option value="19:30">19:30</option>
+                                                    <option value="20:00">20:00</option>
+                                                    <option value="20:30">20:30</option>
+                                                    <option value="21:00">21:00</option>
+                                                    <option value="21:30">21:30</option>
+                                                    <option value="22:00">22:00</option>
+                                                    <option value="22:30">22:30</option>
+                                                    <option value="23:00">23:00</option>
+                                                    <option value="23:29">23:29</option>
+                                                    <option value="23:59">23:59</option>
+                                                </select>
+                                                <label style="margin-left:10px;margin-right:8px;">To</label>
+                                                <select id="ddlEvening1" style="width:70px; height:34px; margin-top:4px;  background-color:#fff;">
+                                                    <option value="17:00">17:00</option>
+                                                    <option value="17:30">17:30</option>
+                                                    <option value="18:00">18:00</option>
+                                                    <option value="18:30">18:30</option>
+                                                    <option value="19:00">19:00</option>
+                                                    <option value="19:30">19:30</option>
+                                                    <option value="20:00">20:00</option>
+                                                    <option value="20:30">20:30</option>
+                                                    <option value="21:00">21:00</option>
+                                                    <option value="21:30">21:30</option>
+                                                    <option value="22:00">22:00</option>
+                                                    <option value="22:30">22:30</option>
+                                                    <option value="23:00">23:00</option>
+                                                    <option value="23:29">23:29</option>
+                                                    <option selected value="23:59">23:59</option>
+                                                </select>
+                                            </td>
+                                            <td data-title="Monday" style="padding-top: 29px;">
+                                                <select id="ddlMonDay2" class="form-control" name="eveningallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Tuesday" style="padding-top: 29px;">
+                                                <select id="ddlTuesDay2" class="form-control" name="eveningallday[]">
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Wednesday" style="padding-top: 29px;">
+                                                <select id="ddlWednesDay2" class="form-control" name="eveningallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Thursday" style="padding-top: 29px;">
+                                                <select id="ddlThursDay2" class="form-control" name="eveningallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Friday" style="padding-top: 29px;">
+                                                <select id="ddlFriDay2" class="form-control" name="eveningallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Saturday" style="padding-top: 29px;">
+                                                <select id="ddlSaturDay2" class="form-control" name="eveningallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                            <td data-title="Sunday" style="padding-top: 29px;">
+                                                <select id="ddlSunDay2" class="form-control" name="eveningallday[]">
+
+                                                    <option value="Full price">Full price</option>
+                                                    <option value="5%">5%</option>
+                                                    <option value="10%">10%</option>
+                                                    <option value="15%">15%</option>
+                                                    <option value="20%">20%</option>
+                                                    <option value="25%">25%</option>
+                                                    <option value="30%">30%</option>
+                                                    <option value="35%">35%</option>
+                                                    <option value="40%">40%</option>
+                                                    <option value="45%">45%</option>
+                                                    <option value="50%">50%</option>
+                                                    <option value="55%">55%</option>
+                                                    <option value="60%">60%</option>
+                                                    <option value="65%">65%</option>
+                                                    <option value="70%">70%</option>
+                                                    <option value="75%">75%</option>
+                                                    <option value="80%">80%</option>
+                                                    <option value="85%">85%</option>
+                                                    <option value="90%">90%</option>
+                                                    <option value="95%">95%</option>
+
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="box-body table-responsive" style="margin-top:10px;">
+                        <input type="hidden" name="group_id" value="6">
+                        <input type="button" id="btnSave" value="Save" style="margin-left:5px; width:100px;" onclick="Save()" class="btn btn-primary pull-right">
+                        <input type="button" id="btnUpdate" value="Update" style="width:100px;" onclick="Update()" class="btn btn-primary pull-right" />
+                        <input type="button" id="btnBack" value="Back" style="width:100px; margin-right: 5px;" onclick="window.location.href='@Url.Action("SalonServicesList", "Salon")';" class="btn btn-danger pull-right">
+                        <label style="color:green" id="lblSuccess"></label>
+                        @*<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>*@
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</section>
+
+
+
+
+
+
+<script type="text/javascript">
+
+    var WebURL = [location.protocol, '//', location.host].join('') + '/';
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+    var UserId = localStorage.getItem("UserId");
+    Category();
+    //  timings();
+    $("#btnSave").show();
+    $("#btnUpdate").hide();
+
+    //function timings() {
+
+    //    $.ajax({
+    //        type: 'GET',
+    //        url: URL + "api/StartTime/GetData",
+    //        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+    //        cache: false,
+    //        xhrFields: {
+    //            withCredentials: false
+    //        },
+    //        success: function (data) {
+    //            for (var i = 0; i < data.length; i++) {
+    //                var opt = new Option(data[i].StartTime, data[i].StartTime);
+    //                var opt1 = new Option(data[i].StartTime, data[i].StartTime);
+    //                var opt2 = new Option(data[i].StartTime, data[i].StartTime);
+    //                var opt3 = new Option(data[i].StartTime, data[i].StartTime);
+    //                var opt4 = new Option(data[i].StartTime, data[i].StartTime);
+    //                var opt5 = new Option(data[i].StartTime, data[i].StartTime);
+    //                var opt6 = new Option(data[i].StartTime, data[i].StartTime);
+    //                $("#ddlMorning").val("") && $("#ddlMorning1").val("") && $("#ddlAfterNoon").val("") && $("#ddlAfterNoon1").val("") && $("#ddlEvening").val("") && $("#ddlEvening1").val("");
+    //                $('#ddlMorning').append(opt) && $('#ddlMorning1').append(opt1) && $('#ddlAfterNoon').append(opt2) && $('#ddlAfterNoon1').append(opt3) && $('#ddlEvening').append(opt4) && $('#ddlEvening1').append(opt5);
+    //            }
+    //        }
+    //    })
+    //}
+    function Category() {
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                $.ajax({
+                    type: 'GET',
+                    url: URL + "api/SalonServices/GetCategorysIsActive",
+                    data: { "SalonsId": SalonsId },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    cache: false,
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (data) {
+                        if (data[0].Message != "NoData") {
+                            for (var i = 0; i < data.length; i++) {
+                                var opt = new Option(data[i].Category, data[i].CategoryId);
+                                $("#ddlCategories").val("");
+                                $('#ddlCategories').append(opt);
+                            }
+                        }
+
+                    },
+                    error: function (err) {
+                        console.log(err.StatusText);
+                    }
+                });
+
+            }
+        });
+
+    }
+
+    function Categories() {
+        $("#lblSuccess").text("");
+        var id = $("#ddlCategories").val();
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                $.ajax({
+                    type: "GET",
+                    url: URL + "api/SalonServices/GetDiscountsbySalonsId",
+                    data: { "SalonsId": SalonsId, "CategoryId": id },
+                    cache: false,
+                    success: function (r) {
+                        if (r[0].Message == "Success") {
+                            BindDiscounts(id);
+                        }
+                        else if (r[0].Message = "NoData") {
+
+                            $("#btnSave").show();
+                            $("#btnUpdate").hide();
+                            $("#ddlMorning").val('00:00');
+                            $("#ddlMorning1").val('11:59');
+                            $("#ddlAfterNoon").val('12:00');
+                            $("#ddlAfterNoon1").val('16:59');
+                            $("#ddlEvening").val('17:00');
+                            $("#ddlEvening1").val('23:59');
+                            $("#ddlMonDay").val('Full price');
+                            $("#ddlTuesDay").val('Full price');
+                            $("#ddlWednesDay").val('Full price');
+                            $("#ddlThursDay").val('Full price');
+                            $("#ddlFriDay").val('Full price');
+                            $("#ddlSaturDay").val('Full price');
+                            $("#ddlSunDay").val('Full price');
+                            $("#ddlMonDay1").val('Full price');
+                            $("#ddlTuesDay1").val('Full price');
+                            $("#ddlWednesDay1").val('Full price');
+                            $("#ddlThursDay1").val('Full price');
+                            $("#ddlFriDay1").val('Full price');
+                            $("#ddlSaturDay1").val('Full price');
+                            $("#ddlSunDay1").val('Full price');
+                            $("#ddlMonDay2").val('Full price');
+                            $("#ddlTuesDay2").val('Full price');
+                            $("#ddlWednesDay2").val('Full price');
+                            $("#ddlThursDay2").val('Full price');
+                            $("#ddlFriDay2").val('Full price');
+                            $("#ddlSaturDay2").val('Full price');
+                            $("#ddlSunDay2").val('Full price');
+                        }
+                    }
+                })
+            }
+        });
+
+    }
+    function BindDiscounts(id) {
+
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                $.ajax({
+                    url: URL + "api/SalonServices/GetDiscountsbySalonsId",
+                    data: { "SalonsId": SalonsId, "CategoryId": id },
+                    type: "GET",
+                    cache: false,
+                    success: function (r) {
+
+                        $('#btnUpdate').show();
+                        $('#btnSave').hide();
+
+
+                        if (r[0].Session == 'Morning') {
+
+                            $("#ddlCategories").val(r[0].CategoryId);
+                            $("#ddlMorning").val(r[0].SessionStart);
+                            $("#ddlMorning1").val(r[0].SessionEnd);
+                            $("#ddlMonDay").val(r[0].MonDay);
+                            $("#ddlTuesDay").val(r[0].TuesDay);
+                            $("#ddlWednesDay").val(r[0].WednesDay);
+                            $("#ddlThursDay").val(r[0].ThursDay);
+                            $("#ddlFriDay").val(r[0].FriDay);
+                            $("#ddlSaturDay").val(r[0].SaturDay);
+                            $("#ddlSunDay").val(r[0].SunDay);
+
+                        }
+                        if (r[1].Session == "AfterNoon") {
+
+                            $("#ddlCategories").val(r[0].CategoryId);
+                            $("#ddlAfterNoon").val(r[1].SessionStart);
+                            $("#ddlAfterNoon1").val(r[1].SessionEnd);
+                            $("#ddlMonDay1").val(r[1].MonDay);
+                            $("#ddlTuesDay1").val(r[1].TuesDay);
+                            $("#ddlWednesDay1").val(r[1].WednesDay);
+                            $("#ddlThursDay1").val(r[1].ThursDay);
+                            $("#ddlFriDay1").val(r[1].FriDay);
+                            $("#ddlSaturDay1").val(r[1].SaturDay);
+                            $("#ddlSunDay1").val(r[1].SunDay);
+                        }
+                        if (r[2].Session == "Evening") {
+
+                            $("#ddlCategories").val(r[2].CategoryId);
+                            $("#ddlEvening").val(r[2].SessionStart);
+                            $("#ddlEvening1").val(r[2].SessionEnd);
+                            $("#ddlMonDay2").val(r[2].MonDay);
+                            $("#ddlTuesDay2").val(r[2].TuesDay);
+                            $("#ddlWednesDay2").val(r[2].WednesDay);
+                            $("#ddlThursDay2").val(r[2].ThursDay);
+                            $("#ddlFriDay2").val(r[2].FriDay);
+                            $("#ddlSaturDay2").val(r[2].SaturDay);
+                            $("#ddlSunDay2").val(r[2].SunDay);
+                        }
+
+                    },
+                    error: function (err) {
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblSalonServices').text(err.statusText);
+                    }
+                })
+            }
+        });
+
+    }
+
+    function Save() {
+        var MonArray = [];
+        var TueArray = [];
+        var WedArray = [];
+        var ThuArray = [];
+        var FriArray = [];
+        var SatArray = [];
+        var SunArray = [];
+        var SessionStartArr = [];
+        var SessionEndArr = [];
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+
+
+                var Monday = $("#ddlMonDay option:selected").text();
+                var Monday1 = $("#ddlMonDay1 option:selected").text();
+                var Monday2 = $("#ddlMonDay2 option:selected").text();
+                MonArray.push(Monday);
+                MonArray.push(Monday1);
+                MonArray.push(Monday2);
+                localStorage.setItem("MonArray", MonArray);
+
+
+
+                var TuesDay = $("#ddlTuesDay option:selected").text();
+                var TuesDay1 = $("#ddlTuesDay1 option:selected").text();
+                var TuesDay2 = $("#ddlTuesDay2 option:selected").text();
+                TueArray.push(TuesDay);
+                TueArray.push(TuesDay1);
+                TueArray.push(TuesDay2);
+                localStorage.setItem("TueArray", TueArray);
+
+
+
+                var WednesDay = $("#ddlWednesDay option:selected").text();
+                var WednesDay1 = $("#ddlWednesDay1 option:selected").text();
+                var WednesDay2 = $("#ddlWednesDay2 option:selected").text();
+                WedArray.push(WednesDay);
+                WedArray.push(WednesDay1);
+                WedArray.push(WednesDay2);
+                localStorage.setItem("WedArray", WedArray);
+
+
+
+                var ThursDay = $("#ddlThursDay option:selected").text();
+                var ThursDay1 = $("#ddlThursDay1 option:selected").text();
+                var ThursDay2 = $("#ddlThursDay2 option:selected").text();
+                ThuArray.push(ThursDay);
+                ThuArray.push(ThursDay1);
+                ThuArray.push(ThursDay2);
+                localStorage.setItem("ThuArray", ThuArray);
+
+
+
+                var FriDay = $("#ddlFriDay option:selected").text();
+                var FriDay1 = $("#ddlFriDay1 option:selected").text();
+                var FriDay2 = $("#ddlFriDay2 option:selected").text();
+                FriArray.push(FriDay);
+                FriArray.push(FriDay1);
+                FriArray.push(FriDay2);
+                localStorage.setItem("FriArray", FriArray);
+
+
+
+                var SaturDay = $("#ddlSaturDay option:selected").text();
+                var SaturDay1 = $("#ddlSaturDay1 option:selected").text();
+                var SaturDay2 = $("#ddlSaturDay2 option:selected").text();
+                SatArray.push(SaturDay);
+                SatArray.push(SaturDay1);
+                SatArray.push(SaturDay2);
+                localStorage.setItem("SatArray", SatArray);
+
+
+
+                var SunDay = $("#ddlSunDay option:selected").text();
+                var SunDay1 = $("#ddlSunDay1 option:selected").text();
+                var SunDay2 = $("#ddlSunDay2 option:selected").text();
+                SunArray.push(SunDay);
+                SunArray.push(SunDay1);
+                SunArray.push(SunDay2);
+                localStorage.setItem("SunArray", SunArray);
+
+
+
+                var SessionStart = $("#ddlMorning option:selected").text();
+                var SessionStart1 = $("#ddlAfterNoon option:selected").text();
+                var SessionStart2 = $("#ddlEvening option:selected").text();
+                SessionStartArr.push(SessionStart);
+                SessionStartArr.push(SessionStart1);
+                SessionStartArr.push(SessionStart2);
+                localStorage.setItem("SessionStartArr", SessionStartArr);
+
+
+                var SessionEnd = $("#ddlMorning1 option:selected").text();
+                var SessionEnd1 = $("#ddlAfterNoon1 option:selected").text();
+                var SessionEnd2 = $("#ddlEvening1 option:selected").text();
+                SessionEndArr.push(SessionEnd);
+                SessionEndArr.push(SessionEnd1);
+                SessionEndArr.push(SessionEnd2);
+                localStorage.setItem("SessionEndArr", SessionEndArr);
+
+                Session = ["Morning", "AfterNoon", "Evening"];
+
+                localStorage.setItem("Session", Session);
+
+                if ($("#ddlCategories").val() != 0) {
+
+
+                    $.ajax({
+                        type: "GET",
+                        url: URL + "api/SalonServices/InsertDiscount",
+                        data: { "CategoryId": $("#ddlCategories").val(), "SalonsId": SalonsId, "Session": localStorage.getItem("Session"), "SessionStart": localStorage.getItem("SessionStartArr"), "SessionEnd": localStorage.getItem("SessionEndArr"), "MonDay": localStorage.getItem("MonArray"), "TuesDay": localStorage.getItem("TueArray"), "WednesDay": localStorage.getItem("WedArray"), "ThursDay": localStorage.getItem("ThuArray"), "FriDay": localStorage.getItem("FriArray"), "SaturDay": localStorage.getItem("SatArray"), "SunDay": localStorage.getItem("SunArray"), "IsActive": 1, "CreatedBy": UserId },
+                        cache: false,
+                        async: false,
+                        success: function (r) {
+                            if (r[0].Message == "Success") {
+                                $("#dvErrorStatus").css({ display: "none" });
+                                $("#dvSuccess").css({ display: "block" });
+                                StatuseMesseage(1);
+                                Categories();
+                                //$("#lblSuccess").text("Discounts Applied Successfully");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $('#lblMessage').text(r[0].ErrorMessage);
+                            }
+                        },
+                        error: function () {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblError').text(err.statusText);
+                        }
+                    })
+                    // }
+                }
+                else {
+                    $("#myModal6").css('display', "block");
+                    $("#lblupdated1").text("Please select Category");
+                    // $("#ddlCategories").focus();
+                    //   $("#lblSuccess1").text("Please select Category");
+                }
+            },
+        })
+        // }
+        //   }
+    }
+
+    function Update() {
+
+        var MonArray = [];
+        var TueArray = [];
+        var WedArray = [];
+        var ThuArray = [];
+        var FriArray = [];
+        var SatArray = [];
+        var SunArray = [];
+        var SessionStartArr = [];
+        var SessionEndArr = [];
+        $.ajax({
+            type: "GET",
+            url: URL + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+
+                var Monday = $("#ddlMonDay option:selected").text();
+                var Monday1 = $("#ddlMonDay1 option:selected").text();
+                var Monday2 = $("#ddlMonDay2 option:selected").text();
+                MonArray.push(Monday);
+                MonArray.push(Monday1);
+                MonArray.push(Monday2);
+                localStorage.setItem("MonArray", MonArray);
+
+
+
+                var TuesDay = $("#ddlTuesDay option:selected").text();
+                var TuesDay1 = $("#ddlTuesDay1 option:selected").text();
+                var TuesDay2 = $("#ddlTuesDay2 option:selected").text();
+                TueArray.push(TuesDay);
+                TueArray.push(TuesDay1);
+                TueArray.push(TuesDay2);
+                localStorage.setItem("TueArray", TueArray);
+
+
+
+                var WednesDay = $("#ddlWednesDay option:selected").text();
+                var WednesDay1 = $("#ddlWednesDay1 option:selected").text();
+                var WednesDay2 = $("#ddlWednesDay2 option:selected").text();
+                WedArray.push(WednesDay);
+                WedArray.push(WednesDay1);
+                WedArray.push(WednesDay2);
+                localStorage.setItem("WedArray", WedArray);
+
+
+
+                var ThursDay = $("#ddlThursDay option:selected").text();
+                var ThursDay1 = $("#ddlThursDay1 option:selected").text();
+                var ThursDay2 = $("#ddlThursDay2 option:selected").text();
+                ThuArray.push(ThursDay);
+                ThuArray.push(ThursDay1);
+                ThuArray.push(ThursDay2);
+                localStorage.setItem("ThuArray", ThuArray);
+
+
+
+                var FriDay = $("#ddlFriDay option:selected").text();
+                var FriDay1 = $("#ddlFriDay1 option:selected").text();
+                var FriDay2 = $("#ddlFriDay2 option:selected").text();
+                FriArray.push(FriDay);
+                FriArray.push(FriDay1);
+                FriArray.push(FriDay2);
+                localStorage.setItem("FriArray", FriArray);
+
+
+
+                var SaturDay = $("#ddlSaturDay option:selected").text();
+                var SaturDay1 = $("#ddlSaturDay1 option:selected").text();
+                var SaturDay2 = $("#ddlSaturDay2 option:selected").text();
+                SatArray.push(SaturDay);
+                SatArray.push(SaturDay1);
+                SatArray.push(SaturDay2);
+                localStorage.setItem("SatArray", SatArray);
+
+
+
+                var SunDay = $("#ddlSunDay option:selected").text();
+                var SunDay1 = $("#ddlSunDay1 option:selected").text();
+                var SunDay2 = $("#ddlSunDay2 option:selected").text();
+                SunArray.push(SunDay);
+                SunArray.push(SunDay1);
+                SunArray.push(SunDay2);
+                localStorage.setItem("SunArray", SunArray);
+
+
+
+                var SessionStart = $("#ddlMorning option:selected").text();
+                var SessionStart1 = $("#ddlAfterNoon option:selected").text();
+                var SessionStart2 = $("#ddlEvening option:selected").text();
+                SessionStartArr.push(SessionStart);
+                SessionStartArr.push(SessionStart1);
+                SessionStartArr.push(SessionStart2);
+                localStorage.setItem("SessionStartArr", SessionStartArr);
+
+
+                var SessionEnd = $("#ddlMorning1 option:selected").text();
+                var SessionEnd1 = $("#ddlAfterNoon1 option:selected").text();
+                var SessionEnd2 = $("#ddlEvening1 option:selected").text();
+                SessionEndArr.push(SessionEnd);
+                SessionEndArr.push(SessionEnd1);
+                SessionEndArr.push(SessionEnd2);
+                localStorage.setItem("SessionEndArr", SessionEndArr);
+
+                Session = ["Morning", "AfterNoon", "Evening"];
+
+                localStorage.setItem("Session", Session);
+
+
+                $.ajax({
+                    type: "GET",
+                    url: URL + "api/SalonServices/UpdateDiscount",
+                    data: { "CategoryId": $("#ddlCategories").val(), "SalonsId": SalonsId, "Session": localStorage.getItem("Session"), "SessionStart": localStorage.getItem("SessionStartArr"), "SessionEnd": localStorage.getItem("SessionEndArr"), "MonDay": localStorage.getItem("MonArray"), "TuesDay": localStorage.getItem("TueArray"), "WednesDay": localStorage.getItem("WedArray"), "ThursDay": localStorage.getItem("ThuArray"), "FriDay": localStorage.getItem("FriArray"), "SaturDay": localStorage.getItem("SatArray"), "SunDay": localStorage.getItem("SunArray"), "IsActive": 1, "UpdatedBy": UserId },
+                    cache: false,
+                    async: false,
+                    success: function (r) {
+                        if (r[0].Message == "Success") {
+                            $("#dvErrorStatus").css({ display: "none" });
+                            $("#dvSuccess").css({ display: "block" });
+                            $("#lblSuccess").text("");
+                            StatuseMesseage(2)
+                            //$("#lblSuccess").text("Discounts Updated Successfully");
+                        }
+                        else if (r[0].Message == "Error") {
+                            $('#lblMessage').text(r[0].ErrorMessage);
+                        }
+                    },
+                    error: function () {
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblError').text(err.statusText);
+                    }
+                })
+                // }
+
+            },
+            error: function () {
+
+            }
+        })
+        // }
+        //   }
+    }
+
+    function StatuseMesseage(Message) {
+
+        if (Message == "2") {
+
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("Discounts Updated Successfully");
+            // window.location.href = '@Url.Action("SalonServicesList", "Salon")';
+            @*setTimeout({
+                window.location.href = '@Url.Action("SalonServicesList", "Salon")'},500)*@
+        }
+        else if (Message == "1") {
+
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("Discounts Created Successfully");
+            @*setTimeout({
+            window.location.href = '@Url.Action("SalonServicesList", "Salon")'},500)*@
+            // window.location.href = '@Url.Action("SalonServicesList", "Salon")';
+
+        }
+    }
+</script>

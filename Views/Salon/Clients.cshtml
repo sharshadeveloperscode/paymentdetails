@@ -1,0 +1,314 @@
+﻿@{
+    ViewBag.Title = "Clients";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content-header">
+    <h1>
+        Clients
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href=""><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Clients</li>
+    </ol>
+</section>
+
+
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <!-- /.box-header -->
+                <div class="box-body ">
+                    <div class="col-md-12">
+                        <div class="col-lg-4">
+                            <input type="text" placeholder="Seacrh By Name" class="form-control" style="width:100%;" id="txtSearchName" />
+                        </div>
+                        <div class="col-lg-4">
+                            <input type="text" placeholder="Search By Email" class="form-control" style="width: 100%;" id="txtSearchEmail" />
+                        </div>
+                        <div class="col-lg-2">
+                            <input type="button" value="Search" style="width:100px" onclick="Search()" class="btn btn-success pull-left" />
+                        </div>
+
+                    </div>
+
+                    <div id="modal2" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <!--  SIGN IN PAGE -->
+
+                                <div class="modal-header">
+                                    <div class="alert alert-danger" style="display: none;" id="error_msg_login"></div>
+                                    <div class="alert alert-info" style="display: none;" id="success_msg_login"></div>
+                                    <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>-->
+                                </div>
+
+                                <!--END SIGN IN PAGE  -->
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-xs-12" style="margin-top: 10px;">
+
+                            <div class="box" style="border-top:1px  solid #d2d6de;">
+                                <!-- /.box-header -->
+                                <div class="box-body table-responsive">
+                                    <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                        <label id="lblClients"></label>
+                                    </div>
+                                    <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                        <label id="lbl_status"></label>
+                                    </div>
+                                </div>
+
+                                <div class="box-body table-responsive">
+                                    <input type="button" class="btn btn-primary" style="width:100px;float:left;margin-bottom: 23px;" onclick="window.location.href = '@Url.Action("AddClients", "Salon")';" value="Add Client" />
+                                    <input type="submit" class="btn btn-danger" id="btnBack" value="Back" style="width:100px;float:right;" onclick="window.location.href = '@Url.Action("BusinessDashboard", "Salon")';" />
+                                </div>
+
+                                <div class="box-body table-responsive">
+
+                                    <table id="tblClients" style="width: 100%" class="table table-bordered table-hover dataTable">
+                                        <thead>
+                                            <tr>
+                                                <th>S.No</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Phone</th>
+                                                <th>Bookings</th>
+                                                <th>Last Booking Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tblClientsBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+
+    var UserId = localStorage.getItem("UserId");
+    window.onload = function () {
+
+        localStorage.setItem("EditSalonServicesId", "null");
+
+        //if (UserId != "null" && RoleId == "1") {
+
+        var Message = localStorage.getItem("SalonServicesMessage");
+        if (Message == "2") {
+            //  $("#dvErrorStatus").css({ display: "none" });
+            //  $("#dvSuccess").css({ display: "block" });
+
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("Client Added SuccessFully");
+            //  $("#lblClients").text("Registered SuccessFully");
+            //  GetAll();
+        }
+        else {
+            $("#dvErrorStatus").css({ display: "none" });
+            $("#dvSuccess").css({ display: "none" });
+            //  GetAll();
+        }
+
+        GetAll();
+    }
+
+    function GetAll() {
+        localStorage.setItem("SalonServicesMessage",null);
+
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+
+                $.ajax({
+                    type: 'GET',
+                    url: URLLink + "api/Client/ListofClientsbasedonSalonssId",
+                    data: { "SalonsId": SalonsId },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    cache: false,
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+
+                        if (json[0].Message == "Error") {
+                          //  $('#tblClients').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#tblClients').text("Error");
+
+                        }
+                        else if (json[0].Message == "NoData") {
+
+                          //  $('#tblClients').hide();
+                            //$("#dvSuccess").css({ display: "none" });
+                            //$("#dvErrorStatus").css({ display: "block" });
+                            //$('#lblClients').text("No Data");
+                        }
+
+                        else if (json[0].Message == "Success") {
+                            $('#tblClients').show();
+                            if ($.fn.dataTable.isDataTable('#tblClients')) {
+                                $('#tblClients').DataTable().destroy();
+                            }
+                            $('#tblClientsBody').empty();
+                            var k = 1;
+                            for (var i = 0; i < json.length; i++) {
+
+                                // $("#NameandMail").val(json[i].Email);
+                                // alert(json[i].Email);
+                                //  $('#txtservicename').val(json[i].TreatmentTitle);
+                                tr = $('<tr/>');
+                                var date1 = new Date(json[i].LastBookingDate);
+                                var date2 = date1.getDate() + "-" + parseInt(date1.getMonth() + 1) + "-" + date1.getFullYear();
+                                tr.append("<td>" + k + "</td>");
+                                tr.append("<td>" + json[i].FirstName + " " + json[i].LastName + "</td>");
+                                tr.append("<td>" + json[i].CustomerEmail + "</td>");
+                                tr.append("<td>" + json[i].CustomerPhoneNumber + "</td>");
+                                tr.append("<td>" + json[i].Bookingscount + "</td>");
+                                tr.append("<td>" + date2 + "</td>");
+                                k++;
+                                $('#tblClients').append(tr);
+                            }
+                          
+                        }
+                        $('#tblClients').DataTable({
+                            select: {
+                                style: 'multi'
+                            },
+                            dom: 'Bfrtip',
+                            buttons: [
+                              'excel', 'pdf'
+                            ],
+                            select: true
+                        });
+                    },
+                    error: function (err) {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#tblSalonComment').text(err.StatusText);
+                    }
+                });
+            }
+        });
+
+
+
+    }
+    function Search()
+    {
+
+        if ($("#txtSearchName").val() != '' || $("#txtSearchEmail").val() != '')
+        {
+            $("#dvErrorStatus").css({ display: "none" });
+            $('#lblClients').text("");
+            $.ajax({
+                type: "GET",
+                url: URLLink + "api/Salons/GetSalonIdByUserId",
+                data: { "UserId": UserId },
+                cache: false,
+                success: function (json) {
+                    var SalonsId = json[0].SalonsId;
+
+                    $.ajax({
+                        type: 'GET',
+                        url: URLLink + "api/Client/SearchByNameEmail",
+                        data: { "SalonsId": SalonsId, "Name": $("#txtSearchName").val(), "Email": $("#txtSearchEmail").val() },
+                        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                        cache: false,
+                        xhrFields: {
+                            withCredentials: false
+                        },
+                        success: function (json) {
+
+                            if (json[0].Message == "Error") {
+                                $('#tblClients').hide();
+                                $("#dvSuccess").css({ display: "none" });
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#tblClients').text("Error");
+
+                            }
+                            else if (json[0].Message == "NoData") {
+
+                                $('#tblClients').hide();
+                                //  $("#dvSuccess").css({ display: "none" });
+                                //  $("#dvErrorStatus").css({ display: "block" });
+                                //  $('#lblClients').text("No Data");
+                            }
+
+                            else if (json[0].Message == "Success") {
+                                $('#tblClients').show();
+                                if ($.fn.dataTable.isDataTable('#tblClients')) {
+                                    $('#tblClients').DataTable().destroy();
+                                }
+                                $('#tblClientsBody').empty();
+                                for (var i = 0; i < json.length; i++) {
+
+                                    // $("#NameandMail").val(json[i].Email);
+                                    // alert(json[i].Email);
+                                    //  $('#txtservicename').val(json[i].TreatmentTitle);
+                                    tr = $('<tr/>');
+                                    var date1 = new Date(json[i].LastBookingDate);
+                                    var date2 = date1.getFullYear() + "-" + parseInt(date1.getMonth() + 1) + "-" + date1.getDate();
+                                    tr.append("<td>" + json[i].UserId + "</td>");
+                                    tr.append("<td>" + json[i].FirstName + " " + json[i].LastName + "</td>");
+                                    tr.append("<td>" + json[i].CustomerEmail + "</td>");
+                                    tr.append("<td>" + json[i].CustomerPhoneNumber + "</td>");
+                                    tr.append("<td>" + json[i].Bookingscount + "</td>");
+                                    tr.append("<td>" + date2 + "</td>");
+
+                                    $('#tblClients').append(tr);
+                                }
+                                $('#tblClients').DataTable({
+                                    select: {
+                                        style: 'multi'
+                                    },
+                                    dom: 'Bfrtip',
+                                    buttons: [
+                                       'excel', 'pdf'
+                                    ],
+                                    select: true
+                                });
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#tblSalonComment').text(err.StatusText);
+                        }
+                    });
+                }
+            });
+        }
+        else
+        {
+            if ($("#txtSearchName").val() == '' || $("#txtSearchEmail").val() == '')
+            {
+                $("#dvSuccess").css({ display: "none" });
+                $("#dvErrorStatus").css({ display: "block" });
+                $('#lblClients').text("Please Enter Search By Name or Email ");
+            }
+
+        }
+
+    }
+</script>

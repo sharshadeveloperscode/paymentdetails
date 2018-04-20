@@ -1,0 +1,228 @@
+﻿
+@{
+    ViewBag.Title = "EmailType";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<body>
+    <section class="content-header">
+        <h1>
+            EmailType
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Email</a></li>
+            <li class="active">Create EmailType</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lblEmailType"></label>
+                        </div>
+                        <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lbl_status"></label>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive">
+                        <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                            <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                            <tr>
+
+                                <td style="width:30%">
+                                    EmailTemplate Name:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" maxlength="40" placeholder="Enter EmailType" id="txtTemplateType" name="txtemailType" title="Enter Alphabets only" class="form-control" required />
+                                </td>
+
+                            </tr>
+                          
+                            <tr>
+                                <td colspan="4" style="text-align:right">
+                                    <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                    <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                    <input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />
+                                    <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("EmailTypeList", "Salon")';" style="width:100px;" />
+                                    <input type="text" hidden="hidden" id="txtTemplateId" name="TemplateId" />
+                                </td>
+                            </tr>
+                        </table>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</body>
+<script type="text/javascript">
+
+  
+
+          var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+        var UserId = localStorage.getItem("UserId");
+        var RoleId = localStorage.getItem("RoleId");
+        var EditTemplateId = localStorage.getItem("EditTemplateId");
+      
+        window.onload = function () {
+            if (UserId != "null" || UserId != null && RoleId == "1") {
+               
+                if (EditTemplateId == "null") {
+                        $('#btnEdit').hide();
+                        $('#btnSave').show();
+                    }
+                else {
+                    $('#btnEdit').show();
+                    $('#btnSave').hide();
+                    $('#btnReset').hide();
+                    BindemailTemplateTypes(EditTemplateId);
+                    }
+
+            }
+            else {
+                window.location.href = '@Url.Action("Logout", "Salon")';
+            }
+        }
+
+
+        //}
+
+    function BindemailTemplateTypes(TemplateId) {
+            $("#lbl_status").text("");
+          //  Clear();
+          
+            $.ajax({
+                url: URL + "api/emailTemplateTypes/GetdatabyTemplateId",
+                data: { "TemplateTypeId": TemplateId },
+                type: "GET",
+                cache: false,
+                success: function (r) {
+                
+                    $('#btnEdit').show();
+                    $('#btnSave').hide();
+                    console.log(r);
+                    $("#txtTemplateId").val(TemplateId);
+                    $("#txtTemplateType").val(r[0].TemplateType);
+                   // $("#txtTemplate").val(r[0].Template);
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblEmailType').text(err.statusText);
+                }
+            })
+        }
+
+        function Save() {
+            $("#lbl_status").text("");
+            $("#lblEmailType").text(' ');
+            if ($("#txtEmailType").val() != '') {
+                var MemberTypeName = $("#txtEmailType").val();
+                var CreatedBy = UserId;
+
+                    $.ajax({
+                        url: URL + "api/emailTemplateTypes/InsertTemplate",
+                        //is active
+                        data: { "TemplateType": $("#txtTemplateType").val(),"IsActive": 1, "CreatedBy": CreatedBy },
+                        type: "GET",
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblEmailType").text("EmailType Name Already Existed");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblEmailType').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                Clear();
+                                StatusMessage(2);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblEmailType').text(err.statusText);
+                        }
+                    });
+
+            } if ($("#txtEmailType").val() == '') {
+                $("#lblEmailType").text("Please Enter EmailTemplate Name");
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#txtEmailType").focus();
+            }
+            else if ($("#txtTemplate").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblEmailType").text("Please Enter Template ");
+                $("#txtTemplate").focus();
+            }
+        }
+
+        function Clear() {
+            $("#txtTemplateType").val("");
+          //  $("#txtEmailType").val("");
+            $("#lbl_status").text("");
+            $("#lblEmailType").text(" ");
+            $('#btnEdit').hide();
+            $('#btnSave').show();
+            $("#dvSuccess").css({ display: "none" });
+            $("#dvErrorStatus").css({ display: "none" });
+        }
+
+        function Update() {
+          
+            $("#lbl_status").text("");
+          
+            if ($("#txtTemplateType").val() != '') {
+                var UpdatedBy = UserId;
+              
+                    $.ajax({
+                        url: URL + "api/emailTemplateTypes/UpdateTemplate",
+                        data: { "TemplateType": $("#txtTemplateType").val(), "IsActive": 1, "UpdatedBy": UpdatedBy, "TemplateTypeId": $("#txtTemplateId").val() },
+                        cache: false,
+                        type: "GET",
+                        dataType: 'json',
+                        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblemailTemplateTypes").text("emailTemplateTypes Name Already Existed.");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblemailTemplateTypes').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                Clear();
+                                StatusMessage(1);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblemailTemplateTypes').text(err.statusText);
+                        }
+                    });
+                
+            }
+            if ($("#txtemailTemplateTypes").val() == '') {
+                $("#lblemailTemplateTypes").text("Please Enter EmailTemplateType Name");
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#txtemailTemplateTypes").focus();
+            }
+            else if ($("#txtTemplate").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblemailTemplateTypes").text("Please Enter Template ");
+                $("#txtTemplate").focus();
+            }
+        }
+
+        function StatusMessage(value) {
+            localStorage.setItem("emailTemplateTypesMessage", value);
+            window.location.href = '@Url.Action("EmailTypeList", "Salon")';
+        }
+</script>

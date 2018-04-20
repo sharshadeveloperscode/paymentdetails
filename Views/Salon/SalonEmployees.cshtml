@@ -1,0 +1,1663 @@
+﻿
+@{
+    ViewBag.Title = "SalonEmployees";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .datepicker.dropdown-menu {
+        width: 21%;
+    }
+
+    .form-control {
+        width: 300px !important;
+    }
+</style>
+<body>
+    <section class="content-header">
+        <h1 id="displaytext"></h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Venue Employee</a></li>
+            <li class="active">Venue Employee</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="row">
+
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-body">
+                        <!-- /.box-header -->
+                        <div class="box-body table-responsive">
+                            <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                <label id="lblSalonEmployees"></label>
+                            </div>
+                            <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                <label id="lbl_status"></label>
+                            </div>
+                        </div>
+                        <div class="box-body table-responsive">
+                            <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                                <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+
+                                <tr>
+                                    <td>
+                                        Employee Image
+                                    </td>
+                                    <td>
+                                        <input type="file" id="FileUpload" name="FileUpload" onchange="readURL(this);" title="Select File" required class="form-control" />Select File
+                                        <label style="color:red;margin-left: 1%;"> *</label>
+                                        <label id="lblFile"></label>
+                                    </td>
+                                    <td colspan="2">
+                                        <div id="divProfileImage" style="display:none">
+                                        </div>
+                                        <img id="ImgEmployeeProfile" class="form-control" style="display:none; width: 212px; height: 165px;" />
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Employee Name <label style="color:red;margin-left: 1%;">*</label>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" placeholder="Enter Employee Name" id="txtEmployeeName" name="txtEmployeeName" required />
+                                    </td>
+                                    <td> Email <label style="color:red;margin-left: 1%;">*</label></td>
+                                    <td><input type="text" class="form-control" placeholder="Ex:pr@gmail.com" id="txtEmail" name="txtEmail" /></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Pricing Level</td>
+                                    <td>
+                                        <select class="form-control" id="ddlPricingLevel">
+                                            <option value="1">Simple</option>
+                                        </select>
+                                    </td>
+                                    <td>Job Title <label style="color:red;margin-left: 1%;">*</label></td>
+                                    <td>
+                                        <input type="text" class="form-control" placeholder="Enter job Title" id="txtJobTitle" name="txtEmail" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Phone Number <label style="color:red;margin-left: 1%;">*</label></td>
+                                    <td><input type="text" class="form-control" placeholder="Enter Phone Number" id="txtPhone" name="txtPhone" /></td>
+                                    <td>Gender </td>
+                                    <td>
+                                        <select class="form-control" id="ddlGender">
+                                            <option value="1">Male</option>
+                                            <option value="2">Female</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Date of Birth </td>
+                                    <td><input type="date" class="form-control" id="txtDOB" name="txtDOB" /></td>
+                                    <td>Date of Joining </td>
+                                    <td><input type="date" class="form-control" id="txtDOJ" name="txtDOJ" /></td>
+                                </tr>
+                                <tr>
+                                    <td>Age </td>
+                                    <td><input type="number" class="form-control" placeholder="Enter Age" id="txtAge" name="txtAge" min="1" /></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                            <label id="lbl_status"></label>
+                        </div>
+
+
+
+                        <div class="box-body table-responsive">
+                            <h4><b><label style="margin-left: 1%;">Unassigned Services</label></b></h4>
+                        </div>
+                        <div class="box-body table-responsive">
+                            <table style="width: 100%" id="tblSalonsServices" class="table table-bordered table-hover dataTable">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="chkAllServices" /><label for="chkAllServices">SELECT ALL</label></th>
+                                        <th>Category </th>
+                                        <th>Treatment Title </th>
+                                        <th>Service Name </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblSalonsServicesBody"></tbody>
+                            </table>
+                        </div>
+                        <div class="box-body table-responsive">
+                            <h4><b><label style="margin-left: 1%;">Assigned Services</label></b></h4>
+                        </div>
+
+                        <div class="box-body table-responsive">
+                            <table style="width: 100%" id="tblAssignedSalonsServices" class="table table-bordered table-hover dataTable">
+
+                                <thead>
+                                    <tr>
+                                        <th>Category </th>
+                                        <th>Treatment Title </th>
+                                        <th>Service Name </th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="tblAssignedSalonsServicesBody"></tbody>
+                            </table>
+
+                        </div>
+
+                        <div class="box-body table-responsive">
+                            <h4><b><label style="margin-left: 1%;">Employee Leaves</label></b></h4>
+                        </div>
+                        <div class="box-body table-responsive">
+                            <table style="width: 100%" id="tblEmployeeLeaves" class="table table-bordered table-hover dataTable">
+
+                                <thead>
+                                    <tr>
+                                        <th>Start Date</th>
+                                        <th>Start Time </th>
+                                        <th>End Date </th>
+                                        <th>End Time </th>
+                                        <th>Comments </th>
+                                    </tr>
+                                </thead>
+
+
+                                <tbody id="tblEmployeeLeavesBody"></tbody>
+                            </table>
+
+
+
+
+                        </div>
+                        <div class="box-body table-responsive">
+                            <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                                <tr>
+                                    <td colspan="4"><h4><b><label style="margin-left: 1%;">Day off </label></b></h4></td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        Start Date
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="txtStartDate" name="txtStartDate" style="width:67%;" />
+                                    </td>
+
+                                    <td>
+                                        Start Time
+                                    </td>
+                                    <td>
+                                        <select class="form-control " id="ddlStartTime">
+                                            <option value="0">--Select--</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        End Date
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" id="txtEndDate" name="txtEndDate" style="width:67%;" />
+                                    </td>
+
+                                    <td>
+                                        End Time
+                                    </td>
+                                    <td>
+                                        <select class="form-control" id="ddlEndTime">
+                                            <option value="0">--Select--</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        About
+                                    </td>
+                                    <td>
+                                        <textarea id="txtAbout" class="form-control"></textarea>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+
+
+
+
+
+
+
+                        <div class="box-body table-responsive pull-right">
+                            <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                            <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                            @*<input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />*@
+                            <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("SalonEmployeesList", "Salon")';" style="width:100px;" />
+                            <input type="text" hidden="hidden" id="txtSalonEmployeesId" name="txtSalonEmployeesId" />
+                            <input type="text" hidden="hidden" id="txtSalonsId" name="txtSalonsId" />
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</body>
+<script type="text/javascript">
+
+
+    var WebURL = [location.protocol, '//', location.host].join('') + '/';
+
+
+    var UserId = localStorage.getItem("UserId");
+    var RoleId = localStorage.getItem("RoleId");
+
+    var EditSalonEmployeesId = localStorage.getItem("EditSalonEmployeesId");
+
+    localStorage.setItem("EployeeProfileImage", 'null');
+    localStorage.setItem("EployeeProfileImage", 'null');
+
+
+
+
+    window.onload = function () {
+
+        $('#txtStartDate').datepicker({ startDate: "+0d", todayHighlight: true, autoclose: true });
+        $('#txtEndDate').datepicker({ startDate: "+0d", todayHighlight: true, autoclose: true });
+
+        if (UserId != "null" || UserId != null && RoleId == "1") {
+            StarttimeEndTimeJobTitle();
+            if (EditSalonEmployeesId == "null") {
+
+                $("#displaytext").text("Add Venue Employee");
+                GetSalonServices();
+                $('#btnEdit').hide();
+                $('#btnSave').show();
+                $('#tblAssignedSalonsServices').DataTable({
+                    select: {
+                        style: 'multi'
+                    },
+                    dom: 'Bfrtip',
+                    buttons: [
+                          'excel', 'pdf'
+                    ],
+                    select: true
+                });
+                $('#tblEmployeeLeaves').DataTable({
+                    select: {
+                        style: 'multi'
+                    },
+                    dom: 'Bfrtip',
+                    buttons: [
+                          'excel', 'pdf'
+                    ],
+                    select: true
+                });
+
+            }
+            else {
+                $("#displaytext").text("Edit Venue Employee");
+                BindAssignedServices(EditSalonEmployeesId);
+                BindUnAssignedServices(EditSalonEmployeesId);
+                Bind(EditSalonEmployeesId);
+                BindEmployeeLeaves(EditSalonEmployeesId);
+                $('#btnEdit').show();
+                $('#btnSave').hide();
+                $('#btnReset').hide();
+            }
+            $('#preloader').hide();
+        }
+        else {
+            window.location.href = '@Url.Action("Logout", "CMS")';
+        }
+    }
+    var RegId = [];
+    var RegId_Ref = [];
+    var IndRegId = [];
+
+    function BindUnAssignedServices(SalonEmployeesId) {
+
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+
+                $.ajax({
+                    type: 'GET',
+                    url: URLLink + "api/SalonServices/GetUnAssDatabyEmpId",
+                    data: { "SalonsId": SalonsId, "SalonEmployeeId": SalonEmployeesId },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+                        console.log(json);
+                        $('#tblSalonsServicesBody').empty();
+                        if (json[0].Message == "Error") {
+                            $('#tblSalonsServices').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblError').text(json[0].ErrorMessage);
+                        }
+                        else {
+                            $('#tblSalonsServices').show();
+                            if (json[0].Message == "Success") {
+                                if ($.fn.dataTable.isDataTable('#tblSalonsServices')) {
+                                    $('#tblSalonsServices').DataTable().destroy();
+                                }
+                                $('#tblSalonsServices').find('tr:gt(0)').remove();
+
+                                $('#tblSalonsServices').show();
+                                for (var i = 0; i < json.length; i++) {
+                                    if (json[i].Message == 'Success') {
+                                        tr = $('<tr/>');
+                                        tr.append("<td><input type='checkbox' id='chkServices" + json[i].SalonServicesId + "' class='chkBids' onclick='chkServices(" + json[i].SalonServicesId + ")'/></td>");
+                                        tr.append("<td>" + json[i].Category + "</td>");
+                                        tr.append("<td>" + json[i].TreatmentTitle + "</td>");
+                                        tr.append("<td>" + json[i].TreatmentTypeId + "</td>");
+
+                                        //tr.append("<td><a href='javascript:void(0);' id='edit" + i + "' onclick='Edit(" + json[i].RegistrationId + ")' class='btn btn-link'> View</a></td>");
+                                        RegId_Ref.push(json[i].SalonServicesId);
+                                        $('#tblSalonsServices').append(tr);
+                                    }
+
+                                }
+                                $('#tblSalonsServices').DataTable({
+                                    destroy: true,
+                                    dom: 'Bfrtip',
+                                    buttons: [
+                                          'excel', 'pdf'
+                                    ],
+
+                                });
+                            }
+                            else if (json[0].Message == "NoData") {
+                                //  $('#tblSalonsServices').hide();
+                                //  $("#dvErrorStatus").css({ display: "none" });
+                                //  $("#dvSuccess").css({ display: "block" });
+                                //  $("#lbl_status").text("No Data");
+                                $('#tblSalonsServices').DataTable();
+                            }
+                            else {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#dvSuccess").css({ display: "none" });
+                                $("#lbl_status").text("Error");
+                            }
+
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err.StatusText);
+                    }
+                });
+
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+
+
+    }
+
+    function BindAssignedServices(SalonEmployeesId) {
+
+        $.ajax({
+            type: 'GET',
+            url: URLLink + "api/SalonServices/GetDatabyEmpId",
+            data: { "SalonEmployeesId": SalonEmployeesId },
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+                if (json[0].Message == "Error") {
+                    $('#tblAssignedSalonsServices').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblError').text(json[0].ErrorMessage);
+                }
+                else {
+                    $('#tblSalonsServices').show();
+                    $('#tblAssignedSalonsServicesBody').empty();
+                    // alert(json[0].Message);
+                    if (json[0].Message == "Success") {
+                        if ($.fn.dataTable.isDataTable('#tblAssignedSalonsServices')) {
+                            $('#tblAssignedSalonsServices').DataTable().destroy();
+                        }
+                        $('#tblAssignedSalonsServicesBody').empty();
+                        for (var i = 0; i < json.length; i++) {
+                            if (json[i].Message == 'Success') {
+                                tr = $('<tr/>');
+                                tr.append("<td>" + json[i].Category + "</td>");
+                                tr.append("<td>" + json[i].TreatmentTitle + "</td>");
+                                tr.append("<td>" + json[i].TreatmentTypeId + "</td>");
+
+                                if (json[i].IsActive == 1) {
+                                    tr.append("<td><a href='#' onclick='ChangeSalonServiceStatus(" + json[i].EmployeeServicesId + " ,0)'>Deactivate</a></td>");
+                                }
+                                else if (json[i].IsActive == 0) {
+                                    tr.append("<td><a href='#' onclick='ChangeSalonServiceStatus(" + json[i].EmployeeServicesId + " ,1)'>Active</a></td>");
+                                }
+                                //tr.append("<td><a href='javascript:void(0);' id='edit" + i + "' onclick='Edit(" + json[i].RegistrationId + ")' class='btn btn-link'> View</a></td>");
+
+                            }
+                            $('#tblAssignedSalonsServices').append(tr);
+                        }
+                    }
+                    else if (json[0].Message == "NoData") {
+                        //alert("hello")
+                        $('#tblAssignedSalonsServices').hide();
+                        // $("#dvErrorStatus").css({ display: "none" });
+                        //   $("#dvSuccess").css({ display: "block" });
+                        //  $("#lbl_status").text("No Data");
+                    }
+                    else {
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#lbl_status").text("Error");
+                    }
+                    $('#tblAssignedSalonsServices').DataTable({
+                        destroy: true,
+                        select: {
+                            style: 'multi'
+                        },
+                        dom: 'Bfrtip',
+                        buttons: [
+                              'excel', 'pdf'
+                        ],
+                        select: true
+                    });
+                }
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+    function ChangeSalonServiceStatus(EmployeeServicesId, Status) {
+        var UserId = localStorage.getItem("UserId");
+        // UpdateStatus(int IsActive, int UpdatedBy, int SalonServicesId)
+        var StatusText = '';
+        var UpdateStatusText = '';
+        if (Status == 1) {
+            StatusText = "active";
+            UpdateStatusText = "activated";
+        }
+        else if (Status == 0) {
+            StatusText = "deactivate";
+            UpdateStatusText = "deactivated";
+        }
+        if (confirm("Are you sure to  " + StatusText + " this service?") == true) {
+            $.ajax({
+                url: URLLink + "api/EmployeeServices/UpdateStatus",
+                data: { "Status": Status, "UpdatedBy": UserId, "EmployeeServicesId": EmployeeServicesId },
+                // UpdateStatus(int Status, int UpdatedBy, int DepartmentId)
+                type: "GET",
+                cache: false,
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                success: function (r) {
+
+                    if (r[0].Message == "REFERENCE") {
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#lblRole").text("Sorry! Can't Delete This Record. It Is Existed In Another Table");
+                    }
+                    else if (r[0].Message == "Error") {
+                        $('#tblRole').hide();
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblRole').text(r[0].ErrorMessage);
+                    }
+                    else if (r[0].Message = "Success") {
+                        $("#dvErrorStatus").css({ display: "none" });
+                        $("#dvSuccess").css({ display: "block" });
+                        $("#lbl_status").text("Service " + UpdateStatusText + " Successfully");
+                        BindAssignedServices(localStorage.getItem("EditSalonEmployeesId"));
+
+                    }
+                },
+                error: function (err) {
+                    //     alert(err.StatusText);
+                }
+            });
+        }
+    }
+    function GetSalonServices() {
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+                $.ajax({
+                    type: 'GET',
+                    url: URLLink + "api/SalonServices/GetDatabySalonsIdIsActive",
+                    data: { "SalonsId": SalonsId },
+                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                    xhrFields: {
+                        withCredentials: false
+                    },
+                    success: function (json) {
+                        $('#tblSalonsServicesBody').empty();
+                        console.log(json);
+                        if (json[0].Message == "Error") {
+                            $('#tblSalonsServices').hide();
+                            $("#dvSuccess").css({ display: "none" });
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblError').text(json[0].ErrorMessage);
+                        }
+                        else {
+                            $('#tblSalonsServices').show();
+                            if (json[0].Message == "Success") {
+
+                                if ($.fn.dataTable.isDataTable('#tblSalonsServices')) {
+                                    $('#tblSalonsServices').DataTable().destroy();
+                                }
+
+                                for (var i = 0; i < json.length; i++) {
+
+                                    if (json[i].Message == 'Success') {
+                                        tr = $('<tr/>');
+                                        tr.append("<td><input type='checkbox' id='chkServices" + json[i].SalonServicesId + "' class='chkBids' onclick='chkServices(" + json[i].SalonServicesId + ")'/></td>");
+                                        tr.append("<td>" + json[i].Category + "</td>");
+                                        tr.append("<td>" + json[i].TreatmentTitle + "</td>");
+                                        tr.append("<td>" + json[i].TreatmentTypeId + "</td>");
+
+                                        //tr.append("<td><a href='javascript:void(0);' id='edit" + i + "' onclick='Edit(" + json[i].RegistrationId + ")' class='btn btn-link'> View</a></td>");
+                                        RegId_Ref.push(json[i].SalonServicesId);
+                                    }
+                                    $('#tblSalonsServices').append(tr);
+                                }
+                                $('#tblSalonsServices').DataTable({
+                                    select: {
+                                        style: 'multi'
+                                    },
+                                    dom: 'Bfrtip',
+                                    buttons: [
+                                            'excel', 'pdf'
+                                    ],
+                                    destroy: true,
+                                    select: true
+                                });
+                            }
+                            else if (json[0].Message == "NoData") {
+
+                                $('#tblSalonsServices').hide();
+                                //  $("#dvErrorStatus").css({ display: "none" });
+                                //  $("#dvSuccess").css({ display: "block" });
+                                // $("#lbl_status").text("No Data");
+                            }
+                            else {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#dvSuccess").css({ display: "none" });
+                                $("#lbl_status").text("Error");
+
+                            }
+
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err.StatusText);
+                    }
+                });
+
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+
+
+    }
+
+
+
+    $('#chkAllServices').change(function () {
+        RegId = [];
+
+        var table = $('#tblSalonsServices').DataTable();
+        var rows = table.rows({ 'search': 'applied' }).nodes();
+
+        $('input[type="checkbox"]', rows).prop('checked', this.checked);
+
+        for (var i = 0; i < RegId_Ref.length; i++) {
+            RegId.push(RegId_Ref[i]);
+        }
+        if ($(this).prop('checked') == true) {
+
+
+            for (var i = 0; i < RegId.length; i++) {
+                $('#chkServices' + RegId[i]).prop('checked', true);
+            }
+        }
+        else if ($(this).prop('checked') == false) {
+            for (var i = 0; i < RegId.length; i++) {
+                $('#chkServices' + RegId[i]).prop('checked', false);
+            }
+
+            EmailId = [];
+            for (var i = 0; i < RegId.length; i++) {
+                var Index = IndRegId.indexOf(RegId[i]);
+                if (Index >= 0) {
+                    IndRegId.splice(Index, 1);
+                }
+            }
+        }
+
+    });
+    $('#chkAllServices').trigger('change');
+
+    function chkServices(id) {
+        if ($('#chkServices' + id).is(':checked') == true) {
+            IndRegId.push(id);
+        } else {
+            var Index = IndRegId.indexOf(id);
+            if (Index >= 0) {
+                IndRegId.splice(Index, 1);
+            }
+        }
+    }
+
+
+    function readURL(input) {
+        $("#divProfileImage").css({ display: "none" });
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#ImgEmployeeProfile').show();
+                $('#ImgEmployeeProfile').attr('src', e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    function StarttimeEndTimeJobTitle() {
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/StartTime/GetData",
+            cache: false,
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].StartTime, data[i].StartTimeId);
+                    $("#ddlStartTime").val("");
+                    $('#ddlStartTime').append(opt);
+                }
+            },
+        });
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/EndTime/GetData",
+            cache: false,
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].EndTime, data[i].EndTimeId);
+                    $("#ddlEndTime").val("");
+                    $('#ddlEndTime').append(opt);
+                }
+            },
+        });
+
+
+    }
+
+
+    function StarttimeEndTimeJobTitleLoad(StartTime, EndTime) {
+
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/StartTime/GetData",
+            cache: false,
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].StartTime, data[i].StartTimeId);
+                    $("#ddlStartTime").val("");
+                    $('#ddlStartTime').append(opt);
+                }
+                $("#ddlStartTime").val(StartTime);
+            },
+
+        });
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/EndTime/GetData",
+            cache: false,
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].EndTime, data[i].EndTimeId);
+                    $("#ddlEndTime").val("");
+                    $('#ddlEndTime').append(opt);
+                }
+                $("#ddlEndTime").val(EndTime);
+            },
+        });
+
+    }
+
+    function Bind(EditSalonEmployeesId) {
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/SalonEmployees/GetDatabyId",
+            data: { "SalonEmployeesId": EditSalonEmployeesId },
+            cache: false,
+            success: function (json) {
+                $('#btnEdit').show();
+                $('#btnSave').hide();
+                $('#btnReset').hide();
+                for (var i = 0; i < json.length; i++) {
+
+                    $("#txtSalonEmployeesId").val(json[0].SalonEmployeesId);
+                    $("#txtEmployeeName").val(json[0].EmployeeName);
+                    $("#ddlPricingLevel").val(json[0].PricingLevel);
+                    $("#txtSalonsId").val(json[0].SalonsId);
+                    $("#txtJobTitle").val(json[0].JobTitle);
+                    $("#txtPhone").val(json[0].Phone);
+                    $("#ddlGender").val(json[0].Gender);
+                    $("#txtEmail").val(json[0].Email);
+
+                    $("#txtAge").val(json[0].Age);
+                    //alert(json[0].StartDate.split(' ')[0]);
+
+
+                    // if (json[0].StartDate == '01/01/0001')
+                    //{
+                    //     $('#txtStartDate').datepicker({ startDate: "+0d", autoclose: true });
+
+                    //}
+                    //else {
+                    //    $("#txtStartDate").val(json[0].StartDate);
+
+                    //}
+                    //if (json[0].EndDate == '01/01/0001')
+                    //{
+                    //    $('#txtEndDate').datepicker({ startDate: "+0d", autoclose: true });
+                    //}
+                    //else
+                    //{
+                    //    $("#txtEndDate").val(json[0].EndDate);
+                    //}
+
+
+
+
+
+                    // $("#txtStartDate").val(formatDate(json[0].StartDate.split(' ')[0]));
+                    // // $("#ddlStartTime").val(json[0].StartTime);
+                    //   $("#txtEndDate").val(formatDate(json[0].EndDate.split(' ')[0]));
+                    //  // $("#ddlEndTime").val(json[0].EndTime);
+                    //  StarttimeEndTimeJobTitleLoad(json[0].StartTime, json[0].EndTime);
+                    //  $("#txtAbout").val(json[0].About);
+                    localStorage.setItem("EployeeProfileImage", json[0].ImagePath);
+                    localStorage.setItem("Image", json[0].Image);
+                    $("#divProfileImage").css({ display: "block" });
+                    $('#divProfileImage').append("<image  src='" + json[0].ImagePath + "' height='150px' width='150px'/>");
+
+                }
+            }
+        });
+        function formatDate(date) {
+
+            var d = date.split('/');
+            return d[2] + "-" + d[0] + "-" + d[1];
+
+        }
+
+
+        $("#lbl_status").text("");
+        Clear();
+        $.ajax({
+            type: "GET",
+            url: URLLink + "api/Salons/GetSalonIdByUserId",
+            data: { "UserId": UserId },
+            cache: false,
+            success: function (json) {
+                var SalonsId = json[0].SalonsId;
+            }
+        });
+    }
+
+    function Save() {
+
+        $("#lbl_status").text("");
+
+        if ($("#txtEmployeeName").val() != '' && $("#txtEmail").val() != '' && $("#txtJobTitle").val() != '' && $("#txtPhone").val() != '' && $("#txtStartDate").val() <= $("#txtEndDate").val()) {
+
+            var CreatedBy = UserId;
+
+            var data = new FormData();
+            var files = $("#FileUpload").get(0).files;
+            if (files.length > 0) {
+                data.append("MyImages", files[0]);
+            }
+            var EmployeeName = $("#txtEmployeeName").val()
+            var PhoneNumber = $("#txtPhone").val()
+            if (EmployeeName.match(/^[a-zA-Z ]*$/) && PhoneNumber.match(/^[0-9-+]+$/)) {
+                var filter = new RegExp(/^[+a-zA-Z0-9._-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+                var email = $("#txtEmail").val();
+                if (!filter.test(email)) {
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblSalonEmployees").text("Please Enter Valid Email");
+                    $(window).scrollTop(0);
+
+                } else {
+
+                    $.ajax({
+                        url: WebURL + "Upload/UploadSalonEmolyeesImages",
+                        type: "POST",
+                        processData: false,
+                        contentType: false,
+                        data: data,
+                        success: function (response) {
+                            console.log("response");
+
+                            console.log(response);
+                            var FilePath = WebURL + "Files/SalonEmployeesImages/" + response;
+                            // InsertTreatmentTitle(string Title, string ImageName, string ImagePath, int CreatedBy)
+                            $.ajax({
+                                type: "GET",
+                                url: URLLink + "api/Salons/GetSalonIdByUserId",
+                                data: { "UserId": UserId },
+                                cache: false,
+
+                                success: function (json) {
+                                    var SalonsId = json[0].SalonsId;
+                                    $.ajax({
+                                        url: URLLink + "api/SalonEmployees/Insert",
+                                        data: { "EmployeeName": $("#txtEmployeeName").val(), "PricingLevel": $("#ddlPricingLevel").val(), "JobTitle": $("#txtJobTitle").val(), "Phone": $("#txtPhone").val(), "Gender": $("#ddlGender").val(), "Email": $("#txtEmail").val(), "StartDate": $("#txtStartDate").val(), "StartTime": $("#ddlStartTime").val(), "EndDate": $("#txtEndDate").val(), "EndTime": $("#ddlEndTime").val(), "About": $("#txtAbout").val(), "SalonsId": SalonsId, "Image": response, "ImagePath": FilePath, "IsActive": 1, "CreatedBy": CreatedBy, "DOB": $("#txtDOB").val(), "DOJ": $("#txtDOJ").val(), "Age": $("#txtAge").val() },
+                                        type: "GET",
+                                        async: false,
+                                        cache: false,
+                                        success: function (r) {
+                                            if (r[0].Message == "UniqueConstraint") {
+                                                $("#dvErrorStatus").css({ display: "block" });
+                                                $("#lblSalonEmployees").text("Email Already Existed.");
+                                                $(window).scrollTop(0);
+                                            }
+                                            else if (r[0].Message == "Error") {
+                                                $("#dvErrorStatus").css({ display: "block" });
+                                                $('#lblSalonEmployees').text(r[0].ErrorMessage);
+                                                $(window).scrollTop(0);
+                                            }
+                                            else {
+                                                // Insert(int SalonServicesId, int SalonEmployeesId, int IsAcitve, int CreatedBy)
+                                                var SalonEmployeesId = r[0].SalonEmployeesId;
+
+                                                //  BindEmployeeLeaves(SalonEmployeesId);
+                                                var Arr = [];
+                                                if ($('#chkAllServices').is(":checked") == true) {
+                                                    for (var i = 0; i < RegId.length; i++) {
+                                                        Arr.push(RegId[i]);
+                                                    }
+                                                } else if ($('#chkAllServices').is(":checked") == false) {
+                                                    for (var i = 0; i < IndRegId.length; i++) {
+                                                        Arr.push(IndRegId[i]);
+                                                    }
+                                                }
+
+                                                var n = 0;
+
+                                                for (l = 0; l < Arr.length; l++) {
+                                                    $.ajax({
+                                                        url: URLLink + "api/EmployeeServices/Insert",
+                                                        data: { "SalonServicesId": Arr[l], "SalonEmployeesId": SalonEmployeesId, "IsAcitve": 1, "CreatedBy": CreatedBy },
+                                                        type: "GET",
+                                                        cache: false,
+                                                        async: false,
+                                                        success: function (r1) {
+                                                            if (r1[0].Message == "UniqueConstraint") {
+                                                                $("#dvErrorStatus").css({ display: "block" });
+                                                                $("#lblSalonEmployees").text("Email Already Existed.");
+                                                                $("#txtEmail").focus();
+                                                                $(window).scrollTop(0);
+                                                            }
+                                                            else if (r1[0].Message == "Duplicate") {
+                                                                $("#dvErrorStatus").css({ display: "block" });
+                                                                $("#lblSalonEmployees").val("Email Alreay Existed");
+                                                                $("#txtEmail").focus();
+                                                                $(window).scrollTop(0);
+
+                                                            }
+                                                            else if (r1[0].Message == "Error") {
+                                                                $("#dvErrorStatus").css({ display: "block" });
+                                                                $('#lblSalonEmployees').text(r[0].ErrorMessage);
+                                                                $(window).scrollTop(0);
+                                                            }
+                                                            else {
+
+                                                            }
+                                                        },
+                                                        error: function (err) {
+                                                            $("#dvErrorStatus").css({ display: "block" });
+                                                            $('#lblSalonEmployees').text(err.statusText);
+                                                            $(window).scrollTop(0);
+                                                        }
+                                                    });
+
+                                                }
+                                                localStorage.setItem("EditSalonEmployeesId", SalonEmployeesId);
+                                                EditSalonEmployeesId = SalonEmployeesId;
+                                                $('#preloader').show();
+                                                setTimeout(function () {
+                                                    BindAssignedServices(SalonEmployeesId);
+                                                    BindUnAssignedServices(SalonEmployeesId);
+                                                    Bind(SalonEmployeesId);
+                                                    $('#preloader').hide();
+                                                }, 4000);
+
+                                                Clear();
+                                                StatusMessage(2);
+                                            }
+                                        },
+                                        error: function (err) {
+                                            $("#dvErrorStatus").css({ display: "block" });
+                                            $('#lblSalonEmployees').text(err.statusText);
+                                            $(window).scrollTop(0);
+                                        }
+                                    });
+                                }
+                            });
+
+
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblSalonEmployees').text(err.statusText);
+                            $(window).scrollTop(0);
+                        }
+                    });
+                }
+
+            }
+                //
+            else {
+                if (!EmployeeName.match(/^[a-zA-Z ]*$/)) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblSalonEmployees").text("Please Enter Valid  Employee Name");
+                    $("#txtEmployeeName").focus();
+                    $(window).scrollTop(0);
+                }
+                else if (!PhoneNumber.match(/^[0-9-+]+$/)) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblCustomer").text("Please Enter Vaild PhoneNumber");
+                    $("#txtPhoneNumber").focus();
+                    $(window).scrollTop(0);
+                }
+
+            }
+
+        }
+        else {
+            //    if ($("#txtEmployeeName").val() != '' && $("#txtEmail").val() != '' && $("#txtJobTitle").val() != '' && $("#txtPhone").val() != '' ) {
+
+            if ($("#txtEmployeeName").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonEmployees").text("Please Enter Employee Name");
+                $("#txtEmployeeName").focus();
+                $(window).scrollTop(0);
+
+            }
+            else if ($("#txtEmail").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonEmployees").text("Please Enter Email");
+
+                $("#txtEmail").focus();
+                $(window).scrollTop(0);
+            }
+            else if ($("#txtJobTitle").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonEmployees").text("Please Enter Job Title");
+
+                $("#txtJobTitle").focus();
+                $(window).scrollTop(0);
+            }
+            else if ($("#txtPhone").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonEmployees").text("Please Enter Your Phone Number");
+
+                $("#txtPhone").focus();
+                $(window).scrollTop(0);
+            }
+            else if ($("#txtStartDate").val() > $("#txtEndDate").val()) {
+                //  $("#dvErrorStatus").css({ display: "block" });
+                alert("Please select to date greaterThan from date")
+                //  $("#lblVoucherType").text("Please select to date greaterThan from date");
+                $("#txtEndDate").focus();
+                $(window).scrollTop(0);
+            }
+
+
+        }
+    }
+
+    function Clear() {
+        localStorage.setItem("EployeeProfileImage", 'null');
+        localStorage.setItem("EployeeProfileImage", 'null');
+        $("#divProfileImage").empty();
+        $("#divProfileImage").css({ display: "none" });
+        $("#txtImage").val("");
+        $("#txtImagePath").val("");
+        $("#ImgEmployeeProfile").css({ display: "none" });
+        $("#txtEmployeeName").val("");
+        $("#FileUpload").val("");
+        $("#lbl_status").text("");
+        $("#lblSalonEmployees").text(" ");
+        $('#btnEdit').hide();
+        $('#txtStartDate').val("");
+        $('#txtEndDate').val("");
+        $('#txtAbout').val("");
+        $('#ddlStartTime').val("0");
+        $('#ddlEndTime').val("0");
+        $('#btnSave').show();
+        $("#dvSuccess").css({ display: "none" });
+        $("#dvErrorStatus").css({ display: "none" });
+    }
+
+
+
+    function Update() {
+
+
+        var UpdatedBy = localStorage.getItem("UserId");
+        $("#lbl_status").text("");
+        $("#lbl_status").text("");
+
+        var filter = new RegExp(/^[+a-zA-Z0-9._-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+        var email = $("#txtEmail").val();
+        if (!filter.test(email)) {
+            $("#dvSuccess").css({ display: "none" });
+            $("#dvErrorStatus").css({ display: "block" });
+            $("#lblSalonEmployees").text("Please Enter Valid Email");
+            $(window).scrollTop(0);
+
+        }
+        EmployeeName = $("#txtEmployeeName").val();
+        var startdate = new Date($("#txtStartDate").val());
+        var enddate = new Date($("#txtEndDate").val());
+         //  alert(startdate);
+         //   alert(enddate);
+        if ($("#txtEmployeeName").val() != '' && $("#txtEmail").val() != '' && $("#txtJobTitle").val() != '' && $("#txtPhone").val() != '' && filter.test(email) && EmployeeName.match(/^[a-zA-Z ]*$/)) {
+            var UpdatedBy = UserId;
+            if ($("#FileUpload").val() != '') {
+                if (startdate == 'Invalid Date' && enddate == 'Invalid Date')
+                {
+                    var data = new FormData();
+                    var files = $("#FileUpload").get(0).files;
+                    if (files.length > 0) {
+                        data.append("MyImages", files[0]);
+                    }
+
+                    var filter = new RegExp(/^[+a-zA-Z0-9._-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+                    var email = $("#txtEmail").val();
+                    var EmployeeName = $("#txtEmployeeName").val();
+                    var PhoneNumber = $("#txtPhone").val();
+
+
+                    //   else {
+                    $.ajax({
+                        url: WebURL + "Upload/UploadSalonEmolyeesImages",
+                        type: "POST",
+                        processData: false,
+                        contentType: false,
+                        data: data,
+                        success: function (response) {
+                            console.log("response");
+
+                            console.log(response);
+                            var FilePath = WebURL + "Files/SalonEmployeesImages/" + response;
+
+                            $.ajax({
+                                url: URLLink + "api/SalonEmployees/Update",
+                                data: { "EmployeeName": $("#txtEmployeeName").val(), "PricingLevel": $("#ddlPricingLevel").val(), "JobTitle": $("#txtJobTitle").val(), "Phone": $("#txtPhone").val(), "Gender": $("#ddlGender").val(), "Email": $("#txtEmail").val(), "StartDate": $("#txtStartDate").val(), "StartTime": $("#ddlStartTime").val(), "EndDate": $("#txtEndDate").val(), "EndTime": $("#ddlEndTime").val(), "About": $("#txtAbout").val(), "SalonsId": $("#txtSalonsId").val(), "Image": response, "ImagePath": FilePath, "UpdatedBy": UpdatedBy, "SalonEmployeesId": $("#txtSalonEmployeesId").val(), "DOB": $("#txtDOB").val(), "DOJ": $("#txtDOJ").val(), "Age": $("#txtAge").val() },
+                                type: "GET",
+                                dataType: 'json',
+                                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                                cache: false,
+                                success: function (r) {
+                                    if (r[0].Message == "UniqueConstraint") {
+                                        $("#dvErrorStatus").css({ display: "block" });
+                                        $("#lblSalonEmployees").text("Email Already Existed.");
+                                        $("#txtEmail").focus();
+                                        $(window).scrollTop(0);
+                                    }
+                                    else if (r[0].Message == "Duplicate") {
+                                        $("#dvErrorStatus").css({ display: "block" });
+
+                                        $("#lblSalonEmployees").val("Email Alreay Existed");
+                                        $("#txtEmail").focus();
+                                        $(window).scrollTop(0);
+                                    }
+                                    else if (r[0].Message == "Error") {
+                                        $("#dvErrorStatus").css({ display: "block" });
+                                        $('#lblSalonEmployees').text(r[0].ErrorMessage);
+                                        $(window).scrollTop(0);
+                                    }
+                                    else {
+                                        var Arr = [];
+                                        if ($('#chkAllServices').is(":checked") == true) {
+                                            for (var i = 0; i < RegId.length; i++) {
+                                                Arr.push(RegId[i]);
+                                            }
+                                        } else if ($('#chkAllServices').is(":checked") == false) {
+                                            for (var i = 0; i < IndRegId.length; i++) {
+                                                Arr.push(IndRegId[i]);
+                                            }
+                                        }
+
+                                        var n = 0;
+
+                                        for (l = 0; l < Arr.length; l++) {
+                                            $.ajax({
+                                                url: URLLink + "api/EmployeeServices/Insert",
+                                                data: { "SalonServicesId": Arr[l], "SalonEmployeesId": $("#txtSalonEmployeesId").val(), "IsAcitve": 1, "CreatedBy": UpdatedBy },
+                                                type: "GET",
+                                                cache: false,
+                                                async: false,
+                                                success: function (r1) {
+                                                    if (r1[0].Message == "UniqueConstraint") {
+                                                        $("#dvErrorStatus").css({ display: "block" });
+                                                        $("#lblSalonEmployees").text("Email Already Existed.");
+                                                        $(window).scrollTop(0);
+                                                    }
+                                                    else if (r1[0].Message == "Error") {
+                                                        $("#dvErrorStatus").css({ display: "block" });
+                                                        $('#lblSalonEmployees').text(r[0].ErrorMessage);
+                                                        $(window).scrollTop(0);
+                                                    }
+                                                    else {
+
+                                                    }
+                                                },
+                                                error: function (err) {
+                                                    $("#dvErrorStatus").css({ display: "block" });
+                                                    $('#lblSalonEmployees').text(err.statusText);
+                                                }
+                                            });
+
+                                        }
+                                        Clear();
+                                        StatusMessage(1);
+                                    }
+                                },
+                                error: function (err) {
+                                    $("#dvErrorStatus").css({ display: "block" });
+                                    $('#lblSalonEmployees').text(err.statusText);
+                                }
+                            });
+
+
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblSalonEmployees').text(err.statusText);
+                        }
+                    });
+                }
+                else {
+                    if (startdate <= enddate) {
+                        var data = new FormData();
+                        var files = $("#FileUpload").get(0).files;
+                        if (files.length > 0) {
+                            data.append("MyImages", files[0]);
+                        }
+
+                        var filter = new RegExp(/^[+a-zA-Z0-9._-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+                        var email = $("#txtEmail").val();
+                        var EmployeeName = $("#txtEmployeeName").val();
+                        var PhoneNumber = $("#txtPhone").val();
+
+
+                        //   else {
+                        $.ajax({
+                            url: WebURL + "Upload/UploadSalonEmolyeesImages",
+                            type: "POST",
+                            processData: false,
+                            contentType: false,
+                            data: data,
+                            success: function (response) {
+                                console.log("response");
+
+                                console.log(response);
+                                var FilePath = WebURL + "Files/SalonEmployeesImages/" + response;
+
+                                $.ajax({
+                                    url: URLLink + "api/SalonEmployees/Update",
+                                    data: { "EmployeeName": $("#txtEmployeeName").val(), "PricingLevel": $("#ddlPricingLevel").val(), "JobTitle": $("#txtJobTitle").val(), "Phone": $("#txtPhone").val(), "Gender": $("#ddlGender").val(), "Email": $("#txtEmail").val(), "StartDate": $("#txtStartDate").val(), "StartTime": $("#ddlStartTime").val(), "EndDate": $("#txtEndDate").val(), "EndTime": $("#ddlEndTime").val(), "About": $("#txtAbout").val(), "SalonsId": $("#txtSalonsId").val(), "Image": response, "ImagePath": FilePath, "UpdatedBy": UpdatedBy, "SalonEmployeesId": $("#txtSalonEmployeesId").val(), "DOB": $("#txtDOB").val(), "DOJ": $("#txtDOJ").val(), "Age": $("#txtAge").val() },
+                                    type: "GET",
+                                    dataType: 'json',
+                                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                                    cache: false,
+                                    success: function (r) {
+                                        if (r[0].Message == "UniqueConstraint") {
+                                            $("#dvErrorStatus").css({ display: "block" });
+                                            $("#lblSalonEmployees").text("Email Already Existed.");
+                                            $("#txtEmail").focus();
+                                            $(window).scrollTop(0);
+                                        }
+                                        else if (r[0].Message == "Duplicate") {
+                                            $("#dvErrorStatus").css({ display: "block" });
+
+                                            $("#lblSalonEmployees").val("Email Alreay Existed");
+                                            $("#txtEmail").focus();
+                                            $(window).scrollTop(0);
+                                        }
+                                        else if (r[0].Message == "Error") {
+                                            $("#dvErrorStatus").css({ display: "block" });
+                                            $('#lblSalonEmployees').text(r[0].ErrorMessage);
+                                            $(window).scrollTop(0);
+                                        }
+                                        else {
+                                            var Arr = [];
+                                            if ($('#chkAllServices').is(":checked") == true) {
+                                                for (var i = 0; i < RegId.length; i++) {
+                                                    Arr.push(RegId[i]);
+                                                }
+                                            } else if ($('#chkAllServices').is(":checked") == false) {
+                                                for (var i = 0; i < IndRegId.length; i++) {
+                                                    Arr.push(IndRegId[i]);
+                                                }
+                                            }
+
+                                            var n = 0;
+
+                                            for (l = 0; l < Arr.length; l++) {
+                                                $.ajax({
+                                                    url: URLLink + "api/EmployeeServices/Insert",
+                                                    data: { "SalonServicesId": Arr[l], "SalonEmployeesId": $("#txtSalonEmployeesId").val(), "IsAcitve": 1, "CreatedBy": UpdatedBy },
+                                                    type: "GET",
+                                                    cache: false,
+                                                    async: false,
+                                                    success: function (r1) {
+                                                        if (r1[0].Message == "UniqueConstraint") {
+                                                            $("#dvErrorStatus").css({ display: "block" });
+                                                            $("#lblSalonEmployees").text("Email Already Existed.");
+                                                            $(window).scrollTop(0);
+                                                        }
+                                                        else if (r1[0].Message == "Error") {
+                                                            $("#dvErrorStatus").css({ display: "block" });
+                                                            $('#lblSalonEmployees').text(r[0].ErrorMessage);
+                                                            $(window).scrollTop(0);
+                                                        }
+                                                        else {
+
+                                                        }
+                                                    },
+                                                    error: function (err) {
+                                                        $("#dvErrorStatus").css({ display: "block" });
+                                                        $('#lblSalonEmployees').text(err.statusText);
+                                                    }
+                                                });
+
+                                            }
+                                            Clear();
+                                            StatusMessage(1);
+                                        }
+                                    },
+                                    error: function (err) {
+                                        $("#dvErrorStatus").css({ display: "block" });
+                                        $('#lblSalonEmployees').text(err.statusText);
+                                    }
+                                });
+
+
+                            },
+                            error: function (err) {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblSalonEmployees').text(err.statusText);
+                            }
+                        });
+                    }
+                    else{
+                        alert("Please select to date greaterThan from date")
+                        $("#txtEndDate").focus();
+                        $(window).scrollTop(0);
+                    }
+                }
+
+              
+
+                //   }
+            }
+            else {
+
+                if (startdate == 'Invalid Date' && enddate == 'Invalid Date') {
+                    var ImagePath = localStorage.getItem("EployeeProfileImage");
+                    var Image = localStorage.getItem("Image");
+
+                    $.ajax({
+                        url: URLLink + "api/SalonEmployees/Update",
+                        data: { "EmployeeName": $("#txtEmployeeName").val(), "PricingLevel": $("#ddlPricingLevel").val(), "JobTitle": $("#txtJobTitle").val(), "Phone": $("#txtPhone").val(), "Gender": $("#ddlGender").val(), "Email": $("#txtEmail").val(), "StartDate": $("#txtStartDate").val(), "StartTime": $("#ddlStartTime").val(), "EndDate": $("#txtEndDate").val(), "EndTime": $("#ddlEndTime").val(), "About": $("#txtAbout").val(), "SalonsId": $("#txtSalonsId").val(), "Image": Image, "ImagePath": ImagePath, "UpdatedBy": UpdatedBy, "SalonEmployeesId": $("#txtSalonEmployeesId").val(), "DOB": $("#txtDOB").val(), "DOJ": $("#txtDOJ").val(), "Age": $("#txtAge").val() },
+                        type: "GET",
+                        dataType: 'json',
+                        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblSalonEmployees").text("Email Already Existed.");
+                                $(window).scrollTop(0);
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblSalonEmployees').text(r[0].ErrorMessage);
+                                $(window).scrollTop(0);
+                            }
+                            else {
+
+                                var Arr = [];
+                                if ($('#chkAllServices').is(":checked") == true) {
+                                    for (var i = 0; i < RegId.length; i++) {
+                                        Arr.push(RegId[i]);
+                                    }
+                                } else if ($('#chkAllServices').is(":checked") == false) {
+                                    for (var i = 0; i < IndRegId.length; i++) {
+                                        Arr.push(IndRegId[i]);
+                                    }
+                                }
+
+                                var n = 0;
+
+                                for (l = 0; l < Arr.length; l++) {
+                                    $.ajax({
+                                        url: URLLink + "api/EmployeeServices/Insert",
+                                        data: { "SalonServicesId": Arr[l], "SalonEmployeesId": $("#txtSalonEmployeesId").val(), "IsAcitve": 1, "CreatedBy": UpdatedBy },
+                                        type: "GET",
+                                        cache: false,
+                                        async: false,
+                                        success: function (r1) {
+                                            if (r1[0].Message == "UniqueConstraint") {
+                                                $("#dvErrorStatus").css({ display: "block" });
+                                                $("#lblSalonEmployees").text("Email Already Existed.");
+                                                $(window).scrollTop(0);
+                                            }
+                                            else if (r1[0].Message == "Error") {
+                                                $("#dvErrorStatus").css({ display: "block" });
+                                                $('#lblSalonEmployees').text(r[0].ErrorMessage);
+                                                $(window).scrollTop(0);
+                                            }
+                                            else {
+
+                                            }
+                                        },
+                                        error: function (err) {
+                                            $("#dvErrorStatus").css({ display: "block" });
+                                            $('#lblSalonEmployees').text(err.statusText);
+                                            $(window).scrollTop(0);
+                                        }
+                                    });
+
+                                }
+                                Clear();
+                                StatusMessage(1);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblSalonEmployees').text(err.statusText);
+                            $(window).scrollTop(0);
+                        }
+                    });
+                }
+            
+        else{
+                    if (startdate <= enddate) {
+
+                        var ImagePath = localStorage.getItem("EployeeProfileImage");
+                        var Image = localStorage.getItem("Image");
+
+                        $.ajax({
+                            url: URLLink + "api/SalonEmployees/Update",
+                            data: { "EmployeeName": $("#txtEmployeeName").val(), "PricingLevel": $("#ddlPricingLevel").val(), "JobTitle": $("#txtJobTitle").val(), "Phone": $("#txtPhone").val(), "Gender": $("#ddlGender").val(), "Email": $("#txtEmail").val(), "StartDate": $("#txtStartDate").val(), "StartTime": $("#ddlStartTime").val(), "EndDate": $("#txtEndDate").val(), "EndTime": $("#ddlEndTime").val(), "About": $("#txtAbout").val(), "SalonsId": $("#txtSalonsId").val(), "Image": Image, "ImagePath": ImagePath, "UpdatedBy": UpdatedBy, "SalonEmployeesId": $("#txtSalonEmployeesId").val(), "DOB": $("#txtDOB").val(), "DOJ": $("#txtDOJ").val(), "Age": $("#txtAge").val() },
+                            type: "GET",
+                            dataType: 'json',
+                            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                            cache: false,
+                            success: function (r) {
+                                if (r[0].Message == "UniqueConstraint") {
+                                    $("#dvErrorStatus").css({ display: "block" });
+                                    $("#lblSalonEmployees").text("Email Already Existed.");
+                                    $(window).scrollTop(0);
+                                }
+                                else if (r[0].Message == "Error") {
+                                    $("#dvErrorStatus").css({ display: "block" });
+                                    $('#lblSalonEmployees').text(r[0].ErrorMessage);
+                                    $(window).scrollTop(0);
+                                }
+                                else {
+
+                                    var Arr = [];
+                                    if ($('#chkAllServices').is(":checked") == true) {
+                                        for (var i = 0; i < RegId.length; i++) {
+                                            Arr.push(RegId[i]);
+                                        }
+                                    } else if ($('#chkAllServices').is(":checked") == false) {
+                                        for (var i = 0; i < IndRegId.length; i++) {
+                                            Arr.push(IndRegId[i]);
+                                        }
+                                    }
+
+                                    var n = 0;
+
+                                    for (l = 0; l < Arr.length; l++) {
+                                        $.ajax({
+                                            url: URLLink + "api/EmployeeServices/Insert",
+                                            data: { "SalonServicesId": Arr[l], "SalonEmployeesId": $("#txtSalonEmployeesId").val(), "IsAcitve": 1, "CreatedBy": UpdatedBy },
+                                            type: "GET",
+                                            cache: false,
+                                            async: false,
+                                            success: function (r1) {
+                                                if (r1[0].Message == "UniqueConstraint") {
+                                                    $("#dvErrorStatus").css({ display: "block" });
+                                                    $("#lblSalonEmployees").text("Email Already Existed.");
+                                                    $(window).scrollTop(0);
+                                                }
+                                                else if (r1[0].Message == "Error") {
+                                                    $("#dvErrorStatus").css({ display: "block" });
+                                                    $('#lblSalonEmployees').text(r[0].ErrorMessage);
+                                                    $(window).scrollTop(0);
+                                                }
+                                                else {
+
+                                                }
+                                            },
+                                            error: function (err) {
+                                                $("#dvErrorStatus").css({ display: "block" });
+                                                $('#lblSalonEmployees').text(err.statusText);
+                                                $(window).scrollTop(0);
+                                            }
+                                        });
+
+                                    }
+                                    Clear();
+                                    StatusMessage(1);
+                                }
+                            },
+                            error: function (err) {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblSalonEmployees').text(err.statusText);
+                                $(window).scrollTop(0);
+                            }
+                        });
+                    }
+
+                    else {
+                        alert("Please select to date greaterThan from date")
+                        $("#txtEndDate").focus();
+                        $(window).scrollTop(0);
+                    }
+            }
+            
+            
+            }
+              
+        }
+        else {
+
+            if ($("#txtEmployeeName").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonEmployees").text("Please Enter Employee Name");
+                $("#txtEmployeeName").focus();
+                $(window).scrollTop(0);
+
+            }
+            else if ($("#txtEmail").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonEmployees").text("Please Enter Email");
+                $("#txtEmail").focus();
+                $(window).scrollTop(0);
+            }
+            else if ($("#txtJobTitle").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonEmployees").text("Please Enter Job Title");
+
+                $("#txtJobTitle").focus();
+                $(window).scrollTop(0);
+
+            }
+            else if ($("#txtPhone").val() == '') {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonEmployees").text("Please Enter Your Phone Number");
+                $("#txtPhone").focus();
+                $(window).scrollTop(0);
+            }
+            else if (!filter.test(email)) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonEmployees").text("Please Enter Valid Email");
+                $("#txtEmail").focus();
+                $(window).scrollTop(0);
+
+            }
+            else if (!EmployeeName.match(/^[a-zA-Z ]*$/)) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblSalonEmployees").text("Please Enter Employee Name");
+                $("#txtEmployeeName").focus();
+                $(window).scrollTop(0);
+            }
+            else if (startdate > enddate) {
+                //  $("#dvErrorStatus").css({ display: "block" });
+                alert("Please select to date greaterThan from date")
+               
+                $("#txtEndDate").focus();
+                $(window).scrollTop(0);
+            }
+
+        }
+    }
+
+    function StatusMessage(Message) {
+        localStorage.setItem("SalonEmployeesMessage", Message);
+        //window.location.href = '@Url.Action("SalonEmployeesList", "Salon")';
+        if (Message == "1") {
+            // $("#dvErrorStatus").css({ display: "none" });
+            //  $("#dvSuccess").css({ display: "block" });
+            //  $("#lbl_status").text("SalonEmployees Updated Successfully");
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("Employee Updated Successfully");
+
+            BindAssignedServices(EditSalonEmployeesId);
+            BindUnAssignedServices(EditSalonEmployeesId);
+            Bind(EditSalonEmployeesId);
+            BindEmployeeLeaves(EditSalonEmployeesId);
+
+        }
+        else if (Message == "2") {
+            //  $("#dvErrorStatus").css({ display: "none" });
+            // $("#dvSuccess").css({ display: "block" });
+            // $("#lbl_status").text("SalonEmployees Created Successfully");
+            $("#myModal3").css('display', "block");
+            $("#lblupdated").text("Employee Created Successfully");
+
+        }
+        else {
+            $("#dvErrorStatus").css({ display: "none" });
+            $("#dvSuccess").css({ display: "none" });
+
+        }
+
+    }
+
+
+    function BindEmployeeLeaves(SalonEmployeesId) {
+
+        $.ajax({
+            type: 'GET',
+            url: URLLink + "api/SalonEmployees/GetLeavesByEmployeeId",
+            data: { "SalonEmployeesId": SalonEmployeesId },
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (json) {
+                // alert(json[0].Message);
+                if (json[0].Message == "Error") {
+                    $('#tblEmployeeLeaves').hide();
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblError').text(json[0].ErrorMessage);
+                }
+                else {
+                    //  $('#tblEmployeeLeaves').show();
+                    if (json[0].Message == "Success") {
+                        if ($.fn.dataTable.isDataTable('#tblEmployeeLeaves')) {
+                            $('#tblEmployeeLeaves').DataTable().destroy();
+                        }
+                        $('#tblEmployeeLeavesBody').empty();
+                        //alert(json.length);
+                        for (var i = 0; i < json.length; i++) {
+                            if (json[i].Message == 'Success') {
+                                //     alert("gg");
+                                var st = json[i].StartDate.split("/");
+                                st = st[1] + "-" + st[0] + "-" + st[2];
+                                var et = json[i].EndDate.split("/");
+                                et = et[1] + "-" + et[0] + "-" + et[2];
+                                tr = $('<tr/>');
+                                tr.append("<td>" + st + "</td>");
+                                tr.append("<td>" + json[i].StartTime + "</td>");
+                                tr.append("<td>" + et + "</td>");
+                                tr.append("<td>" + json[i].EndTime + "</td>");
+                                tr.append("<td>" + json[i].About + "</td>");
+                                $('#tblEmployeeLeaves').append(tr);
+                            }
+                        }
+                        $('#tblEmployeeLeaves').DataTable({
+                            destroy: true,
+                            select: {
+                                style: 'multi'
+                            },
+                            dom: 'Bfrtip',
+                            buttons: [
+                                  'excel', 'pdf'
+                            ],
+                            select: true
+                        });
+                    }
+                    else if (json[0].Message == "NoData") {
+
+                        $('#tblEmployeeLeaves').hide();
+                        // $("#dvErrorStatus").css({ display: "none" });
+                        //   $("#dvSuccess").css({ display: "block" });
+                        //  $("#lbl_status").text("No Data");
+                    }
+                    else {
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#lbl_status").text("Error");
+                    }
+
+                }
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+
+
+</script>

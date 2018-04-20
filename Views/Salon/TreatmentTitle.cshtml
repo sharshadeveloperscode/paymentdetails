@@ -1,0 +1,430 @@
+﻿
+@{
+    ViewBag.Title = "TreatmentTitle";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<body>
+    <section class="content-header">
+        <h1>
+            Treatment Title
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Location</a></li>
+            <li class="active">Create Treatment Title</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lblTreatmentTitle"></label>
+
+                        </div>
+                        <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lbl_status"></label>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive">
+                        <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                            <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+
+                            <tr>
+                                <td>
+                                    Category Name:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <select id="ddlCategory" class="form-control">
+                                        <option value="0">--Select--</option>
+                                    </select>
+                                </td>
+                            </tr>
+
+                            <tr>
+
+                                <td>
+                                    Treatment Title:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="text" maxlength="40" placeholder="Enter Treatment Title" id="txtTreatmentTitle" name="txtTreatmentTitle" title="Enter Alphabets only" class="form-control" required />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Category Image:<label style="color:red;margin-left: 1%;"></label>
+                                </td>
+                                <td colspan="2">
+                                    <input type="file" id="FileUpload" name="FileUpload" onchange="readURL(this);" title="Select File" required class="form-control" style="width:60%;" />Select File
+                                    <label style="color:red;margin-left: 1%;"> *</label>
+                                    <label id="lblFile"></label>
+                                </td>
+                                <td colspan="2">
+                                    <div id="divProfileImage" style="display:none">
+
+                                    </div>
+                                    <img id="ImgEmployeeProfile" style="display:none; width: 212px; height: 165px;" />
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td colspan="4" style="text-align:right">
+                                    <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                    <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                    @*<input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />*@
+                                    <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("TreatmentTitleList", "Salon")';" style="width:100px;" />
+                                    <input type="text" hidden="hidden" id="txtTreatmentTitleId" name="TreatmentTitleId" />
+                                </td>
+                            </tr>
+                        </table>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+<script type="text/javascript">
+
+          var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+        var UserId = localStorage.getItem("UserId");
+        var RoleId = localStorage.getItem("RoleId");
+    var EditTreatmentTitleId = localStorage.getItem("EditTreatmentTitleId");
+    localStorage.setItem("EployeeProfileImage", 'null');
+    localStorage.setItem("EployeeProfileImage", 'null');
+
+        window.onload = function () {
+            if (UserId != "null" || UserId != null && RoleId == "1") {
+
+                if (EditTreatmentTitleId == "null" || EditTreatmentTitleId == null) {
+                    Category();
+                        $('#btnEdit').hide();
+                        $('#btnSave').show();
+                    }
+                    else {
+                    BindTreatmentTitle(EditTreatmentTitleId);
+                        $('#btnEdit').show();
+                        $('#btnSave').hide();
+                        $('#btnReset').hide();
+                    }
+
+            }
+            else {
+                window.location.href = '@Url.Action("Logout", "Salon")';
+            }
+    }
+    function readURL(input) {
+        $("#divProfileImage").css({ display: "none" });
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#ImgEmployeeProfile').show();
+                $('#ImgEmployeeProfile').attr('src', e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+
+    /////dropd down City Name
+    function Category() {
+            $.ajax({
+                type: 'GET',
+                url: URL + "api/Category/GetCategoryByIsActive",
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                cache:false,
+                xhrFields: {
+                    withCredentials: false
+                },
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        var opt = new Option(data[i].Category, data[i].CategoryId);
+                        $("#ddlCategory").val("");
+                        $('#ddlCategory').append(opt);
+                    }
+
+                },
+                error: function (err) {
+                    console.log(err.StatusText);
+                }
+            });
+        }
+
+    function CategoryLoad(CategoryId) {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/Category/GetCategory",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].Category, data[i].CategoryId);
+                    $("#ddlCategory").val("");
+                    $('#ddlCategory').append(opt);
+                }
+                $('#ddlCategory').val(CategoryId);
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+
+    function BindTreatmentTitle(TreatmentTitleId) {
+            $("#lbl_status").text("");
+            Clear();
+
+            $.ajax({
+                url: URL + "api/TreatmentTitle/GetDatabyId",
+
+                data: { "TreatmentTitleId": TreatmentTitleId },
+                type: "GET",
+                cache: false,
+                success: function (r) {
+
+                    $('#btnEdit').show();
+                    $('#btnSave').hide();
+                    console.log(r);
+                    $("#txtTreatmentTitleId").val(TreatmentTitleId);
+                    $("#txtTreatmentTitle").val(r[0].TreatmentTitle);
+                    CategoryLoad(r[0].CategoryId);
+                    localStorage.setItem("EployeeProfileImage", r[0].ImagePath);
+                    localStorage.setItem("Image", r[0].Image);
+                    $("#divProfileImage").css({ display: "block" });
+                    $('#divProfileImage').append("<image  src='" + r[0].ImagePath + "' height='150px' width='150px'/>");
+
+                   // $('#ddlCity').val(r[0].CityId);
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblTreatmentTitle').text(err.statusText);
+                }
+            })
+        }
+
+        function Save() {
+            $("#lbl_status").text("");
+            $("#lblTreatmentTitle").text("");
+            $("#lblTreatmentTitle").text("");
+            if ($("#txtTreatmentTitle").val() != '' && $("#ddlCategory").val() != 0 && $("#FileUpload").val() != '') {
+                var TreatmentTitle = $("#txtTreatmentTitle").val();
+                //doubt
+                var CategoryId = $("#ddlCategory").val();
+
+                var CreatedBy = UserId;
+                //Insert(string AreaName, int CityId, int IsAcitve, int CreatedBy)
+                var data = new FormData();
+                var files = $("#FileUpload").get(0).files;
+                if (files.length > 0) {
+                    data.append("MyImages", files[0]);
+                }
+
+                if (TreatmentTitle.match(/^[a-zA-Z ]*$/)) {
+                    $.ajax({
+                        url: WebURL + "Upload/UploadTreatmentTitleImages",
+                        type: "POST",
+                        processData: false,
+                        contentType: false,
+                        data: data,
+                        success: function (response) {
+                            console.log("response");
+                            console.log(response);
+                            var FilePath = WebURL + "Files/" + response;
+                            $.ajax({
+                                url: URL + "api/TreatmentTitle/Insert",
+                                //is active
+                                data: { "TreatmentTitle": $("#txtTreatmentTitle").val(), "CategoryId": $("#ddlCategory").val(), "IsAcitve": 1, "CreatedBy": CreatedBy, "ImageName": response, "ImagePath": FilePath },
+                                type: "GET",
+                                cache: false,
+                                success: function (r) {
+                                    if (r[0].Message == "UniqueConstraint") {
+                                        $("#dvErrorStatus").css({ display: "block" });
+                                        $("#lblTreatmentTitle").text("Treatment Title Already Existed.");
+                                    }
+                                    else if (r[0].Message == "Error") {
+                                        $("#dvErrorStatus").css({ display: "block" });
+                                        $('#lblTreatmentTitle').text(r[0].ErrorMessage);
+                                    }
+                                    else {
+                                        Clear();
+                                        StatusMessage(2);
+                                    }
+                                },
+                                error: function (err) {
+                                    $("#dvErrorStatus").css({ display: "block" });
+                                    $('#lblTreatmentTitle').text(err.statusText);
+                                }
+                            });
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblCategory').text(err.statusText);
+                        }
+                    });
+                } else {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblTreatmentTitle").text("Please Enter Valid TreatmentTitle");
+                }
+            } else {
+             if ($("#ddlCategory").val() == 0) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblTreatmentTitle").text("Please Select Category Name");
+                    $("#ddlCategory").focus();
+                }
+             else if ($("#txtTreatmentTitle").val() == '') {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblTreatmentTitle").text("Please Enter TreatmentTitle");
+                    $("#txtTreatmentTitle").focus();
+                }
+
+            }
+        }
+        function Clear() {
+            localStorage.setItem("EployeeProfileImage", 'null');
+
+            localStorage.setItem("EployeeProfileImage", 'null');
+            $("#ImgEmployeeProfile").css({ "display": "none" });
+
+            $("#divProfileImage").empty();
+            $("#divProfileImage").css({ display: "none" });
+            $("#txtImage").val("");
+            $("#txtImagePath").val("");
+            $("#FileUpload").val("");
+
+            $("#txtTreatmentTitleId").val("");
+            $("#txtTreatmentTitle").val("");
+            $("#ddlCategory").val("0");
+            $("#lbl_status").text("");
+            $("#lblTreatmentTitle").text(" ");
+            $('#btnEdit').hide();
+            $('#btnSave').show();
+            $("#dvSuccess").css({ display: "none" });
+            $("#dvErrorStatus").css({ display: "none" });
+        }
+
+
+
+        function Update() {
+            $("#lbl_status").text("");
+            if ($("#txtTreatmentTitle").val() != '' && $('#ddlCategory').val() != 0 && $("#FileUpload").val() != '') {
+                var Category = $("#txtTreatmentTitle").val();
+                var UpdatedBy = UserId;
+                if (Category.match(/^[a-zA-Z ]*$/)) {
+                    // Update(string TreatmentTitle, int CategoryId, int UpdatedBy, int TreatmentTitleId)
+                    if ($("#FileUpload").val() != '') {
+                        var data = new FormData();
+                        var files = $("#FileUpload").get(0).files;
+                        if (files.length > 0) {
+                            data.append("MyImages", files[0]);
+                        }
+
+                        $.ajax({
+                            url: WebURL + "Upload/UploadCategoryImages",
+                            type: "POST",
+                            processData: false,
+                            contentType: false,
+                            data: data,
+                            success: function (response) {
+                                console.log("response");
+
+                                console.log(response);
+                                var FilePath = WebURL + "Files/" + response;
+                                 $.ajax({
+                                    url: URL + "api/TreatmentTitle/Update",
+                                     data: { "TreatmentTitle": $("#txtTreatmentTitle").val(), "CategoryId": $("#ddlCategory").val(), "UpdatedBy": UpdatedBy, "TreatmentTitleId": $("#txtTreatmentTitleId").val(), "ImageName": response, "ImagePath": FilePath  },
+                                    cache:false,
+                                    type: "GET",
+                                    dataType: 'json',
+                                    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                                    cache: false,
+                                    success: function (r) {
+                                        if (r[0].Message == "UniqueConstraint") {
+                                            $("#dvErrorStatus").css({ display: "block" });
+                                            $("#lblTreatmentTitle").text("Treatment Title Already Existed.");
+                                        }
+                                        else if (r[0].Message == "Error") {
+                                            $("#dvErrorStatus").css({ display: "block" });
+                                            $('#lblTreatmentTitle').text(r[0].ErrorMessage);
+                                        }
+                                        else {
+                                            Clear();
+                                            StatusMessage(1);
+                                        }
+                                    },
+                                    error: function (err) {
+                                        $("#dvErrorStatus").css({ display: "block" });
+                                        $('#lblTreatmentTitle').text(err.statusText);
+                                    }
+                                });
+                            },
+                            error: function (err) {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblTreatmentTitle').text(err.statusText);
+                            }
+                        });
+
+                    }
+                    else {
+                        var ImagePath = localStorage.getItem("EployeeProfileImage");
+                        var Image = localStorage.getItem("Image");
+                        $.ajax({
+                            url: URL + "api/TreatmentTitle/Update",
+                            data: { "TreatmentTitle": $("#txtTreatmentTitle").val(), "CategoryId": $("#ddlCategory").val(), "UpdatedBy": UpdatedBy, "TreatmentTitleId": $("#txtTreatmentTitleId").val(), "ImageName": response, "ImagePath": FilePath },
+                            type: "GET",
+                            dataType: 'json',
+                            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                            cache: false,
+                            success: function (r) {
+                                if (r[0].Message == "UniqueConstraint") {
+                                    $("#dvErrorStatus").css({ display: "block" });
+                                    $("#lblTreatmentTitle").text(" Already Existed.");
+                                }
+                                else if (r[0].Message == "Error") {
+                                    $("#dvErrorStatus").css({ display: "block" });
+                                    $('#lblTreatmentTitle').text(r[0].ErrorMessage);
+                                }
+                                else {
+                                    Clear();
+                                    StatusMessage(1);
+                                }
+                            },
+                            error: function (err) {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblTreatmentTitle').text(err.statusText);
+                            }
+                        });
+                    }
+
+                } else {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblTreatmentTitle").text("Please Select  Category Name");
+                }
+            }
+            else {
+                if ($("#ddlCategory").val() == 0) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblTreatmentTitle").text("Please Select Category");
+                    $("#ddlCategory").focus();
+                }
+                else if ($('#txtTreatmentTitle').val() == '') {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblTreatmentTitle").text("Please Enter Treatment Title");
+                    $("#txtTreatmentTitle").focus();
+                }
+
+            }
+        }
+
+        function StatusMessage(value) {
+            localStorage.setItem("TreatmentTitleMessage", value);
+            window.location.href = '@Url.Action("TreatmentTitleList", "Salon")';
+        }
+</script>

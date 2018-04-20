@@ -1,0 +1,398 @@
+﻿
+@{
+    ViewBag.Title = "Testing";
+    Layout = null;
+}
+
+@*calender script*@
+
+<link href="~/Content/libs/css/smoothness/jquery-ui-1.8.11.custom.css" rel="stylesheet" />
+<link rel='stylesheet' type='text/css' href='~/Content/jquery.weekcalendar.css' />
+<link href="~/Content/skins/default.css" rel="stylesheet" />
+<link href="~/Content/skins/gcalendar.css" rel="stylesheet" />
+
+<script src="~/Content/libs/jquery-1.4.4.min.js"></script>
+<script src="~/Content/libs/jquery-ui-1.8.11.custom.min.js"></script>
+<script src="~/Content/libs/jquery-ui-i18n.js"></script>
+<script src="~/Content/libs/date.js"></script>
+<script src="~/Content/jquery.weekcalendar.js"></script>
+
+<div id="calendar"></div>
+
+
+
+       <script type="text/javascript">
+
+        var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+        var UserId = localStorage.getItem("UserId");
+        var EmployeesArr = [];
+        var EmployeesIdsArr = [];
+     
+
+            CalenderData();
+            function CalenderData() {
+
+                jQuery(function ($) {
+                    $('#eventlist').gCalReader({
+                        calendarId: 'q80se6543bkb40g6fv2hkpburc@group.calendar.google.com',
+                        apiKey: 'AIzaSyC9vh_c4nfuCVn-gl78TkRRlKk1Lopd8qU',
+                        sortDescending: false
+                    });
+                });
+            $.fn.gCalReader = function (options) {
+                var $div = $(this);
+
+                var defaults = $.extend({
+                    calendarId: 'q80se6543bkb40g6fv2hkpburc@group.calendar.google.com',
+                    apiKey: 'AIzaSyC9vh_c4nfuCVn-gl78TkRRlKk1Lopd8qU',
+                    clientId: '503055486067-sjblj3h1l9olfihgk8io1ur6b4svjh0s.apps.googleusercontent.com',
+                    dateFormat: 'LongDate',
+                    errorMsg: 'No events in calendar',
+                    maxEvents: 50,
+                    //   futureEventsOnly: true,
+                    sortDescending: true
+                },
+                  options);
+
+                var s = '';
+                var feedUrl = 'https://www.googleapis.com/calendar/v3/calendars/' +
+                  encodeURIComponent(defaults.calendarId.trim()) + '/events?key=' + defaults.apiKey +
+                  '&orderBy=startTime&singleEvents=true';
+                var titlearray = [];
+                var eventids = [];
+                var empid = [];
+                var empname = [];
+             
+
+                $.ajax({
+                    url: feedUrl,
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data);
+                        if (defaults.sortDescending) {
+                            data.items = data.items.reverse();
+                        }
+                        data.items = data.items.slice(0, defaults.maxEvents);
+                        var j = 0;
+                        var eventData1;
+                        var opt;
+                        var events = [];
+                        var freebusys = [];
+                        $.each(data.items, function (e, item) {
+                            console.log("e");
+                            console.log(item);
+                            var eventdate = item.start.dateTime || item.start.date || '';
+                            var summary = item.summary || '';
+                            var description = item.description;
+                            var location = item.location;
+                            s = '<div class="eventtitle">' + summary + '</div>';
+                            titlearray.push(summary);
+                            eventids.push(item.id);
+                            s += '<div class="eventdate"> When: ' + formatDate(eventdate, defaults.dateFormat.trim()) + '</div>';
+                            if (location) {
+                                s += '<div class="location">Where: ' + location + '</div>';
+                            }
+                            if (description) {
+                                s += '<div class="description">' + description + '</div>';
+                            }
+                            $($div).append('<li>' + s + '</li>');
+                            var year = new Date(item.start.dateTime).getFullYear();
+                            var month = new Date(item.start.dateTime).getMonth();
+                            var day = new Date(item.start.dateTime).getDate();
+
+                             events.push(
+                                {
+                                "start": new Date(year, month, day, new Date(item.start.dateTime).getHours(), new Date(item.start.dateTime).getMinutes()),    //your artist variable
+                                "end": new Date(new Date(item.end.dateTime).getFullYear(), new Date(item.end.dateTime).getMonth(), new Date(item.end.dateTime).getDate(), new Date(item.end.dateTime).getHours(), new Date(item.end.dateTime).getMinutes()),   //your title variable
+                                "title": titlearray[j],  //your title variable
+                                "id": eventids[j], "userId": 0
+                                });
+                             freebusys.push(
+                                      { 'start': new Date(year, month, day, new Date(item.start.dateTime).getHours(), new Date(item.start.dateTime).getMinutes()),
+                                         'end': new Date(new Date(item.end.dateTime).getFullYear(), new Date(item.end.dateTime).getMonth(), new Date(item.end.dateTime).getDate(), new Date(item.end.dateTime).getHours(), new Date(item.end.dateTime).getMinutes()),
+                                         'free': true,
+                                         userId: [1]
+                                     });
+                              eventData1 = {
+                               events, freebusys,
+                                options: {
+                                    timeslotsPerHour: 4,
+                                    timeslotHeight: 20,
+                                    defaultFreeBusy: { free: true }
+                                },
+
+                            }
+
+
+                            j++;
+                          //  eventData1.push(opt);
+                            console.log("opt");
+                            console.log(eventData1);
+                            $('.wc-hour-header ui-state-default').css("margin-top", "-234px !important");
+                        });
+
+
+
+
+                        var $calendar = $('#calendar').weekCalendar({
+                            timeslotsPerHour: 4,
+                            scrollToHourMillis: 0,
+                            data: eventData1,
+                            height: function ($calendar) {
+                                return $(window).height() - $('h1').outerHeight(true);
+                            },
+                            eventRender: function (calEvent, $event) {
+                                console.log("eventData1");
+                                console.log(calEvent);
+                                if (calEvent.end.getTime() < new Date().getTime()) {
+                                    $event.css('backgroundColor', '#aaa');
+                                    $event.find('.wc-time').css({
+                                        backgroundColor: '#999',
+                                        border: '1px solid #888'
+                                    });
+                                }
+                            },
+                            eventNew: function (calEvent, $event, FreeBusyManager, calendar) {
+                                var isFree = true;
+                                $.each(FreeBusyManager.getFreeBusys(calEvent.start, calEvent.end), function () {
+                                    if (
+                                      this.getStart().getTime() != calEvent.end.getTime()
+                                      && this.getEnd().getTime() != calEvent.start.getTime()
+                                      && !this.getOption('free')
+                                    ) {
+                                        isFree = false;
+                                        return false;
+                                    }
+                                });
+
+                                if (!isFree) {
+                                    alert('looks like you tried to add an event on busy part !');
+                                    $(calendar).weekCalendar('removeEvent', calEvent.id);
+                                    return false;
+                                }
+
+                                alert('You\'ve added a new event. You would capture this event, add the logic for creating a new event with your own fields, data and whatever backend persistence you require.');
+
+                                calEvent.id = calEvent.userId + '_' + calEvent.start.getTime();
+                                $(calendar).weekCalendar('updateFreeBusy', {
+                                    userId: calEvent.userId,
+                                    start: calEvent.start,
+                                    end: calEvent.end,
+                                    free: false
+                                });
+                            },
+                            data: function (start, end, callback) {
+                                var dataSource = "1";
+                                if (dataSource === '1') {
+                                    callback(eventData1);
+                                } else if (dataSource === '2') {
+                                    callback(eventData2);
+                                } else {
+                                    callback({
+                                        options: {
+                                            defaultFreeBusy: {
+                                                free: true
+                                            }
+                                        },
+                                        events: []
+                                    });
+                                }
+                            },
+                            users: ['Prasanth','Vinti'],
+                          //  showAsSeparateUser: true,
+                            displayOddEven: true,
+                            displayFreeBusys: true,
+                          //  daysToShow: 1,
+                            switchDisplay: { '1 day': 1, 'full week': 7 },
+                            headerSeparator: ' ',
+                            useShortDayNames: true,
+                            // I18N
+                          //  firstDayOfWeek: $.datepicker.regional['fr'].firstDay,
+                         //   shortDays: $.datepicker.regional['fr'].dayNamesShort,
+                          //  longDays: $.datepicker.regional['fr'].dayNames,
+                          //  shortMonths: $.datepicker.regional['fr'].monthNamesShort,
+                          //  longMonths: $.datepicker.regional['fr'].monthNames,
+                           // dateFormat: 'd F y'
+                        });
+
+
+                      },
+                    error: function (error) {
+                        $($div).append('<p>' + defaults.errorMsg + ' | ' + error + '</p>');
+                    }
+                });
+
+                function formatDate(strDate, strFormat) {
+                    var fd, arrDate, am, time;
+                    var calendars = {
+                        months: {
+                            full: ['', 'January', 'February', 'March', 'April', 'May',
+                              'June', 'July', 'August', 'September', 'October',
+                              'November', 'December'
+                            ],
+                            short: ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul',
+                              'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+                            ]
+                        },
+                        days: {
+                            full: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+                              'Friday', 'Saturday', 'Sunday'
+                            ],
+                            short: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat',
+                              'Sun'
+                            ]
+                        }
+                    };
+
+                    if (strDate.length > 10) {
+                        arrDate = /(\d+)\-(\d+)\-(\d+)T(\d+)\:(\d+)/.exec(strDate);
+
+                        am = (arrDate[4] < 12);
+                        time = am ? (parseInt(arrDate[4]) + ':' + arrDate[5] + ' AM') : (
+                          arrDate[4] - 12 + ':' + arrDate[5] + ' PM');
+
+                        if (time.indexOf('0') === 0) {
+                            if (time.indexOf(':00') === 1) {
+                                if (time.indexOf('AM') === 5) {
+                                    time = 'MIDNIGHT';
+                                } else {
+                                    time = 'NOON';
+                                }
+                            } else {
+                                time = time.replace('0:', '12:');
+                            }
+                        }
+
+                    } else {
+                        arrDate = /(\d+)\-(\d+)\-(\d+)/.exec(strDate);
+                        time = 'Time not present in feed.';
+                    }
+
+                    var year = parseInt(arrDate[1]);
+                    var month = parseInt(arrDate[2]);
+                    var dayNum = parseInt(arrDate[3]);
+
+                    var d = new Date(year, month - 1, dayNum);
+
+                    switch (strFormat) {
+                        case 'ShortTime':
+                            fd = time;
+                            break;
+                        case 'ShortDate':
+                            fd = month + '/' + dayNum + '/' + year;
+                            break;
+                        case 'LongDate':
+                            fd = calendars.days.full[d.getDay()] + ' ' + calendars.months.full[
+                              month] + ' ' + dayNum + ', ' + year;
+                            break;
+                        case 'LongDate+ShortTime':
+                            fd = calendars.days.full[d.getDay()] + ' ' + calendars.months.full[
+                              month] + ' ' + dayNum + ', ' + year + ' ' + time;
+                            break;
+                        case 'ShortDate+ShortTime':
+                            fd = month + '/' + dayNum + '/' + year + ' ' + time;
+                            break;
+                        case 'DayMonth':
+                            fd = calendars.days.short[d.getDay()] + ', ' + calendars.months.full[
+                              month] + ' ' + dayNum;
+                            break;
+                        case 'MonthDay':
+                            fd = calendars.months.full[month] + ' ' + dayNum;
+                            break;
+                        case 'YearMonth':
+                            fd = calendars.months.full[month] + ' ' + year;
+                            break;
+                        default:
+                            fd = calendars.days.full[d.getDay()] + ' ' + calendars.months.short[
+                              month] + ' ' + dayNum + ', ' + year + ' ' + time;
+                    }
+                    return fd;
+                }
+            };
+
+    var d = new Date();
+    d.setDate(d.getDate() - d.getDay());
+    var year = d.getFullYear();
+    var month = d.getMonth();
+    var day = d.getDate();
+
+    var eventData1s = {
+      options: {
+        timeslotsPerHour: 4,
+        timeslotHeight: 20,
+        defaultFreeBusy: {free: true}
+      },
+      events : [
+        {'id':1, 'start': new Date(year, month, day, 12), 'end': new Date(year, month, day, 13, 30), 'title': 'Lunch with Mike', userId: 0},
+        {'id':2, 'start': new Date(year, month, day, 14), 'end': new Date(year, month, day, 14, 45), 'title': 'Dev Meeting', userId: 1},
+        {'id':3, 'start': new Date(year, month, day+1, 18), 'end': new Date(year, month, day+1, 18, 45), 'title': 'Hair cut', userId: 1},
+        {'id':4, 'start': new Date(year, month, day+2, 8), 'end': new Date(year, month, day+2, 9, 30), 'title': 'Team breakfast', userId: 0},
+        {'id':5, 'start': new Date(year, month, day+1, 14), 'end': new Date(year, month, day+1, 15), 'title': 'Product showcase', userId: 1}
+      ],
+      freebusys: [
+        {'start': new Date(year, month, day), 'end': new Date(year, month, day+3), 'free': false, userId: [0,1,2,3]},
+        {'start': new Date(year, month, day, 8), 'end': new Date(year, month, day, 12), 'free': true, userId: [0,1,2,3]},
+        {'start': new Date(year, month, day+1, 8), 'end': new Date(year, month, day+1, 12), 'free': true, userId: [0,1,2,3]},
+        {'start': new Date(year, month, day+2, 8), 'end': new Date(year, month, day+2, 12), 'free': true, userId: [0,1,2,3]},
+        {'start': new Date(year, month, day+1, 14), 'end': new Date(year, month, day+1, 18), 'free': true, userId: [0,1,2,3]},
+        {'start': new Date(year, month, day+2, 8), 'end': new Date(year, month, day+2, 12), 'free': true, userId: [0,3]},
+        {'start': new Date(year, month, day+2, 14), 'end': new Date(year, month, day+2, 18), 'free': true, userId: 1}
+      ]
+    };
+    console.log("eventData1s");
+    console.log(eventData1s);
+    d = new Date();
+    d.setDate(d.getDate() -(d.getDay() - 3));
+    year = d.getFullYear();
+    month = d.getMonth();
+    day = d.getDate();
+
+    var eventData2 = {
+      options: {
+        timeslotsPerHour: 3,
+        timeslotHeight: 30,
+        defaultFreeBusy: {free: false}
+      },
+      events : [
+        {'id':1, 'start': new Date(year, month, day, 12), 'end': new Date(year, month, day, 13, 00), 'title': 'Lunch with Sarah', userId: [1, 2]},
+        {'id':2, 'start': new Date(year, month, day, 14), 'end': new Date(year, month, day, 14, 40), 'title': 'Team Meeting', userId: 0},
+        {'id':3, 'start': new Date(year, month, day+1, 18), 'end': new Date(year, month, day+1, 18, 40), 'title': 'Meet with Joe', userId: 1},
+        {'id':4, 'start': new Date(year, month, day-1, 8), 'end': new Date(year, month, day-1, 9, 20), 'title': 'Coffee with Alison', userId: 1},
+        {'id':5, 'start': new Date(year, month, day+1, 14), 'end': new Date(year, month, day+1, 15, 00), 'title': 'Product showcase', userId: 0}
+      ],
+      freebusys: [
+        {'start': new Date(year, month, day-1, 8), 'end': new Date(year, month, day-1, 18), 'free': true, userId: [0,1,2,3]},
+        {'start': new Date(year, month, day, 8), 'end': new Date(year, month, day+0, 18), 'free': true, userId: [0,1,2,3]},
+        {'start': new Date(year, month, day+1, 8), 'end': new Date(year, month, day+1, 18), 'free': true, userId: [0,3]},
+        {'start': new Date(year, month, day+2, 14), 'end': new Date(year, month, day+2, 18), 'free': true, userId: 1}
+      ]
+    };
+        }
+    function updateMessage() {
+      var dataSource = "1";
+
+      $('#message').fadeOut(function() {
+        if (dataSource === '1') {
+          $('#message').text('Displaying event data set 1 with timeslots per hour of 4 and timeslot height of 20px. Moreover, the calendar is free by default.');
+        } else if(dataSource === '2') {
+          $('#message').text('Displaying event data set 2 with timeslots per hour of 3 and timeslot height of 30px. Moreover, the calendar is busy by default.');
+        } else {
+          $('#message').text('Displaying no events.');
+          }
+
+        $(this).fadeIn();
+      });
+    }
+
+    $(document).ready(function () {
+        //alert(eventData1);
+
+      $('#data_source').change(function() {
+        $calendar.weekCalendar('refresh');
+        updateMessage();
+      });
+
+      updateMessage();
+    });
+ // })(jQuery);
+</script>

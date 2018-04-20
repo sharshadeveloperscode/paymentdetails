@@ -1,0 +1,497 @@
+﻿
+@{
+    ViewBag.Title = "AdminInvoice";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<body>
+    <section class="content-header">
+        <h1>
+            Invoice
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i>Home</a></li>
+            <li><a href="#">Invoice</a></li>
+        </ol>
+    </section>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-body ">
+
+
+                        <label id="lblAdminInvoice" style="color:red"></label>
+                        <label id="lblInvoice" style="color:red"></label><label id="lblSuccess" style="color:green"></label>
+                        <div class="section">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <label style="margin-left: 5px">Year</label>
+                                        <select class="form-control" style="" id="ddlyear"></select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label style="">Month</label>
+
+                                        <select class="form-control" style="" id="ddlmonth">
+                                            <option value="0">Select Month</option>
+                                            <option value="01">Jan</option>
+                                            <option value="02">Feb</option>
+                                            <option value="03">Mar</option>
+                                            <option value="04">Apr</option>
+                                            <option value="05">May</option>
+                                            <option value="06">Jun</option>
+                                            <option value="07">Jul</option>
+                                            <option value="08">Aug</option>
+                                            <option value="09">Sep</option>
+                                            <option value="10">Oct</option>
+                                            <option value="11">Nov</option>
+                                            <option value="12">Dec</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label style="">Select Period</label>
+                                        <select class="form-control" style="" id="ddlPeriod">
+                                            <option value="0">Select Period</option>
+                                            <option value="1">Period1</option>
+                                            <option value="2">Period2</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label style="">Venues</label>
+                                        <select class="form-control" onchange="Venues()" style="height:96px;" id="ddlSalons" multiple></select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="a1" style="margin-top:25px; float:right;">
+                                            <input type="button" style="width:100px" class="btn btn-success" onclick="ViewInvoice()" value="Preview" />
+                                        </div>
+                                        <div class="a1" style="margin-top:25px; ">
+                                            <input type="button" class="btn btn-success" style="width:100px;" onclick="GenerateInvoice()" value="Generate">
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+
+
+
+
+                            </div>
+                        </div>
+
+                        <div id="test"> </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+<script>
+    var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+    var UserId = localStorage.getItem("UserId");
+    Salons();
+
+    bindYear();
+    function bindYear() {
+        $('#ddlyear').append('<Option value="0">Select Year</Option>');
+        for (i = new Date().getFullYear() ; i > 2000; i--) {
+            $('#ddlyear').append($('<option />').val(i).html(i));
+        }
+    }
+    function Venues() {
+        var id = $("#ddlSalons").val();
+        if (id == 0) {
+            $('#ddlSalons option').prop('selected', true);
+            $('#ddlSalons option[value=0]').prop('selected', false);
+        }
+    }
+    function Salons() {
+        $.ajax({
+            type: 'GET',
+            url: URL + "api/VoucherType/TotalSalonsIsActive",
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            cache: false,
+            xhrFields: {
+                withCredentials: false
+            },
+            success: function (data) {
+                $('#ddlSalons').append("<option value='0'>Select All</option>");
+                for (var i = 0; i < data.length; i++) {
+                    var opt = new Option(data[i].BusinessName, data[i].SalonsId);
+                    $("#ddlSalons").val("");
+                    $('#ddlSalons').append(opt);
+                }
+            },
+            error: function (err) {
+                console.log(err.StatusText);
+            }
+        });
+    }
+    function GenerateInvoice() {
+        //  var ids = [];
+        var year = $("#ddlyear").val();
+        var month = $("#ddlmonth").val();
+        var venues = $("#ddlSalons").val();
+        localStorage.setItem("Salons", venues);
+
+        //   ids = venues.split(',');
+        if ($('#ddlyear').val() != 0 && $("#ddlmonth").val() != 0 && $("#ddlPeriod").val() != 0 && $("#ddlSalons").val() != null) {
+
+            //   ids.push(venues);
+            //  for (var i = 0; i < venues.length; i++)
+            //   {
+            if ($("#ddlPeriod").val() == 1) {
+
+
+                var id = 1;
+                var id1 = 15;
+            }
+            else {
+                var id = 16;
+                var id1 = 31;
+            }
+
+
+            $.ajax({
+                type: 'GET',
+                url: URL + "api/AdminInvoice/GetInvoiceGeneration",
+                data: { "Month": month, "Year": year, "Period1": id, "Period2": id1, "SalonsId": localStorage.getItem("Salons") },
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                cache: false,
+                xhrFields: {
+                    withCredentials: false
+                },
+                success: function (json) {
+                    $('#test').empty();
+                    if (json[0].Message == "Error") {
+                        $('#tblSalonInvoiceGeneration').hide();
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblBillings').text("Error");
+                    }
+                    else if (json[0].Message == "NoData") {
+                        $('#tblSalonInvoiceGeneration').hide();
+                        $('#lblInvoice').text("No Bookings For This Venue");
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                    }
+                    else if (json[0].Message == "Success") {
+
+
+                        $.ajax({
+                            url: URL + "api/AdminInvoice/InsertInvoice",
+                            data: { 'SalonsId': localStorage.getItem("Salons"), 'Month': $("#ddlmonth").val(), 'Year': $("#ddlyear").val(), 'IsActive': 1, "CreatedBy": UserId, "Period1": id, "Period2": id1 },
+                            type: "GET",
+                            cache: false,
+                            success: function (r) {
+                                var salonsids = localStorage.getItem("Salons")
+                                EmailGeneration(salonsids);
+                                $("#myModal3").css('display', "block");
+                                $("#lblupdated").text("Generated Successfully");
+                                Clear();
+                            }
+                        })
+                    }
+                }
+            });
+
+
+
+            //  }
+
+        }
+        else {
+            if ($("#ddlyear").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblInvoice").text("Please Select Year");
+                $("#ddlyear").focus();
+            }
+            else if ($("#ddlmonth").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblInvoice").text("Please Select Month");
+                $("#ddlmonth").focus();
+            }
+            else if ($("#ddlPeriod").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblInvoice").text("Please Select Period");
+                $("#ddlmonth").focus();
+            }
+            else if ($("#ddlSalons").val() == null) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblInvoice").text("Please Select Salons");
+                $("#ddlSalons").focus();
+            }
+        }
+    }
+
+
+    function EmailGeneration(salonsids) {
+
+        var SalonEmail = ''
+        var BusinessNam = ''
+        var ids = [];
+        ids = salonsids.split(',');
+        var Content = "Your Venue Invoice generated Please Check "
+        for (var i = 0; i < ids.length; i++) {
+            $.ajax({
+                type: "GET",
+                url: URL + "api/Salons/GetSalonsId",
+                data: { "SalonsId": ids[i] },
+                cache: false,
+                success: function (r) {
+                    for (var j = 0; j < r.length; j++) {
+                        SalonEmail = r[j].Email
+                        BusinessName = r[j].BusinessName
+
+
+                        $.ajax({
+                            url: URL + "api/emailTemplateTypes/SendEmail",
+                            data: { "Email": SalonEmail, "Mobile": 1234567895, "TemplateTypeId": 10, "Content": Content, "Name": BusinessName },
+                            type: "GET",
+                            cache: false,
+                            success: function (json) {
+
+                            }
+                        });
+                    }
+
+
+                }
+
+            });
+        }
+    }
+
+
+
+
+    function ViewInvoice() {
+        var year = $("#ddlyear").val();
+        var month = $("#ddlmonth").val();
+        var venues = $("#ddlSalons").val();
+
+        localStorage.setItem("venues", venues);
+        var id = localStorage.setItem("venues", venues);
+        if ($("#ddlPeriod").val() == 1) {
+
+
+            var id = 1;
+            var id1 = 15;
+        }
+        else {
+            var id = 16;
+            var id1 = 31;
+        }
+        if ($('#ddlyear').val() != 0 && $("#ddlmonth").val() != 0 && $("#ddlPeriod").val() != 0 && $("#ddlSalons").val() != null) {
+            $.ajax({
+                type: 'GET',
+                url: URL + "api/AdminInvoice/GetInvoiceGeneration",
+                data: { "Month": month, "Year": year, "Period1": id, "Period2": id1, "SalonsId": localStorage.getItem("venues") },
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                cache: false,
+                xhrFields: {
+                    withCredentials: false
+                },
+                success: function (json) {
+                    $('#test').empty();
+                    if (json[0].Message == "Error") {
+                        $('#tblSalonInvoiceGeneration').hide();
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                        $('#lblBillings').text("Error");
+                    }
+                    else if (json[0].Message == "NoData") {
+                        $('#tblSalonInvoiceGeneration').hide();
+                        $('#lblInvoice').text("No Bookings For This Venue");
+                        $("#dvSuccess").css({ display: "none" });
+                        $("#dvErrorStatus").css({ display: "block" });
+                    }
+                    else if (json[0].Message == "Success") {
+                        $("#lblInvoice").empty();
+                        $('#tblSalonInvoiceGeneration').show();
+                        if ($.fn.dataTable.isDataTable('#tblSalonInvoiceGeneration')) {
+                            $('#tblBillings').DataTable().destroy();
+                        }
+                        $('#tblSalonInvoiceGenerationBody').empty();
+                        var sum = 0;
+                        var sum1 = 0;
+                        var sum2 = 0;
+                        var mydata = "";
+                        var mydata1 = "";
+                        var mydata2 = "";
+                        var mydata3 = "";
+                        var mydata4 = "";
+
+                        var date = new Date();
+
+                        var monthNames = [];
+
+                        monthNames[0] = 'January';
+                        monthNames[1] = 'February';
+                        monthNames[2] = 'March';
+                        monthNames[3] = 'April';
+                        monthNames[4] = 'May';
+                        monthNames[5] = 'June';
+                        monthNames[6] = 'July';
+                        monthNames[7] = 'August';
+                        monthNames[8] = 'September';
+                        monthNames[9] = 'October';
+                        monthNames[10] = 'November';
+                        monthNames[11] = 'December';
+
+                        var month = monthNames[date.getMonth()];
+
+                        tdate = date.getDate();
+                        year = date.getFullYear();
+
+                        var getcurrentdate = " " + month + " " + " " + tdate + " " + " " + year;
+
+
+                        mydata += '<h3 style=" font-size:20px;">Salon Invoice Remittance #UK</h3>';
+                        mydata += '</br>';
+                        mydata += '<label style="font-size:15px;">Issue Date:' + getcurrentdate + '</label>'
+                        //   mydata += '</br>';
+                        //   mydata += '</br>';
+                        //   mydata += '<label> To   :  ' + json[0].BusinessName + ' </label>'; mydata += '<label style="margin-left:500px">From   : Salon</label>';
+                        // //  mydata += '</br>';
+                        ////   mydata += '<label>' + json[0].BusinessName + '</label>'
+                        //   mydata += '</br>';
+                        //   mydata += '<label>' + json[0].Address + '</label>'
+                        //   mydata += '</br>';
+                        //   mydata += '<label>London</label>'
+                        //   mydata += '</br>';
+                        //   mydata += '<label>' + json[0].Postcode + '</label>'
+
+                        mydata += '<h3 style="font-size:20px;">Pay At Venue</h3>';
+
+                        mydata += '<table border="1" style="text-align:center" class="table table-bordered table-hover dataTable">';
+                        mydata += "<tr><th style='text-align:center'>Booking Date</th>";
+                        mydata += "<th style='text-align:center'>Service</th>";
+                        mydata += "<th style='text-align:center'>Payment Type</th>";
+                        mydata += "<th style='text-align:center'>Payable Amount</th></tr>";
+
+                        mydata1 += '<h3 style="font-size:20px;">Pay By Paypal</h3>';
+                        mydata1 += '<table border="1" style="text-align:center" class="table table-bordered table-hover dataTable">';
+                        mydata1 += "<tr><th style='text-align:center'>Booking Date</th>";
+                        mydata1 += "<th style='text-align:center'>Service</th>";
+                        mydata1 += "<th style='text-align:center'>Payment Type</th>";
+                        mydata1 += "<th style='text-align:center'>Payable Amount</th></tr>";
+
+                        mydata2 += '<h3 style="font-size:20px;">Total Amount</h3>';
+                        mydata2 += '<table border="1" style="text-align:center" class="table table-bordered table-hover dataTable">';
+                        //mydata3 += '<h2>Total PAYATVENUE AMOUNT</h2>';
+                        //mydata3 += "<table>";
+                        //mydata4 += '<h2>Total PAYBYPAYPAL AMOUNT</h2>';
+                        //mydata4 += "<table>";
+                        var totalpayatvenue = 0;
+                        var totalpaypal = 0;
+                        for (var i = 0; i < json.length; i++) {
+
+                            if (json[i].PaymentType == "PAYATVENUE") {
+                                mydata += '<tbody><tr>';
+                                mydata += "<td>" + json[i].bookdate + "</td>";
+                                mydata += "<td>" + json[i].TreatmentTypeId + "</td>";
+                                mydata += "<td>" + json[i].PaymentType + "</td>";
+                                mydata += "<td>" + json[i].ServicePrice + "</td>";
+                                mydata += "</tr></tbody>";
+
+                                totalpayatvenue = parseFloat(totalpayatvenue) + parseFloat(json[i].ServicePrice);
+                            }
+
+
+
+
+                            if (json[i].PaymentType == "PAYBYPAYPAL") {
+
+                                mydata1 += "<tr>";
+                                mydata1 += "<td>" + json[i].bookdate + "</td>";
+                                mydata1 += "<td>" + json[i].TreatmentTypeId + "</td>";
+                                mydata1 += "<td>" + json[i].PaymentType + "</td>";
+                                mydata1 += "<td>" + json[i].ServicePrice + "</td>";
+                                mydata1 += "</tr>";
+
+                                totalpaypal = parseFloat(totalpaypal) + parseFloat(json[i].ServicePrice);
+                            }
+
+
+
+                            // }
+
+                        }
+                        var total = 0;
+                        mydata += " <tfoot><tr><td></td><td></td>";
+                        mydata += "<td><span>Total</span></td> ";
+                        mydata += "<td>" + totalpayatvenue + "  </td> </tr></tfoot>";
+
+
+                        mydata1 += " <tfoot><tr><td></td><td></td>";
+                        mydata1 += "<td><span>Total</span></td> ";
+                        mydata1 += "<td>" + totalpaypal + "  </td> </tr></tfoot>";
+
+                        mydata2 += "<tr><th style='text-align:center'>Paypal</th><th style='text-align:center'>PayAt Venue</th><th style='text-align:center'>Net Total</th></tr>";
+                        var total = totalpayatvenue + totalpaypal
+
+                        mydata2 += "<tr><td>" + totalpaypal + "</td><td>" + totalpayatvenue + " </td>";
+                        mydata2 += "<td>" + total + " </td></tr>";
+
+                        //mydata3 += "<tr>";
+                        //mydata3 += "<td>" + totalpayatvenue + "</td>";
+                        //mydata3 += "</tr>";
+
+                        //mydata4 += "<tr>";
+                        //mydata4 += "<td>" + totalpaypal + "</td>";
+                        //mydata4 += "</tr>";
+
+                        mydata += "</table>";
+                        mydata1 += "</table>";
+                        mydata2 += "</table>";
+                        //   mydata3 += "</table>";
+                        //  mydata4 += "</table>";
+                        $('#test').append(mydata + mydata1 + mydata2);
+                        //window.location.href = '';
+                        //window.location.href = "http://hogarbarber.developerscode.in/tcpdf/examples/appypdf.php?myfile="+mydata;
+                        //   window.location.href = "http://hogarbarber.developerscode.in/Salon/HtmlCreate?mydata=" + mydata + mydata1 + mydata2;
+                    }
+                },
+                error: function (err) {
+                    $("#dvSuccess").css({ display: "none" });
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#tblAdminInvoice').text(err.StatusText);
+                }
+            });
+        }
+        else {
+            if ($("#ddlyear").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblInvoice").text("Please Select Year");
+                $("#ddlyear").focus();
+            }
+            else if ($("#ddlmonth").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblInvoice").text("Please Select Month");
+                $("#ddlmonth").focus();
+            }
+            else if ($("#ddlPeriod").val() == 0) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblInvoice").text("Please Select Period");
+                $("#ddlmonth").focus();
+            }
+            else if ($("#ddlSalons").val() == null) {
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblInvoice").text("Please Select Salons");
+                $("#ddlSalons").focus();
+            }
+
+        }
+    }
+
+    function Clear() {
+
+        $("#ddlyear").val("");
+        $("#ddlmonth").val("");
+        $("#ddlSalons").val("");
+    }
+</script>

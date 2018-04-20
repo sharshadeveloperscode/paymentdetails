@@ -1,0 +1,241 @@
+﻿
+@{
+    ViewBag.Title = "Duration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<body>
+    <section class="content-header">
+        <h1>
+            Duration
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><a href="#">Masters</a></li>
+            <li class="active">Create Duration</li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive">
+                        <div id="dvErrorStatus" style="display:none" class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lblDuration"></label>
+                        </div>
+                        <div id="dvSuccess" style="display:none" class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <label id="lbl_status"></label>
+                        </div>
+                    </div>
+                    <div class="box-body table-responsive">
+                        <table style="width: 100%" class="table table-bordered table-hover dataTable">
+                            <tr><td colspan="4"><label style="color:red;margin-left: 1%;">* indicates fields are required</label></td></tr>
+                            <tr>
+
+                                <td>
+                                    Duration:<label style="color:red;margin-left: 1%;">*</label>
+                                </td>
+                                <td>
+                                    <input type="number" min="0" maxlength="40" placeholder="Enter Duration " id="txtDuration" name="txtDuration" title="Enter Alphabets only" class="form-control" required />
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td colspan="4" style="text-align:right">
+                                    <input type="button" class="btn btn-primary" id="btnSave" value="Save" style="width:100px;" onclick="Save()" />
+                                    <input type="button" class="btn btn-primary" id="btnEdit" value="Update" style="width:100px;" onclick="Update()" />
+                                    @*<input type="button" class="btn btn-danger" id="btnReset" value="Reset" onclick="Clear()" style="width:100px;" />*@
+                                    <input type="button" class="btn btn-danger" id="btnBack" value="Back" onclick="window.location.href = '@Url.Action("DurationList", "Salon")';" style="width:100px;" />
+                                    <input type="text" hidden="hidden" id="txtDurationId" name="DurationId" />
+                                </td>
+                            </tr>
+                        </table>
+                        <label id="lbl_status"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</body>
+<script type="text/javascript">
+
+          var URL = "@System.Configuration.ConfigurationManager.AppSettings["URL"]";
+        var UserId = localStorage.getItem("UserId");
+        var RoleId = localStorage.getItem("RoleId");
+        var EditDurationId = localStorage.getItem("EditDurationId");
+
+        window.onload = function () {
+            if (UserId != "null" || UserId != null && RoleId == "1") {
+
+                    if (EditDurationId == "null") {
+                        $('#btnEdit').hide();
+                        $('#btnSave').show();
+                    }
+                    else {
+                        BindDuration(EditDurationId);
+                        $('#btnEdit').show();
+                        $('#btnSave').hide();
+                        $('#btnReset').hide();
+                    }
+
+            }
+            else {
+                window.location.href = '@Url.Action("Logout", "Salon")';
+            }
+        }
+
+
+        //}
+
+    function BindDuration(DurationId) {
+            $("#lbl_status").text("");
+            Clear();
+
+            $.ajax({
+                url: URL + "api/Duration/GetbyId",
+                data:{"DurationId":DurationId},
+                type: "GET",
+                cache: false,
+                success: function (r) {
+                    $('#btnEdit').show();
+                    $('#btnSave').hide();
+                    console.log(r);
+                    $("#txtDurationId").val(DurationId);
+                    var num = r[0].Duration.match(/[\d\.]+/g);
+                    var number = num.toString();
+                  //  alert(number);
+                  //  Dur = r[0].Duration.split()
+                    $("#txtDuration").val(number);
+                },
+                error: function (err) {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $('#lblDuration').text(err.statusText);
+                }
+            })
+        }
+
+    function Save() {
+        $("#dvErrorStatus").css({ display: "none" });
+        $("#lblDuration").text("");
+            $("#lbl_status").text("");
+            if ($("#txtDuration").val() != '' ) {
+                var Duration = $("#txtDuration").val();
+               var CreatedBy = UserId;
+               if (Duration.match("^[0-9]+$")) {
+                   var Duration1 = Duration + "min";
+                
+                    $.ajax({
+                        url: URL + "api/Duration/Insert",
+                        //is active
+                        data: { "Duration": Duration1, "IsActive": 1, "CreatedBy": CreatedBy },
+                        type: "GET",
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblDuration").text("Duration Already Existed.");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblDuration').text(r[0].ErrorMessage);
+                            }
+                            else
+                            {
+                                Clear();
+                                StatusMessage(2);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblDuration').text(err.statusText);
+                        }
+                    });
+               } else {
+                   $("#dvErrorStatus").css({ display: "block" });
+                  $("#lblDuration").text("Please Enter Duration In Minutes");
+                }
+            } else {
+
+                $("#dvErrorStatus").css({ display: "block" });
+                $("#lblDuration").text("please enter Duration In Minutes ");
+               $("#txtduration").focus();
+    }
+
+        }
+        function Clear() {
+            $("#txtDurationId").val("");
+            $("#txtDuration").val("");
+            $("#lbl_status").text("");
+            $("#lblDuration").text(" ");
+            $('#btnEdit').hide();
+            $('#btnSave').show();
+            $("#dvSuccess").css({ display: "none" });
+            $("#dvErrorStatus").css({ display: "none" });
+        }
+
+
+
+        function Update() {
+            $("#dvErrorStatus").css({ display: "none" });
+            $("#lblDuration").text("");
+            $("#lbl_status").text("");
+            if ($("#txtDuration").val() != '') {
+                var Duration = $("#txtDuration").val();
+                var UpdatedBy = UserId;
+               
+                if (Duration.match("^[0-9]+$")) {
+
+                    var Duration1 = Duration + "min";
+                    $.ajax({
+                        url: URL + "api/Duration/Update",
+                        data: { "Duration": Duration1, "UpdatedBy": UpdatedBy, "Durationid": $("#txtDurationId").val() },
+                        cache: false,
+                        type: "GET",
+                        dataType: 'json',
+                        contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                        cache: false,
+                        success: function (r) {
+                            if (r[0].Message == "UniqueConstraint") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $("#lblDuration").text("Duration Already Existed.");
+                            }
+                            else if (r[0].Message == "Error") {
+                                $("#dvErrorStatus").css({ display: "block" });
+                                $('#lblDuration').text(r[0].ErrorMessage);
+                            }
+                            else {
+                                Clear();
+                                StatusMessage(1);
+                            }
+                        },
+                        error: function (err) {
+                            $("#dvErrorStatus").css({ display: "block" });
+                            $('#lblDuration').text(err.statusText);
+                        }
+                    });
+                } else {
+                    $("#dvErrorStatus").css({ display: "block" });
+                    $("#lblDuration").text("Please Enter Valid Duration ");
+                }
+            }
+            else {
+                $("#lblDuration").text("Please Enter Duration.");
+                $("#dvErrorStatus").css({ display: "block" });
+            }
+
+            
+            // function StatusMessage(value) {
+            //localStorage.setItem("CleanUpTimeMessage", value);
+           // window.location.href = '@Url.Action("CleanUpTimeList", "Salon")';
+       // }
+        }
+    function StatusMessage(value) {
+        localStorage.setItem("DurationMessage", value);
+        window.location.href = '@Url.Action("DurationList", "Salon")';
+    }
+</script>
+
